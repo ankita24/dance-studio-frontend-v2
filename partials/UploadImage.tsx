@@ -7,56 +7,74 @@ import {
   Text,
   StyleSheet,
 } from 'react-native'
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import axios from 'axios'
+import { cloudinaryUrl } from '../utils'
 
-export default function UploadImage({receiveImage}:{receiveImage:(data:string)=>void}) {
-  const [image, setImage] = useState<string>('')
-  
+export default function UploadImage({
+  receiveImage,
+  squared,
+  image,
+  addMore,
+}: {
+  receiveImage: (data: string) => void
+  squared?: boolean
+  image: string
+  addMore?: boolean
+}) {
   const addImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
+      allowsMultipleSelection: !!squared,
     })
     if (result.cancelled) {
-      return;
+      return
     }
 
     if (!result.cancelled) {
-      let localUri = result.uri;
-      let filename = localUri.split('/').pop();
-    
-      // Infer the type of the image
-      let match = /\.(\w+)$/.exec(filename ?? '');
-      let type = match ? `image/${match[1]}` : `image`;
-    
-      // Upload the image using the fetch and FormData APIs
-      let formData = new FormData();
-      // Assume "photo" is the name of the form field the server expects
-      formData.append('photo', { uri: localUri, name: filename, type });
-      setImage(result.uri)
+      let localUri = result.uri
+      let filename = localUri.split('/').pop()
+      let formData = new FormData()
+      const uri = result.uri
+      const type = result.type
+      const name = filename
+      const size = result.height
+      const source = {
+        uri,
+        type,
+        name,
+        size,
+      }
+      formData.append('file', source)
+      formData.append('upload_preset', 'tavlkdbq')
       axios
-      .post(
-        'http://192.168.29.91:9999/api/imageUpload',
-        formData
-      )
-      .then((res) => {
-        if (res?.data?.status === 'error') {
-          Alert.alert(res?.data?.error)
-        }
-        receiveImage(res.data.data)
-      })
-      .catch(e => console.log(e))
+        .post(
+          'https://api.cloudinary.com/v1_1/ankitadancestudio/upload',
+          formData
+        )
+        .then(res => {
+          receiveImage(res.data.public_id)
+        })
+        .catch(e => console.log(e.message))
     }
   }
 
   return (
-    <View style={imageUploaderStyles.container}>
+    <View
+      style={[
+        imageUploaderStyles.container,
+        squared ? null : imageUploaderStyles.circular,
+      ]}
+    >
       {!!image && (
-        <Image source={{ uri: image }} style={{ width: 100, height: 100 }} />
+        <Image
+          source={{ uri: cloudinaryUrl(image) }}
+          style={{ width: 100, height: 100 }}
+        />
       )}
 
       <View style={imageUploaderStyles.uploadBtnContainer}>
@@ -64,7 +82,14 @@ export default function UploadImage({receiveImage}:{receiveImage:(data:string)=>
           onPress={addImage}
           style={imageUploaderStyles.uploadBtn}
         >
-          <AntDesign name='camera' size={20} color='black' />
+          {!addMore ? (
+            <AntDesign name='camera' size={20} color='black' />
+          ) : (
+            <View>
+              <MaterialIcons name='add-to-photos' size={30} color='black' />
+              <Text>Add More</Text>
+            </View>
+          )}
         </TouchableOpacity>
       </View>
     </View>
@@ -78,8 +103,10 @@ const imageUploaderStyles = StyleSheet.create({
     width: 100,
     backgroundColor: '#efefef',
     position: 'relative',
-    borderRadius: 999,
     overflow: 'hidden',
+  },
+  circular: {
+    borderRadius: 999,
   },
   uploadBtnContainer: {
     opacity: 0.7,

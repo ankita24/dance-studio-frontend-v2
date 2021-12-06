@@ -9,13 +9,21 @@ import {
   Button,
   Alert,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native'
 import axios from 'axios'
 import { AntDesign } from '@expo/vector-icons'
 import UploadImage from '../partials/UploadImage'
 import { useNavigation } from '@react-navigation/native'
+import { validate } from '../utils/helper'
 
-export default function SignUp({route}) {
+export default function SignUp({
+  route: {
+    params: { type },
+  },
+}: {
+  route: { params: { type: string } }
+}) {
   const navigate = useNavigation()
   const [focus, setFocus] = useState({
     name: false,
@@ -29,41 +37,42 @@ export default function SignUp({route}) {
     email: '',
     password: '',
     confirmPassword: '',
+    image: '',
   })
   const { name, email, pwd, confirmPwd } = focus
-  const [image, setImage] = useState<string>('')
 
   const handleRegister = async () => {
-    // axios
-    //   .post(
-    //     'http://192.168.29.91:9999/api/register',
+    axios
+      .post(
+        'http://192.168.29.91:9999/api/register',
 
-    //     {
-    //       name: data.name,
-    //       email: data.email,
-    //       password: data.password,
-    //       image,
-    //       type: props.location.state,
-    //     }
-    //   )
-    //   .then(res => {
-    //     if (res?.data?.status === 'error') {
-    //       Alert.alert(res?.data?.error)
-    //     }
-    //     else {
-    //       // if(props.location.state==='owner')
-    //       //   navigate('/ownerStep1')
-    //     }
-    //   })
-    //   .catch(e => console.log(e))
-    if (route.params.type === 'owner')
-      navigate.navigate('ownerStep1')
+        {
+          name: data.name,
+          email: data.email,
+          password: data.password,
+          image: data.image,
+          type,
+        }
+      )
+      .then(res => {
+        if (res?.data?.status === 'error') {
+          Alert.alert(res?.data?.error)
+        } else {
+          // if(props.location.state==='owner')
+          //   navigate('/ownerStep1')
+        }
+        if (type === 'owner')
+          navigate.navigate('ownerStep1', { studioId: res?.data.response._id })
+      })
+      .catch(e => console.log(e))
   }
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign Up</Text>
       <StatusBar style='auto' />
-      <UploadImage receiveImage={(data: string) => setImage(data)} />
+      <UploadImage
+        receiveImage={(image: string) => setData({ ...data, image })}
+      />
       <TextInput
         placeholderTextColor='grey'
         onBlur={() => setFocus({ ...focus, name: false })}
@@ -72,20 +81,28 @@ export default function SignUp({route}) {
         style={[styles.input, styles.margin, name ? styles.yellow : null]}
         onChangeText={text => setData({ ...data, name: text })}
       />
+
       <TextInput
         placeholderTextColor='grey'
         onBlur={() => setFocus({ ...focus, email: false })}
         onFocus={() => setFocus({ ...focus, email: true })}
         placeholder='Email'
         style={[styles.input, styles.margin, email ? styles.yellow : null]}
-        onChangeText={text => setData({ ...data, email: text })}
+        onChangeText={text => {
+          setData({ ...data, email: text })
+        }}
       />
+
+      <Text style={{ color: 'red' }}>
+        {!validate(data.email) && !!data.email ? `Email is invalid` : ''}
+      </Text>
       <TextInput
         placeholderTextColor='grey'
         onBlur={() => setFocus({ ...focus, pwd: false })}
         onFocus={() => setFocus({ ...focus, pwd: true })}
         placeholder='Password'
         textContentType='password'
+        secureTextEntry
         style={[styles.input, styles.margin, pwd ? styles.yellow : null]}
         onChangeText={text => setData({ ...data, password: text })}
       />
@@ -95,6 +112,7 @@ export default function SignUp({route}) {
         onFocus={() => setFocus({ ...focus, confirmPwd: true })}
         placeholder='Confirm Password'
         textContentType='password'
+        secureTextEntry
         style={[styles.input, styles.margin, confirmPwd ? styles.yellow : null]}
         onChangeText={text => setData({ ...data, confirmPassword: text })}
       />
@@ -110,13 +128,17 @@ export default function SignUp({route}) {
           title='SIGN UP'
           color='#fff'
           onPress={handleRegister}
-          disabled={
-            (!data.email &&
-              !data.name &&
-              !data.password &&
-              !data.confirmPassword) ||
-            data.password !== data.confirmPassword
-          }
+          /**
+           * Uncomment
+           */
+          // disabled={
+          //   (!data.email &&
+          //     !data.name &&
+          //     !data.password &&
+          //     !data.confirmPassword) ||
+          //   data.password !== data.confirmPassword ||
+          //   !validate(data.email)
+          // }
         />
       </TouchableHighlight>
       <Text style={[styles.signUpText, styles.marginTop25, styles.flex]}>
@@ -136,7 +158,6 @@ export default function SignUp({route}) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // backgroundColor: '#171717',
     alignItems: 'center',
     justifyContent: 'center',
   },

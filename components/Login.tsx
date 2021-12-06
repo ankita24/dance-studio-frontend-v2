@@ -10,8 +10,9 @@ import {
   Button,
 } from 'react-native'
 import { Ionicons, AntDesign } from '@expo/vector-icons'
-import axios, { AxiosResponse } from 'axios'
+import axios from 'axios'
 import { useNavigation } from '@react-navigation/native'
+import { validate } from '../utils/helper'
 
 export default function Login() {
   const navigate = useNavigation()
@@ -28,7 +29,7 @@ export default function Login() {
           password: data.pwd,
         }
       )
-      .then((res) => {
+      .then(res => {
         console.log(res.status, res.data)
         if (res?.data?.status === 'error') {
           Alert.alert(res?.data?.error)
@@ -69,6 +70,7 @@ export default function Login() {
           onFocus={() => setFocus({ ...focus, pwd: true })}
           placeholder='Password'
           textContentType='password'
+          secureTextEntry
           style={[styles.input, styles.margin, pwd ? styles.yellow : null]}
           onChangeText={text => setData({ ...data, pwd: text })}
         />

@@ -6,6 +6,7 @@ import Login from './components/Login'
 import OwnerRequired from './components/OwnerRequired'
 import SignUp from './components/SignUp'
 import UserType from './components/UserType'
+import OwnerStep2 from './components/OwnerStep2'
 
 const Stack = createNativeStackNavigator()
 
@@ -17,6 +18,7 @@ export default function App() {
         <Stack.Screen name='login' component={Login} />
         <Stack.Screen name='signup' component={SignUp} />
         <Stack.Screen name='ownerStep1' component={OwnerRequired} />
+        <Stack.Screen name='ownerStep2' component={OwnerStep2} />
       </Stack.Navigator>
     </NavigationContainer>
   )
