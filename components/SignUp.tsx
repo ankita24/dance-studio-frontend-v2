@@ -42,30 +42,49 @@ export default function SignUp({
   const { name, email, pwd, confirmPwd } = focus
 
   const handleRegister = async () => {
-    axios
-      .post(
-        'http://192.168.29.91:9999/api/register',
+    // axios
+    //   .post(
+    //     'http://192.168.29.91:9999/api/register',
 
-        {
-          name: data.name,
-          email: data.email,
-          password: data.password,
-          image: data.image,
-          type,
-        }
-      )
-      .then(res => {
-        if (res?.data?.status === 'error') {
-          Alert.alert(res?.data?.error)
-        } else {
-          // if(props.location.state==='owner')
-          //   navigate('/ownerStep1')
-        }
-        if (type === 'owner')
-          navigate.navigate('ownerStep1', { studioId: res?.data.response._id })
-      })
-      .catch(e => console.log(e))
+    //     {
+    //       name: data.name,
+    //       email: data.email,
+    //       password: data.password,
+    //       image: data.image,
+    //       type,
+    //     }
+    //   )
+    //   .then(res => {
+    //     if (res?.data?.status === 'error') {
+    //       Alert.alert(res?.data?.error)
+    //     } else {
+    //       // if(props.location.state==='owner')
+    //       //   navigate('/ownerStep1')
+    //     }
+    //     if (type === 'owner') {
+    //       storeProfileId(res?.data.response._id).then(() => {
+    //         navigate.navigate('ownerStep1', {
+    //           studioId: res?.data.response._id,
+    //         })
+    //       })
+    //     }
+    //   })
+    //   .catch(e => console.log(e))
+    /**
+     * Delete next two lines once above code is uncommented
+     */
+    if (type === 'owner')
+      navigate.navigate('ownerStep1', { studioId: '61acfba84c7e58a0b4f279ea' })
   }
+
+  const storeProfileId = async (id: string) => {
+    try {
+      await AsyncStorage.setItem('@id', id)
+    } catch (e) {
+      // saving error
+    }
+  }
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Sign Up</Text>

@@ -99,7 +99,7 @@ export default function OwnerStep2({
         <Button
           color='#D1D100'
           title='Skip'
-          onPress={() => navigate.navigate('signup')} //change this
+          onPress={() => navigate.navigate('profile', { studioId })} //change this
         />
       </TouchableHighlight>
     </View>

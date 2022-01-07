@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar'
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import {
   StyleSheet,
   Text,
@@ -10,9 +10,24 @@ import {
   Button,
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function UserType() {
   const navigation = useNavigation()
+  useEffect(() => {
+    getData()
+  }, [])
+
+  const getData = async () => {
+    try {
+      const value = await AsyncStorage.getItem('@id')
+      if (value !== null) {
+        navigation.navigate('profile', { studioId: value })
+      }
+    } catch (e) {
+      // error reading value
+    }
+  }
   return (
     <View style={styles.container}>
       <Text style={styles.welcomeText}>Welcome to Generic Dance studio</Text>

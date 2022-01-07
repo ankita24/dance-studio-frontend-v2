@@ -13,6 +13,7 @@ import { Ionicons, AntDesign } from '@expo/vector-icons'
 import axios from 'axios'
 import { useNavigation } from '@react-navigation/native'
 import { validate } from '../utils/helper'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 export default function Login() {
   const navigate = useNavigation()
@@ -30,12 +31,24 @@ export default function Login() {
         }
       )
       .then(res => {
-        console.log(res.status, res.data)
         if (res?.data?.status === 'error') {
           Alert.alert(res?.data?.error)
+        } else if (res.status === 200) {
+          storeProfileId(res.data.id).then(() => {
+            navigate.navigate('profile', { studioId: res.data.id })
+          })
         }
       })
       .catch(e => console.log(e))
+  }
+
+  const storeProfileId = async (id: string) => {
+    try {
+      console.log('storage',res.data.id)
+      await AsyncStorage.setItem('@id', id)
+    } catch (e) {
+      // saving error
+    }
   }
   const { user, pwd } = focus
   return (
