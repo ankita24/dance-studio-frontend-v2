@@ -35,7 +35,8 @@ export default function Login() {
           Alert.alert(res?.data?.error)
         } else if (res.status === 200) {
           storeProfileId(res.data.id).then(() => {
-            navigate.navigate('profile', { studioId: res.data.id })
+            if (res.data.type === 'user') navigate.navigate('danceStudios')
+            else navigate.navigate('profile', { id: res.data.id })
           })
         }
       })
@@ -44,7 +45,6 @@ export default function Login() {
 
   const storeProfileId = async (id: string) => {
     try {
-      console.log('storage',res.data.id)
       await AsyncStorage.setItem('@id', id)
     } catch (e) {
       // saving error

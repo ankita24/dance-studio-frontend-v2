@@ -14,10 +14,10 @@ import { useNavigation } from '@react-navigation/native'
 
 export default function OwnerStep2({
   route: {
-    params: { studioId },
+    params: { id },
   },
 }: {
-  route: { params: { studioId: number } }
+  route: { params: { id: number } }
 }) {
   const navigate = useNavigation()
   const [focus, setFocus] = useState({ area: false, rooms: false })
@@ -28,9 +28,9 @@ export default function OwnerStep2({
   const { area, rooms } = focus
 
   const handleStepTwo = () => {
-    if (studioId) {
+    if (id) {
       axios
-        .put(`http://192.168.29.91:9999/api/owner/${studioId}`, data)
+        .put(`http://192.168.29.91:9999/api/owner/${id}`, data)
         .then(res => {
           if (res?.data?.status === 'error') {
             Alert.alert(res?.data?.error)
@@ -99,7 +99,7 @@ export default function OwnerStep2({
         <Button
           color='#D1D100'
           title='Skip'
-          onPress={() => navigate.navigate('profile', { studioId })} //change this
+          onPress={() => navigate.navigate('profile', { id })} //change this
         />
       </TouchableHighlight>
     </View>

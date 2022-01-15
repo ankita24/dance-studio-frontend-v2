@@ -2,12 +2,15 @@ import React from 'react'
 import { StyleSheet } from 'react-native'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import Login from './components/Login'
-import OwnerRequired from './components/OwnerRequired'
-import SignUp from './components/SignUp'
-import UserType from './components/UserType'
-import OwnerStep2 from './components/OwnerStep2'
-import Profile from './components/Profile'
+import {
+  UserType,
+  Login,
+  SignUp,
+  OwnerRequired,
+  OwnerStep2,
+  DanceStudios,
+  Profile,
+} from './components'
 
 const Stack = createNativeStackNavigator()
 
@@ -20,7 +23,13 @@ export default function App() {
         <Stack.Screen name='signup' component={SignUp} />
         <Stack.Screen name='ownerStep1' component={OwnerRequired} />
         <Stack.Screen name='ownerStep2' component={OwnerStep2} />
-        <Stack.Screen name='profile' component={Profile} />
+        <Stack.Screen name='danceStudios' component={DanceStudios} />
+        <Stack.Screen
+          name='profile'
+          component={Profile}
+          //TODO: Remove back button
+          options={{ headerLeft: props => null }}
+        />
       </Stack.Navigator>
     </NavigationContainer>
   )

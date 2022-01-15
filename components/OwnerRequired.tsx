@@ -16,10 +16,10 @@ import UploadImage from '../partials/UploadImage'
 
 export default function OwnerRequired({
   route: {
-    params: { studioId },
+    params: { id },
   },
 }: {
-  route: { params: { studioId: number } }
+  route: { params: { id: number } }
 }) {
   const navigate = useNavigation()
   const [focus, setFocus] = useState({ cost: false, location: false })
@@ -35,9 +35,9 @@ export default function OwnerRequired({
 
   const handleStepOne = () => {
     const ownerStep1Data = { ...data, images: image }
-    if (studioId) {
+    if (id) {
       axios
-        .put(`http://192.168.29.91:9999/api/owner/${studioId}`, ownerStep1Data)
+        .put(`http://192.168.29.91:9999/api/owner/${id}`, ownerStep1Data)
         .then(res => {
           if (res?.data?.status === 'error') {
             Alert.alert(res?.data?.error)
@@ -72,6 +72,9 @@ export default function OwnerRequired({
             })
           }}
           query={{
+            /**
+             * TODO: Keep the key in env variables
+             */
             key: 'AIzaSyBygoa-D3AeuGajrVzOTRrFnNzkGTyZtjA',
             language: 'en',
           }}
@@ -189,7 +192,7 @@ export default function OwnerRequired({
         <Button
           color='#D1D100'
           title='Skip'
-          onPress={() => navigate.navigate('ownerStep2', { studioId })} //change this
+          onPress={() => navigate.navigate('ownerStep2', { id })} //change this
         />
       </TouchableHighlight>
     </View>
