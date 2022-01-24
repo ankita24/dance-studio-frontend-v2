@@ -42,6 +42,7 @@ export default function OwnerRequired({
           if (res?.data?.status === 'error') {
             Alert.alert(res?.data?.error)
           } else {
+            navigate.navigate('ownerStep2', { id })
           }
         })
         .catch(e => console.log(e))

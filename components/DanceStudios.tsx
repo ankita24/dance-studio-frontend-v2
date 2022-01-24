@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, Button } from 'react-native'
+import { View, Text, StyleSheet, Button, FlatList } from 'react-native'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import * as Location from 'expo-location'
 import { MaterialIcons } from '@expo/vector-icons'
+import axios from 'axios'
+import { studiosDetails } from '../const'
 
 export default function DanceStudios() {
   const [location, setLocation] = useState({
@@ -11,13 +13,26 @@ export default function DanceStudios() {
   })
 
   useEffect(() => {
-    getStudios()
+    if (!!location.lat && !!location.long) getStudios()
   }, [location])
 
+  const [studios, setStudios] = useState(studiosDetails)
+
   const getStudios = () => {
+    const { lat, long } = location
     /**
      * TODO: Api call to get studios
      */
+    axios
+      .get(`http://192.168.29.91:9999/api/studios`, {
+        params: { lat, long },
+      })
+      .then(response => {
+        console.log('data', response.data.data)
+      })
+      .catch(err => {
+        console.error(err)
+      })
   }
 
   const handleCurrentLocation = () => {
@@ -32,8 +47,15 @@ export default function DanceStudios() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Dance studios new me</Text>
-      <View style={{ display: 'flex', flexDirection: 'row', width: 250 }}>
+      <Text style={styles.title}>Dance studios near me</Text>
+      <View
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          width: 250,
+          marginTop: -75,
+        }}
+      >
         <GooglePlacesAutocomplete
           placeholder='Search location'
           onPress={(data1, details) => {
@@ -42,7 +64,6 @@ export default function DanceStudios() {
               lat: details?.geometry.location.lat ?? 0,
               long: details?.geometry.location.lng ?? 0,
             })
-            console.log(data1)
           }}
           query={{
             /**
@@ -63,6 +84,30 @@ export default function DanceStudios() {
           onPress={handleCurrentLocation}
         />
       </View>
+      <FlatList
+        key='_id'
+        data={studios}
+        renderItem={({ item }) => (
+          <View style={styles.listCtn}>
+            <View style={{ width: '80%' }}>
+              <Text style={{ fontWeight: 'bold' }}>{item.name}</Text>
+              <Text style={{ marginTop: 7 }}>
+                {item.cost} ₹ / {item.duration} hrs
+              </Text>
+              <Text style={{ marginTop: 7 }}>{item.distance} kms</Text>
+              <Text style={{ marginTop: 7 }} numberOfLines={2}>
+                {item.location}
+              </Text>
+            </View>
+            <Text>
+              <Button
+                title='Book'
+                onPress={() => console.log('do something')}
+              />
+            </Text>
+          </View>
+        )}
+      />
     </View>
   )
 }
@@ -70,25 +115,18 @@ export default function DanceStudios() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //backgroundColor: '#171717',
     alignItems: 'center',
-    // justifyContent: 'center',
   },
   input: {
     height: 40,
-    width: 250,
+    width: 300,
     borderBottomWidth: 1,
     borderRadius: 10,
     padding: 10,
     borderColor: 'grey',
     marginTop: -8,
     color: 'grey',
-  },
-  margin: {
-    marginTop: 25,
-  },
-  yellow: {
-    borderColor: '#D1D100',
+    marginLeft: -25,
   },
   button: {
     height: 40,
@@ -96,32 +134,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#000',
     borderRadius: 10,
   },
-  marginTop25: {
-    marginTop: 25,
-  },
-  signUpText: {
-    // color: '#fff',
-  },
-  lastText: {
-    fontWeight: 'bold',
-  },
   title: {
     // color: '#fff',
     marginBottom: 100,
-    fontSize: 50,
-    marginRight: 150,
+    fontSize: 30,
+    // marginRight: 150,
+    width: 300,
+    marginTop: 20,
   },
-  costWidth: {
-    width: 60,
-  },
-  imageView: {
+  listCtn: {
     display: 'flex',
     flexDirection: 'row',
-    marginTop: 10,
-    width: 320,
-    justifyContent: 'space-between',
-  },
-  flexStart: {
-    justifyContent: 'space-evenly',
+    width: 300,
+    height: 150,
+    borderColor: 'grey',
+    borderWidth: 1,
+    marginTop: 30,
+    padding: 10,
   },
 })

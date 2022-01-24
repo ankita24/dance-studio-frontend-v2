@@ -22,7 +22,7 @@ export default function UserType() {
     try {
       const value = await AsyncStorage.getItem('@id')
       if (value !== null) {
-        navigation.navigate('profile', { id: value })
+        navigation.navigate('danceStudios', { id: value })
       }
     } catch (e) {
       // error reading value

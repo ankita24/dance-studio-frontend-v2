@@ -35,6 +35,7 @@ export default function OwnerStep2({
           if (res?.data?.status === 'error') {
             Alert.alert(res?.data?.error)
           } else {
+            navigate.navigate('profile', { id })
           }
         })
         .catch(e => console.log(e))
