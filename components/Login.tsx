@@ -34,18 +34,22 @@ export default function Login() {
         if (res?.data?.status === 'error') {
           Alert.alert(res?.data?.error)
         } else if (res.status === 200) {
-          storeProfileId(res.data.id).then(() => {
+          storeProfileId(res.data.id, res.data.type).then(() => {
             if (res.data.type === 'user') navigate.navigate('danceStudios')
-            else navigate.navigate('profile', { id: res.data.id })
+            /**
+             * TODO: change it to profile below
+             */
+            else navigate.navigate('ownerStep2', { id: res.data.id })
           })
         }
       })
       .catch(e => console.log(e))
   }
 
-  const storeProfileId = async (id: string) => {
+  const storeProfileId = async (id: string, type: string) => {
     try {
       await AsyncStorage.setItem('@id', id)
+      await AsyncStorage.setItem('@type', type)
     } catch (e) {
       // saving error
     }

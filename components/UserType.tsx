@@ -3,10 +3,8 @@ import React, { useState, useEffect } from 'react'
 import {
   StyleSheet,
   Text,
-  TextInput,
   View,
   TouchableHighlight,
-  Alert,
   Button,
 } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
@@ -21,8 +19,10 @@ export default function UserType() {
   const getData = async () => {
     try {
       const value = await AsyncStorage.getItem('@id')
+      const type = await AsyncStorage.getItem('@type')
       if (value !== null) {
-        navigation.navigate('danceStudios', { id: value })
+        if (type === 'owner') navigation.navigate('profile', { id: value })
+        else navigation.navigate('danceStudios', { id: value })
       }
     } catch (e) {
       // error reading value

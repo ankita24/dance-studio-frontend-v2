@@ -7,10 +7,23 @@ import {
   View,
   TouchableHighlight,
   Button,
+  ScrollView,
 } from 'react-native'
 import { Entypo, MaterialIcons } from '@expo/vector-icons'
 import axios from 'axios'
 import { useNavigation } from '@react-navigation/native'
+import { Card } from 'react-native-elements'
+import DateTimePicker from '@react-native-community/datetimepicker'
+import { AntDesign, FontAwesome } from '@expo/vector-icons'
+
+var start = new Date()
+start.setHours(0, 0, 0, 0)
+
+const addStartHours = 2 * 1000 * 3600
+const addEndHours = 5 * 1000 * 3600
+
+const addDefaultStartHours = start.getTime() + addStartHours
+const addDefaultEndHours = start.getTime() + addEndHours
 
 export default function OwnerStep2({
   route: {
@@ -25,6 +38,46 @@ export default function OwnerStep2({
     area: 0,
     rooms: 0,
   })
+
+  const [week, setWeek] = useState<
+    { day: string; timings: { start: Date; end: Date }[]; enable: boolean }[]
+  >([
+    {
+      day: 'Monday',
+      timings: [],
+      enable: false,
+    },
+    {
+      day: 'Tuesday',
+      timings: [],
+      enable: false,
+    },
+    {
+      day: 'Wednesday',
+      timings: [],
+      enable: false,
+    },
+    {
+      day: 'Thursday',
+      timings: [],
+      enable: false,
+    },
+    {
+      day: 'Friday',
+      timings: [],
+      enable: false,
+    },
+    {
+      day: 'Saturday',
+      timings: [],
+      enable: false,
+    },
+    {
+      day: 'Sunday',
+      timings: [],
+      enable: false,
+    },
+  ])
   const { area, rooms } = focus
 
   const handleStepTwo = () => {
@@ -38,7 +91,7 @@ export default function OwnerStep2({
             navigate.navigate('profile', { id })
           }
         })
-        .catch(e => console.log(e))
+        .catch(e => console.error(e))
     }
   }
 
@@ -58,7 +111,11 @@ export default function OwnerStep2({
           onBlur={() => setFocus({ ...focus, area: false })}
           onFocus={() => setFocus({ ...focus, area: true })}
           placeholder='Area(sq feet)'
-          style={[styles.input, styles.margin, area ? styles.yellow : null]}
+          style={[
+            styles.input,
+            styles.marginTop25,
+            area ? styles.yellow : null,
+          ]}
           onChangeText={text => {
             if (!isNaN(Number(text))) setData({ ...data, area: Number(text) })
           }}
@@ -78,7 +135,11 @@ export default function OwnerStep2({
           onBlur={() => setFocus({ ...focus, rooms: false })}
           onFocus={() => setFocus({ ...focus, rooms: true })}
           placeholder='No of rooms'
-          style={[styles.input, styles.margin, rooms ? styles.yellow : null]}
+          style={[
+            styles.input,
+            styles.marginTop25,
+            rooms ? styles.yellow : null,
+          ]}
           onChangeText={text => {
             if (!isNaN(Number(text))) setData({ ...data, rooms: Number(text) })
           }}
@@ -86,8 +147,127 @@ export default function OwnerStep2({
           value={!!data.rooms ? data.rooms.toString() : ''}
         />
       </View>
+      <View style={{ width: 275 }}>
+        <Text style={{ marginTop: 32, fontWeight: 'bold' }}>
+          Weekly Availabilty
+        </Text>
+        <ScrollView style={{ width: 275, height: 420 }}>
+          {week.map((item, index1) => (
+            <Card
+              key={item.day}
+              containerStyle={{ width: 285, marginLeft: -10 }}
+            >
+              <Card.Title>{item.day}</Card.Title>
+              <Card.Divider />
+              {item.enable ? (
+                item.timings.map((timing, index2) => {
+                  return (
+                    <View
+                      key={item.day + timing.start}
+                      style={{
+                        display: 'flex',
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        margin: 0,
+                        justifyContent: 'center',
+                        marginTop: 10,
+                      }}
+                    >
+                      <DateTimePicker
+                        mode='time'
+                        value={timing.start}
+                        style={{ width: 90, padding: 0 }}
+                        onChange={(e, date) => {
+                          if (!!date) {
+                            const arr = [...week]
+                            arr[index1].timings[index2].start = date
+                            setWeek(arr)
+                          }
+                        }}
+                      />
+                      <Text>-</Text>
+                      <DateTimePicker
+                        mode='time'
+                        value={timing.end}
+                        style={{ width: 90, padding: 0 }}
+                        onChange={(e, date) => {
+                          if (
+                            !!date &&
+                            date.getTime() > timing.start.getTime()
+                          ) {
+                            const arr = [...week]
+                            arr[index1].timings[index2].end = date
+                            setWeek(arr)
+                          } else {
+                            const arr = [...week]
+                            arr[index1].timings[index2].end = timing.end
+                            setWeek(arr)
+                          }
+                        }}
+                      />
+                      <AntDesign
+                        name='pluscircleo'
+                        size={20}
+                        color='grey'
+                        style={{ marginLeft: 10 }}
+                        onPress={() => {
+                          const arr = [...week]
+                          arr[index1].timings.push({
+                            start: new Date(
+                              item.timings[index2].end.getTime() + addStartHours
+                            ),
+                            end: new Date(
+                              item.timings[index2].end.getTime() + addEndHours
+                            ),
+                          })
+                          setWeek(arr)
+                        }}
+                      />
+                      <FontAwesome
+                        name='remove'
+                        size={20}
+                        color='grey'
+                        style={{ marginLeft: 10 }}
+                        onPress={() => {
+                          const arr = [...week]
+                          arr[index1].timings.splice(index2, 1)
+                          if (!arr[index1].timings.length)
+                            arr[index1].enable = false
+                          setWeek(arr)
+                        }}
+                      />
+                    </View>
+                  )
+                })
+              ) : (
+                <Button
+                  title='Add Time'
+                  onPress={() => {
+                    setWeek(
+                      week.map(i => {
+                        if (i.day === item.day)
+                          return {
+                            ...i,
+                            enable: !item.enable,
+                            timings: [
+                              {
+                                start: new Date(addDefaultStartHours),
+                                end: new Date(addDefaultEndHours),
+                              },
+                            ],
+                          }
+                        else return i
+                      })
+                    )
+                  }}
+                />
+              )}
+            </Card>
+          ))}
+        </ScrollView>
+      </View>
 
-      <TouchableHighlight style={[styles.button, styles.marginTop25]}>
+      <TouchableHighlight style={[styles.button, styles.marginTop10]}>
         <Button
           title='Next'
           color='#fff'
@@ -100,7 +280,7 @@ export default function OwnerStep2({
         <Button
           color='#D1D100'
           title='Skip'
-          onPress={() => navigate.navigate('profile', { id })} //change this
+          onPress={() => navigate.navigate('profile', { id })}
         />
       </TouchableHighlight>
     </View>
@@ -110,9 +290,7 @@ export default function OwnerStep2({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //backgroundColor: '#171717',
     alignItems: 'center',
-    // justifyContent: 'center',
   },
   input: {
     height: 40,
@@ -123,9 +301,6 @@ const styles = StyleSheet.create({
     borderColor: 'grey',
     marginTop: -8,
     color: 'grey',
-  },
-  margin: {
-    marginTop: 25,
   },
   yellow: {
     borderColor: '#D1D100',
@@ -139,26 +314,11 @@ const styles = StyleSheet.create({
   marginTop25: {
     marginTop: 25,
   },
-  signUpText: {
-    // color: '#fff',
-  },
-  lastText: {
-    fontWeight: 'bold',
+  marginTop10: {
+    marginTop: 10,
   },
   title: {
-    // color: '#fff',
-    marginBottom: 100,
-    fontSize: 50,
-    marginRight: 150,
-  },
-  imageView: {
-    display: 'flex',
-    flexDirection: 'row',
+    fontSize: 30,
     marginTop: 10,
-    width: 320,
-    justifyContent: 'space-between',
-  },
-  flexStart: {
-    justifyContent: 'space-evenly',
   },
 })
