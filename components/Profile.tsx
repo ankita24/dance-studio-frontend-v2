@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosResponse } from 'axios'
 import React, { useEffect, useState } from 'react'
 import {
   Text,
@@ -46,9 +46,21 @@ export default function Profile({
   const fetchProfile = () => {
     axios
       .get(`http://192.168.29.91:9999/api/profile/${id}`)
-      .then(response => {
-        setProfile(response.data.user)
-        setEditableData(response.data.user)
+      .then((response: AxiosResponse) => {
+        const {
+          data: { user },
+        } = response
+        if (!user.location && !user.cost && !user.duration)
+          navigate.navigate('ownerStep1', { id })
+        else if (
+          !user.rooms &&
+          !user.area &&
+          !user?.availabilty &&
+          !user.availabilty?.length
+        )
+          navigate.navigate('ownerStep2', { id })
+        setProfile(user)
+        setEditableData(user)
       })
       .catch(error => console.error(error))
   }
@@ -73,7 +85,7 @@ export default function Profile({
             setEdit(false)
           }
         })
-        .catch(e => console.log(e))
+        .catch(e => console.error(e))
     }
   }
 
@@ -198,7 +210,7 @@ export default function Profile({
               </View>
             </View>
           )}
-          <TouchableHighlight >
+          <TouchableHighlight>
             <Button title='Log out' color='#fff' onPress={logOut} />
           </TouchableHighlight>
         </View>

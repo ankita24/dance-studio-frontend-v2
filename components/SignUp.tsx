@@ -69,7 +69,7 @@ export default function SignUp({
           })
         }
       })
-      .catch(e => console.log(e))
+      .catch(e => console.error(e))
     /**
      * Delete next two lines once above code is uncommented
      */

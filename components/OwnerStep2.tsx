@@ -82,8 +82,12 @@ export default function OwnerStep2({
 
   const handleStepTwo = () => {
     if (id) {
+      const availabilty = week.map(({ enable, ...keepRest }) => keepRest)
       axios
-        .put(`http://192.168.29.91:9999/api/owner/${id}`, data)
+        .put(`http://192.168.29.91:9999/api/owner/${id}`, {
+          ...data,
+          availabilty,
+        })
         .then(res => {
           if (res?.data?.status === 'error') {
             Alert.alert(res?.data?.error)

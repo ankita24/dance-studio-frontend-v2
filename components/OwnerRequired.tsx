@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar'
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   StyleSheet,
   Text,
@@ -21,6 +21,8 @@ export default function OwnerRequired({
 }: {
   route: { params: { id: number } }
 }) {
+  const ref = useRef()
+
   const navigate = useNavigation()
   const [focus, setFocus] = useState({ cost: false, location: false })
   const [data, setData] = useState({
@@ -32,6 +34,38 @@ export default function OwnerRequired({
   })
   const [image, setImage] = useState<string[]>([])
   const { location, cost } = focus
+
+  useEffect(() => {
+    fetchProfile()
+  }, [])
+
+  useEffect(() => {
+    ref.current?.setAddressText(data.location)
+  }, [])
+
+  const fetchProfile = () => {
+    axios
+      .get(`http://192.168.29.91:9999/api/profile/${id}`)
+      .then(response => {
+        const { location, cost, lat, long, duration } = response?.data?.user
+        /**
+         * TODO: Add images also(min 2) in the query. 
+         * TODO: Check what is the place to check the ownerStep1, ownerStep2 and profile. 
+         */
+        if (!!location && !!cost && !!duration) {
+          navigate.navigate('ownerStep2', { id })
+        } else
+          setData({
+            ...data,
+            location,
+            cost,
+            lat,
+            long,
+            hour: duration,
+          })
+      })
+      .catch(error => console.error(error))
+  }
 
   const handleStepOne = () => {
     const ownerStep1Data = { ...data, images: image }
@@ -45,7 +79,7 @@ export default function OwnerRequired({
             navigate.navigate('ownerStep2', { id })
           }
         })
-        .catch(e => console.log(e))
+        .catch(e => console.error(e))
     }
   }
 
@@ -63,6 +97,7 @@ export default function OwnerRequired({
           color={location ? '#D1D100' : 'grey'}
         />
         <GooglePlacesAutocomplete
+          ref={ref}
           placeholder='Search location'
           onPress={(data1, details) => {
             setData({
@@ -104,6 +139,7 @@ export default function OwnerRequired({
             cost ? styles.yellow : null,
           ]}
           onChangeText={text => setData({ ...data, cost: Number(text) })}
+          value={data?.cost?.toString() ?? ''}
         />
         <Text style={{ marginTop: 32, fontSize: 19 }}>/</Text>
         <TextInput

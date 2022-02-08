@@ -39,11 +39,23 @@ export default function Login() {
             /**
              * TODO: change it to profile below
              */
-            else navigate.navigate('ownerStep2', { id: res.data.id })
+            const {
+              data: { user },
+            } = res
+            if (!user.location && !user.cost && !user.duration)
+              navigate.navigate('ownerStep1', { id })
+            else if (
+              !user.rooms &&
+              !user.area &&
+              !user?.availabilty &&
+              !user.availabilty?.length
+            )
+              navigate.navigate('ownerStep2', { id })
+            else navigate.navigate('profile', { id: res.data.id })
           })
         }
       })
-      .catch(e => console.log(e))
+      .catch(e => console.error(e))
   }
 
   const storeProfileId = async (id: string, type: string) => {

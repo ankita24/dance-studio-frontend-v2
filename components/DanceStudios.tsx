@@ -99,7 +99,7 @@ export default function DanceStudios() {
             <Text>
               <Button
                 title='Book'
-                onPress={() => console.log('do something')}
+                onPress={() => console.error('do something')}
               />
             </Text>
           </View>

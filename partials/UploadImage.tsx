@@ -59,7 +59,7 @@ export default function UploadImage({
         .then(res => {
           receiveImage(res.data.public_id)
         })
-        .catch(e => console.log(e.message))
+        .catch(e => console.error(e.message))
     }
   }
 
