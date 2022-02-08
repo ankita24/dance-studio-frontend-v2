@@ -25,7 +25,7 @@ export default function DanceStudios() {
         params: { lat, long },
       })
       .then(response => {
-        console.log('data', response.data.data)
+        console.log('user', response.data.data)
       })
       .catch(err => {
         console.error(err)
