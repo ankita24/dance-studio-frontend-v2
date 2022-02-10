@@ -7,23 +7,29 @@ import {
   View,
   TouchableHighlight,
   Button,
+  Alert,
 } from 'react-native'
 import { Entypo } from '@expo/vector-icons'
 import axios from 'axios'
-import { useNavigation } from '@react-navigation/native'
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import {
+  GooglePlacesAutocomplete,
+  GooglePlacesAutocompleteRef,
+} from 'react-native-google-places-autocomplete'
 import UploadImage from '../partials/UploadImage'
 
-export default function OwnerRequired({
-  route: {
-    params: { id },
-  },
-}: {
-  route: { params: { id: number } }
-}) {
-  const ref = useRef()
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { RootStackParamList } from '../App'
+import { Profile } from 'types'
 
-  const navigate = useNavigation()
+type Props = NativeStackScreenProps<
+  RootStackParamList,
+  'danceStudios' | 'ownerStep1' | 'ownerStep2' | 'profile'
+>
+
+export default function OwnerRequired({ route, navigation }: Props) {
+  const ref = useRef<GooglePlacesAutocompleteRef | null>(null)
+
+  const { id } = route.params || {}
   const [focus, setFocus] = useState({ cost: false, location: false })
   const [data, setData] = useState({
     cost: 0,
@@ -45,15 +51,15 @@ export default function OwnerRequired({
 
   const fetchProfile = () => {
     axios
-      .get(`http://192.168.29.91:9999/api/profile/${id}`)
+      .get<{ user: Profile }>(`http://192.168.29.91:9999/api/profile/${id}`)
       .then(response => {
         const { location, cost, lat, long, duration } = response?.data?.user
         /**
-         * TODO: Add images also(min 2) in the query. 
-         * TODO: Check what is the place to check the ownerStep1, ownerStep2 and profile. 
+         * TODO: Add images also(min 2) in the query.
+         * TODO: Check what is the place to check the ownerStep1, ownerStep2 and profile.
          */
-        if (!!location && !!cost && !!duration) {
-          navigate.navigate('ownerStep2', { id })
+        if (!!location && !!cost && !!duration && id) {
+          navigation.navigate('ownerStep2', { id })
         } else
           setData({
             ...data,
@@ -71,12 +77,15 @@ export default function OwnerRequired({
     const ownerStep1Data = { ...data, images: image }
     if (id) {
       axios
-        .put(`http://192.168.29.91:9999/api/owner/${id}`, ownerStep1Data)
+        .put<{ status: string; error: string }>(
+          `http://192.168.29.91:9999/api/owner/${id}`,
+          ownerStep1Data
+        )
         .then(res => {
           if (res?.data?.status === 'error') {
             Alert.alert(res?.data?.error)
           } else {
-            navigate.navigate('ownerStep2', { id })
+            if (id) navigation.navigate('ownerStep2', { id })
           }
         })
         .catch(e => console.error(e))
@@ -229,7 +238,7 @@ export default function OwnerRequired({
         <Button
           color='#D1D100'
           title='Skip'
-          onPress={() => navigate.navigate('ownerStep2', { id })} //change this
+          onPress={() => navigation.navigate('ownerStep2', { id: id ?? '' })} //change this
         />
       </TouchableHighlight>
     </View>

@@ -1,5 +1,4 @@
-import { StatusBar } from 'expo-status-bar'
-import React, { useState, useEffect } from 'react'
+import React, {  useEffect } from 'react'
 import {
   StyleSheet,
   Text,
@@ -7,11 +6,16 @@ import {
   TouchableHighlight,
   Button,
 } from 'react-native'
-import { useNavigation } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { RootStackParamList } from '../App'
 
-export default function UserType() {
-  const navigation = useNavigation()
+type Props = NativeStackScreenProps<
+  RootStackParamList,
+  'ownerStep1' | 'login' | 'danceStudios'
+>
+
+export default function UserType({ route, navigation }: Props) {
   useEffect(() => {
     getData()
   }, [])
@@ -38,7 +42,9 @@ export default function UserType() {
             <Button
               color='#D1D100'
               title='USER'
-              onPress={() => navigation.navigate('signup', { type: 'user' })}
+              onPress={() =>
+                navigation.navigate('signup', { type: 'user', id: '' })
+              }
             />
           </TouchableHighlight>
 
@@ -46,7 +52,9 @@ export default function UserType() {
             <Button
               color='#D1D100'
               title='OWNER'
-              onPress={() => navigation.navigate('signup', { type: 'owner' })}
+              onPress={() =>
+                navigation.navigate('signup', { type: 'owner', id: '' })
+              }
             />
           </TouchableHighlight>
         </View>

@@ -14,15 +14,32 @@ import axios from 'axios'
 import { useNavigation } from '@react-navigation/native'
 import { validate } from '../utils/helper'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Profile } from 'types'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { RootStackParamList } from '../App'
 
-export default function Login() {
+type Props = NativeStackScreenProps<
+  RootStackParamList,
+  'danceStudios' | 'ownerStep1' | 'ownerStep2' | 'profile'
+>
+
+export default function Login({ route, navigation }: Props) {
   const navigate = useNavigation()
   const [focus, setFocus] = useState({ pwd: false, user: false })
   const [data, setData] = useState({ pwd: '', user: '' })
 
   const handleLogin = async () => {
     axios
-      .post(
+      .post<
+        | {
+            status?: 'error' | 'ok'
+            id: string
+            type: 'owner' | 'user'
+            user: Profile
+            error: string
+          }
+        | undefined
+      >(
         'http://192.168.29.91:9999/api/login',
 
         {
@@ -33,25 +50,27 @@ export default function Login() {
       .then(res => {
         if (res?.data?.status === 'error') {
           Alert.alert(res?.data?.error)
-        } else if (res.status === 200) {
-          storeProfileId(res.data.id, res.data.type).then(() => {
-            if (res.data.type === 'user') navigate.navigate('danceStudios')
+        } else if (res.status === 200 && res.data?.id) {
+          storeProfileId(res?.data?.id, res?.data?.type).then(() => {
+            if (res?.data?.type === 'user') navigation.navigate('danceStudios')
             /**
              * TODO: change it to profile below
              */
-            const {
-              data: { user },
-            } = res
-            if (!user.location && !user.cost && !user.duration)
-              navigate.navigate('ownerStep1', { id })
-            else if (
-              !user.rooms &&
-              !user.area &&
-              !user?.availabilty &&
-              !user.availabilty?.length
-            )
-              navigate.navigate('ownerStep2', { id })
-            else navigate.navigate('profile', { id: res.data.id })
+            if (res.data?.user) {
+              const {
+                data: { user },
+              } = res
+              if (!user.location && !user.cost && !user.duration)
+                navigation.navigate('ownerStep1', { id: res.data.id })
+              else if (
+                !user.rooms &&
+                !user.area &&
+                !user?.availabilty &&
+                !user.availabilty?.length
+              )
+                navigation.navigate('ownerStep2', { id: res.data.id })
+              else navigation.navigate('profile', { id: res.data.id })
+            }
           })
         }
       })
@@ -118,7 +137,7 @@ export default function Login() {
           <Button
             color='#D1D100'
             title='Sign up!'
-            onPress={() => navigate.navigate('signup')}
+            onPress={() => navigation.navigate('signup')}
           />
         </TouchableHighlight>
       </Text>

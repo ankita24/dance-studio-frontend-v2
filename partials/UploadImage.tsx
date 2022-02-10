@@ -20,7 +20,7 @@ export default function UploadImage({
 }: {
   receiveImage: (data: string) => void
   squared?: boolean
-  image: string
+  image?: string
   addMore?: boolean
 }) {
   const addImage = async () => {
@@ -52,7 +52,7 @@ export default function UploadImage({
       formData.append('file', source)
       formData.append('upload_preset', 'tavlkdbq')
       axios
-        .post(
+        .post<{public_id:string}>(
           'https://api.cloudinary.com/v1_1/ankitadancestudio/upload',
           formData
         )

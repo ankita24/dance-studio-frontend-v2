@@ -8,13 +8,17 @@ import {
   TouchableHighlight,
   Button,
   ScrollView,
+  Alert,
 } from 'react-native'
 import { Entypo, MaterialIcons } from '@expo/vector-icons'
 import axios from 'axios'
-import { useNavigation } from '@react-navigation/native'
 import { Card } from 'react-native-elements'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { AntDesign, FontAwesome } from '@expo/vector-icons'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { RootStackParamList } from '../App'
+
+type Props = NativeStackScreenProps<RootStackParamList, 'profile'>
 
 var start = new Date()
 start.setHours(0, 0, 0, 0)
@@ -25,14 +29,8 @@ const addEndHours = 5 * 1000 * 3600
 const addDefaultStartHours = start.getTime() + addStartHours
 const addDefaultEndHours = start.getTime() + addEndHours
 
-export default function OwnerStep2({
-  route: {
-    params: { id },
-  },
-}: {
-  route: { params: { id: number } }
-}) {
-  const navigate = useNavigation()
+export default function OwnerStep2({ route, navigation }: Props) {
+  const { id } = route.params || {}
   const [focus, setFocus] = useState({ area: false, rooms: false })
   const [data, setData] = useState({
     area: 0,
@@ -84,15 +82,18 @@ export default function OwnerStep2({
     if (id) {
       const availabilty = week.map(({ enable, ...keepRest }) => keepRest)
       axios
-        .put(`http://192.168.29.91:9999/api/owner/${id}`, {
-          ...data,
-          availabilty,
-        })
+        .put<{ status: string; error: string }>(
+          `http://192.168.29.91:9999/api/owner/${id}`,
+          {
+            ...data,
+            availabilty,
+          }
+        )
         .then(res => {
           if (res?.data?.status === 'error') {
             Alert.alert(res?.data?.error)
           } else {
-            navigate.navigate('profile', { id })
+            navigation.navigate('profile', { id })
           }
         })
         .catch(e => console.error(e))
@@ -284,7 +285,7 @@ export default function OwnerStep2({
         <Button
           color='#D1D100'
           title='Skip'
-          onPress={() => navigate.navigate('profile', { id })}
+          onPress={() => navigation.navigate('profile', { id: id ?? '' })}
         />
       </TouchableHighlight>
     </View>

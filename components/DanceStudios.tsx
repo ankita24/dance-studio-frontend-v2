@@ -5,6 +5,7 @@ import * as Location from 'expo-location'
 import { MaterialIcons } from '@expo/vector-icons'
 import axios from 'axios'
 import { studiosDetails } from '../const'
+import { Studio } from 'types'
 
 export default function DanceStudios() {
   const [location, setLocation] = useState({
@@ -21,7 +22,7 @@ export default function DanceStudios() {
   const getStudios = () => {
     const { lat, long } = location
     axios
-      .get(`http://192.168.29.91:9999/api/studios`, {
+      .get<{ data: Studio[] }>(`http://192.168.29.91:9999/api/studios`, {
         params: { lat, long },
       })
       .then(response => {

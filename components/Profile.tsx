@@ -7,6 +7,7 @@ import {
   TextInput,
   TouchableHighlight,
   Button,
+  Alert,
 } from 'react-native'
 import { Profile as ProfileType } from '../types'
 import { cloudinaryUrl } from '../utils'
@@ -14,15 +15,18 @@ import { getInitials } from '../utils/helper'
 import { Avatar } from 'react-native-elements'
 import { useNavigation } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { RootStackParamList } from '../App'
+import { Profile } from 'types'
 
-export default function Profile({
-  route: {
-    params: { id },
-  },
-}: {
-  route: { params: { id: number } }
-}) {
+type Props = NativeStackScreenProps<
+  RootStackParamList,
+  'danceStudios' | 'ownerStep1' | 'ownerStep2' | 'home'
+>
+
+export default function Profile({ route, navigation }: Props) {
   const navigate = useNavigation()
+  const { params: { id } = {} } = route
   const [profile, setProfile] = useState<ProfileType>()
   const [edit, setEdit] = useState(false)
   const [editableData, setEditableData] = useState<ProfileType | undefined>()
@@ -45,22 +49,24 @@ export default function Profile({
 
   const fetchProfile = () => {
     axios
-      .get(`http://192.168.29.91:9999/api/profile/${id}`)
-      .then((response: AxiosResponse) => {
+      .get<{ user: Profile }>(`http://192.168.29.91:9999/api/profile/${id}`)
+      .then(response => {
         const {
           data: { user },
         } = response
-        if (!user.location && !user.cost && !user.duration)
-          navigate.navigate('ownerStep1', { id })
-        else if (
-          !user.rooms &&
-          !user.area &&
-          !user?.availabilty &&
-          !user.availabilty?.length
-        )
-          navigate.navigate('ownerStep2', { id })
-        setProfile(user)
-        setEditableData(user)
+        if (!!id) {
+          if (!user.location && !user.cost && !user.duration)
+            navigation.navigate('ownerStep1', { id })
+          else if (
+            !user.rooms &&
+            !user.area &&
+            !user?.availabilty &&
+            !user.availabilty?.length
+          )
+            navigation.navigate('ownerStep2', { id })
+          setProfile(user)
+          setEditableData(user)
+        }
       })
       .catch(error => console.error(error))
   }
@@ -76,7 +82,10 @@ export default function Profile({
   const SaveDetails = () => {
     if (id) {
       axios
-        .put(`http://192.168.29.91:9999/api/owner/${id}`, editableData)
+        .put<{ status: string; error: string }>(
+          `http://192.168.29.91:9999/api/owner/${id}`,
+          editableData
+        )
         .then(res => {
           if (res?.data?.status === 'error') {
             Alert.alert(res?.data?.error)
@@ -92,7 +101,7 @@ export default function Profile({
   const logOut = async () => {
     try {
       await AsyncStorage.removeItem('@id')
-      navigate.navigate('home')
+      navigation.navigate('home')
       return true
     } catch (exception) {
       console.error(exception)

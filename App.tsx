@@ -12,9 +12,19 @@ import {
   Profile,
 } from './components'
 
-const Stack = createNativeStackNavigator()
+const Stack = createNativeStackNavigator<RootStackParamList>()
 
-export default function App() {
+export type RootStackParamList = {
+  home: undefined
+  login: undefined
+  signup: { id: string; type: string }
+  ownerStep1: { id: string; type?: string }
+  ownerStep2: { id: string; type?: string }
+  danceStudios: { id: string; type?: string }
+  profile: { id: string; type?: string }
+}
+
+const App: React.FC<RootStackParamList> = () => {
   return (
     <NavigationContainer>
       <Stack.Navigator>
@@ -28,7 +38,6 @@ export default function App() {
           name='profile'
           component={Profile}
           //TODO: Remove back button
-          options={{ headerLeft: props => null }}
         />
       </Stack.Navigator>
     </NavigationContainer>
@@ -43,3 +52,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 })
+
+export default App

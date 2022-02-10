@@ -8,23 +8,18 @@ import {
   TouchableHighlight,
   Button,
   Alert,
-  TouchableOpacity,
-  TouchableWithoutFeedback,
 } from 'react-native'
 import axios from 'axios'
-import { AntDesign } from '@expo/vector-icons'
 import UploadImage from '../partials/UploadImage'
-import { useNavigation } from '@react-navigation/native'
 import { validate } from '../utils/helper'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { RootStackParamList } from '../App'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
-export default function SignUp({
-  route: {
-    params: { type },
-  },
-}: {
-  route: { params: { type: string } }
-}) {
-  const navigate = useNavigation()
+type Props = NativeStackScreenProps<RootStackParamList, 'ownerStep1' | 'login'>
+
+export default function SignUp({ route, navigation }: Props) {
+  const { type } = route.params || {}
   const [focus, setFocus] = useState({
     name: false,
     email: false,
@@ -43,7 +38,7 @@ export default function SignUp({
 
   const handleRegister = async () => {
     axios
-      .post(
+      .post<{ status: string; error: string; response: { _id: string } }>(
         'http://192.168.29.91:9999/api/register',
 
         {
@@ -59,13 +54,16 @@ export default function SignUp({
           Alert.alert(res?.data?.error)
         } else {
           storeProfileId(res?.data.response._id).then(() => {
-            if (type === 'owner') {
-              navigate.navigate('ownerStep1', {
-                id: res?.data.response._id,
-              })
-            } else navigate.navigate('profile', {
-              id: res?.data.response._id,
-            })
+            if (!!type) {
+              if (type === 'owner') {
+                navigation.navigate('ownerStep1', {
+                  id: res?.data.response._id,
+                })
+              } else
+                navigation.navigate('profile', {
+                  id: res?.data.response._id,
+                })
+            }
           })
         }
       })
@@ -166,7 +164,7 @@ export default function SignUp({
           <Button
             color='#D1D100'
             title='Login!'
-            onPress={() => navigate.navigate('login')}
+            onPress={() => navigation.navigate('login')}
           />
         </TouchableHighlight>
       </Text>
