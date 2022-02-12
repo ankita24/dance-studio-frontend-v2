@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from 'react'
-import { View, Text, StyleSheet, Button, FlatList } from 'react-native'
+import {
+  View,
+  Text,
+  StyleSheet,
+  Button,
+  FlatList,
+  TouchableOpacity,
+} from 'react-native'
 import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import * as Location from 'expo-location'
 import { MaterialIcons } from '@expo/vector-icons'
 import axios from 'axios'
 import { studiosDetails } from '../const'
 import { Studio } from 'types'
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { RootStackParamList } from '../App'
 
-export default function DanceStudios() {
+type Props = NativeStackScreenProps<RootStackParamList, 'studioDetails'>
+
+export default function DanceStudios({ route, navigation }: Props) {
   const [location, setLocation] = useState({
     lat: 0,
     long: 0,
@@ -86,7 +97,13 @@ export default function DanceStudios() {
         key='_id'
         data={studios}
         renderItem={({ item }) => (
-          <View style={styles.listCtn}>
+          <TouchableOpacity
+            style={styles.listCtn}
+            key={item._id}
+            onPress={() =>
+              navigation.navigate('studioDetails', { id: item._id })
+            }
+          >
             <View style={{ width: '80%' }}>
               <Text style={{ fontWeight: 'bold' }}>{item.name}</Text>
               <Text style={{ marginTop: 7 }}>
@@ -103,7 +120,7 @@ export default function DanceStudios() {
                 onPress={() => console.error('do something')}
               />
             </Text>
-          </View>
+          </TouchableOpacity>
         )}
       />
     </View>

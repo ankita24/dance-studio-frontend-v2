@@ -13,11 +13,9 @@ import { Profile as ProfileType } from '../types'
 import { cloudinaryUrl } from '../utils'
 import { getInitials } from '../utils/helper'
 import { Avatar } from 'react-native-elements'
-import { useNavigation } from '@react-navigation/native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
-import { Profile } from 'types'
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -25,7 +23,6 @@ type Props = NativeStackScreenProps<
 >
 
 export default function Profile({ route, navigation }: Props) {
-  const navigate = useNavigation()
   const { params: { id } = {} } = route
   const [profile, setProfile] = useState<ProfileType>()
   const [edit, setEdit] = useState(false)
@@ -49,7 +46,7 @@ export default function Profile({ route, navigation }: Props) {
 
   const fetchProfile = () => {
     axios
-      .get<{ user: Profile }>(`http://192.168.29.91:9999/api/profile/${id}`)
+      .get<{ user: ProfileType }>(`http://192.168.29.91:9999/api/profile/${id}`)
       .then(response => {
         const {
           data: { user },

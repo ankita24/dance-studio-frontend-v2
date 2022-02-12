@@ -5,6 +5,7 @@ import UserType from './UserType'
 import OwnerStep2 from './OwnerStep2'
 import Profile from './Profile'
 import DanceStudios from './DanceStudios'
+import StudioDetails from './StudioDetails'
 
 export {
   Login,
@@ -14,4 +15,5 @@ export {
   OwnerStep2,
   Profile,
   DanceStudios,
+  StudioDetails,
 }

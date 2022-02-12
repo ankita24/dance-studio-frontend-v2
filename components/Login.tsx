@@ -55,21 +55,22 @@ export default function Login({ route, navigation }: Props) {
             if (res?.data?.type === 'user') navigation.navigate('danceStudios')
             /**
              * TODO: change it to profile below
-             */
-            if (res.data?.user) {
-              const {
-                data: { user },
-              } = res
-              if (!user.location && !user.cost && !user.duration)
-                navigation.navigate('ownerStep1', { id: res.data.id })
-              else if (
-                !user.rooms &&
-                !user.area &&
-                !user?.availabilty &&
-                !user.availabilty?.length
-              )
-                navigation.navigate('ownerStep2', { id: res.data.id })
-              else navigation.navigate('profile', { id: res.data.id })
+             */ else {
+              if (res.data?.user) {
+                const {
+                  data: { user },
+                } = res
+                if (!user.location && !user.cost && !user.duration)
+                  navigation.navigate('ownerStep1', { id: res.data.id })
+                else if (
+                  !user.rooms &&
+                  !user.area &&
+                  !user?.availabilty &&
+                  !user.availabilty?.length
+                )
+                  navigation.navigate('ownerStep2', { id: res.data.id })
+                else navigation.navigate('profile', { id: res.data.id })
+              }
             }
           })
         }

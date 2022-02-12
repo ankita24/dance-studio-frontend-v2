@@ -10,6 +10,7 @@ import {
   OwnerStep2,
   DanceStudios,
   Profile,
+  StudioDetails,
 } from './components'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -22,6 +23,7 @@ export type RootStackParamList = {
   ownerStep2: { id: string; type?: string }
   danceStudios: { id: string; type?: string }
   profile: { id: string; type?: string }
+  studioDetails: { id: string }
 }
 
 const App: React.FC<RootStackParamList> = () => {
@@ -39,6 +41,7 @@ const App: React.FC<RootStackParamList> = () => {
           component={Profile}
           //TODO: Remove back button
         />
+        <Stack.Screen name='studioDetails' component={StudioDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   )
