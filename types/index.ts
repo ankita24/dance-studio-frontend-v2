@@ -31,3 +31,7 @@ export interface Studio {
   name: string
   rooms: number
 }
+
+export interface StudioWithSlots extends Studio {
+  slots: string[]
+}

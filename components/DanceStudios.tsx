@@ -150,10 +150,8 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   title: {
-    // color: '#fff',
     marginBottom: 100,
     fontSize: 30,
-    // marginRight: 150,
     width: 300,
     marginTop: 20,
   },
