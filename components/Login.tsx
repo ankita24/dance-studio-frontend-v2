@@ -17,10 +17,11 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Profile } from 'types'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
+import { IP_ADDRESS } from '@env'
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
-  'danceStudios' | 'ownerStep1' | 'ownerStep2' | 'profile'
+  'danceStudios' | 'profile' | 'home'
 >
 
 export default function Login({ route, navigation }: Props) {
@@ -40,7 +41,7 @@ export default function Login({ route, navigation }: Props) {
           }
         | undefined
       >(
-        'http://192.168.29.91:9999/api/login',
+        `${IP_ADDRESS}/api/login`,
 
         {
           username: data.user,
@@ -52,7 +53,8 @@ export default function Login({ route, navigation }: Props) {
           Alert.alert(res?.data?.error)
         } else if (res.status === 200 && res.data?.id) {
           storeProfileId(res?.data?.id, res?.data?.type).then(() => {
-            if (res?.data?.type === 'user') navigation.navigate('danceStudios')
+            if (res?.data?.type === 'user')
+              navigation.navigate('danceStudios', { id: res.data.id })
             /**
              * TODO: change it to profile below
              */ else {
@@ -138,7 +140,7 @@ export default function Login({ route, navigation }: Props) {
           <Button
             color='#D1D100'
             title='Sign up!'
-            onPress={() => navigation.navigate('signup')}
+            onPress={() => navigation.navigate('home')}
           />
         </TouchableHighlight>
       </Text>

@@ -17,6 +17,7 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 import { AntDesign, FontAwesome } from '@expo/vector-icons'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
+import { IP_ADDRESS } from '@env'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'profile'>
 
@@ -83,7 +84,7 @@ export default function OwnerStep2({ route, navigation }: Props) {
       const availabilty = week.map(({ enable, ...keepRest }) => keepRest)
       axios
         .put<{ status: string; error: string }>(
-          `http://192.168.29.91:9999/api/owner/${id}`,
+          `${IP_ADDRESS}/api/owner/${id}`,
           {
             ...data,
             availabilty,

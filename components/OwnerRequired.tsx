@@ -20,11 +20,9 @@ import UploadImage from '../partials/UploadImage'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
 import { Profile } from 'types'
+import { IP_ADDRESS, GOOGLE_MAPS_KEY } from '@env'
 
-type Props = NativeStackScreenProps<
-  RootStackParamList,
-  'danceStudios' | 'ownerStep1' | 'ownerStep2' | 'profile'
->
+type Props = NativeStackScreenProps<RootStackParamList, 'ownerStep2'>
 
 export default function OwnerRequired({ route, navigation }: Props) {
   const ref = useRef<GooglePlacesAutocompleteRef | null>(null)
@@ -51,7 +49,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
 
   const fetchProfile = () => {
     axios
-      .get<{ user: Profile }>(`http://192.168.29.91:9999/api/profile/${id}`)
+      .get<{ user: Profile }>(`${IP_ADDRESS}/api/profile/${id}`)
       .then(response => {
         const { location, cost, lat, long, duration } = response?.data?.user
         /**
@@ -78,7 +76,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
     if (id) {
       axios
         .put<{ status: string; error: string }>(
-          `http://192.168.29.91:9999/api/owner/${id}`,
+          `${IP_ADDRESS}/api/owner/${id}`,
           ownerStep1Data
         )
         .then(res => {
@@ -120,7 +118,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
             /**
              * TODO: Keep the key in env variables
              */
-            key: 'AIzaSyBygoa-D3AeuGajrVzOTRrFnNzkGTyZtjA',
+            key: GOOGLE_MAPS_KEY,
             language: 'en',
           }}
           onFail={err => console.warn(err)}

@@ -15,6 +15,7 @@ import { validate } from '../utils/helper'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { IP_ADDRESS } from '@env'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ownerStep1' | 'login'>
 
@@ -39,7 +40,7 @@ export default function SignUp({ route, navigation }: Props) {
   const handleRegister = async () => {
     axios
       .post<{ status: string; error: string; response: { _id: string } }>(
-        'http://192.168.29.91:9999/api/register',
+        `${IP_ADDRESS}/api/register`,
 
         {
           name: data.name,

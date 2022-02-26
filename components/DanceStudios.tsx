@@ -15,6 +15,7 @@ import { studiosDetails } from '../const'
 import { Studio } from 'types'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
+import { IP_ADDRESS, GOOGLE_MAPS_KEY } from '@env'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'studioDetails'>
 
@@ -33,7 +34,7 @@ export default function DanceStudios({ route, navigation }: Props) {
   const getStudios = () => {
     const { lat, long } = location
     axios
-      .get<{ data: Studio[] }>(`http://192.168.29.91:9999/api/studios`, {
+      .get<{ data: Studio[] }>(`${IP_ADDRESS}/api/studios`, {
         params: { lat, long },
       })
       .then(response => {
@@ -78,7 +79,7 @@ export default function DanceStudios({ route, navigation }: Props) {
             /**
              * TODO: Keep the key in env variables
              */
-            key: 'AIzaSyBygoa-D3AeuGajrVzOTRrFnNzkGTyZtjA',
+            key: GOOGLE_MAPS_KEY,
             language: 'en',
           }}
           onFail={err => console.warn(err)}

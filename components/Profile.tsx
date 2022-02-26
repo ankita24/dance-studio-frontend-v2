@@ -16,6 +16,7 @@ import { Avatar } from 'react-native-elements'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
+import { IP_ADDRESS } from '@env'
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -80,7 +81,7 @@ export default function Profile({ route, navigation }: Props) {
     if (id) {
       axios
         .put<{ status: string; error: string }>(
-          `http://192.168.29.91:9999/api/owner/${id}`,
+          `${IP_ADDRESS}/api/owner/${id}`,
           editableData
         )
         .then(res => {

@@ -11,17 +11,22 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
 import axios from 'axios'
 import { StudioWithSlots } from 'types'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { IP_ADDRESS } from '@env'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'studioDetails'>
 
 export default function StudioDetails({ route }: Props) {
   const { params: { id } = {} } = route
   const [studio, setStudios] = useState<StudioWithSlots | undefined>()
+  const [userId, setUserId] = useState('')
+
+  useEffect(() => {
+    getUserId()
+  }, [])
   useEffect(() => {
     axios
-      .get<{ studioDetails: StudioWithSlots }>(
-        `http://192.168.29.91:9999/api/studio/${id}`
-      )
+      .get<{ studioDetails: StudioWithSlots }>(`${IP_ADDRESS}/api/studio/${id}`)
       .then(response => {
         setStudios(response.data.studioDetails)
       })
@@ -29,7 +34,17 @@ export default function StudioDetails({ route }: Props) {
         console.error(err)
       })
   }, [id])
+
+  const getUserId = async () => {
+    const value = await AsyncStorage.getItem('@id')
+    setUserId(value ?? '')
+  }
   const [selectedSlot, setSelectedSlot] = useState<number | undefined>()
+
+  const handleBooking = () => {
+    //call api to send userId, ownerId, timings
+  }
+
   return (
     <View style={styles.container}>
       <Text style={{ fontSize: 30 }}>{studio?.name}</Text>
@@ -62,7 +77,7 @@ export default function StudioDetails({ route }: Props) {
         <Button
           title='BOOK'
           color='#fff'
-          onPress={() => console.log('book it')}
+          onPress={handleBooking}
           disabled={!selectedSlot && selectedSlot !== 0}
         />
       </TouchableHighlight>
