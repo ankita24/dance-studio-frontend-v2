@@ -35,3 +35,26 @@ export interface Studio {
 export interface StudioWithSlots extends Studio {
   slots: string[]
 }
+
+export interface Bookings {
+  _id: string
+  price: number
+  slot: string
+}
+
+export interface UserBookings extends Bookings {
+  studioDetails: {
+    email: string
+    name: string
+    location?: string
+  }
+  studioId: string
+}
+
+export interface StudioBookings extends Bookings {
+  userDetails: {
+    email: string
+    name: string
+  }
+  userId: string
+}
