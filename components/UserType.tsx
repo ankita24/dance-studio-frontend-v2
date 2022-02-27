@@ -1,4 +1,4 @@
-import React, {  useEffect } from 'react'
+import React, { useEffect } from 'react'
 import {
   StyleSheet,
   Text,
@@ -10,10 +10,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
 
-type Props = NativeStackScreenProps<
-  RootStackParamList,
-  'ownerStep1' | 'login' | 'danceStudios'
->
+type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function UserType({ route, navigation }: Props) {
   useEffect(() => {
@@ -26,7 +23,9 @@ export default function UserType({ route, navigation }: Props) {
       const type = await AsyncStorage.getItem('@type')
       if (value !== null) {
         if (type === 'owner') navigation.navigate('profile', { id: value })
-        else navigation.navigate('danceStudios', { id: value })
+        /**
+         * TODO:Change the booked classes to danceStudios
+         */ else navigation.navigate('userBookedClasses', { id: value })
       }
     } catch (e) {
       // error reading value

@@ -19,10 +19,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
 import { IP_ADDRESS } from '@env'
 
-type Props = NativeStackScreenProps<
-  RootStackParamList,
-  'danceStudios' | 'profile' | 'home'
->
+type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function Login({ route, navigation }: Props) {
   const navigate = useNavigation()
@@ -54,10 +51,11 @@ export default function Login({ route, navigation }: Props) {
         } else if (res.status === 200 && res.data?.id) {
           storeProfileId(res?.data?.id, res?.data?.type).then(() => {
             if (res?.data?.type === 'user')
-              navigation.navigate('danceStudios', { id: res.data.id })
-            /**
-             * TODO: change it to profile below
-             */ else {
+              /**
+               * TODO:Change the booked classes to danceStudios
+               */
+              navigation.navigate('userBookedClasses', { id: res.data.id })
+            else {
               if (res.data?.user) {
                 const {
                   data: { user },

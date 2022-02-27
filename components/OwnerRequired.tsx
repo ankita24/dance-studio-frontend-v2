@@ -22,7 +22,10 @@ import { RootStackParamList } from '../App'
 import { Profile } from 'types'
 import { IP_ADDRESS, GOOGLE_MAPS_KEY } from '@env'
 
-type Props = NativeStackScreenProps<RootStackParamList, 'ownerStep2'>
+type Props = NativeStackScreenProps<
+  RootStackParamList,
+  'signup' | 'profile' | 'login'
+>
 
 export default function OwnerRequired({ route, navigation }: Props) {
   const ref = useRef<GooglePlacesAutocompleteRef | null>(null)

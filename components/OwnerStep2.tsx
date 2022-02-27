@@ -19,7 +19,10 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
 import { IP_ADDRESS } from '@env'
 
-type Props = NativeStackScreenProps<RootStackParamList, 'profile'>
+type Props = NativeStackScreenProps<
+  RootStackParamList,
+  'profile' | 'ownerStep1' | 'login'
+>
 
 var start = new Date()
 start.setHours(0, 0, 0, 0)

@@ -16,7 +16,7 @@ import { IP_ADDRESS } from '@env'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'studioDetails'>
 
-export default function StudioDetails({ route }: Props) {
+export default function StudioDetails({ route, navigation }: Props) {
   const { params: { id } = {} } = route
   const [studio, setStudios] = useState<StudioWithSlots | undefined>()
   const [userId, setUserId] = useState('')
@@ -43,6 +43,22 @@ export default function StudioDetails({ route }: Props) {
 
   const handleBooking = () => {
     //call api to send userId, ownerId, timings
+    if (selectedSlot) {
+      axios
+        .post(`${IP_ADDRESS}/api/booking/${id}`, {
+          userId,
+          slot: studio?.slots[selectedSlot],
+          price: studio?.cost,
+        })
+        .then(response => {
+          console.log(response.status)
+          if (response.status === 200)
+            navigation.navigate('userBookedClasses', { id: userId })
+        })
+        .catch(e => {
+          console.log('oops')
+        })
+    }
   }
 
   return (

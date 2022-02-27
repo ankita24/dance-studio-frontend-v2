@@ -11,6 +11,7 @@ import {
   DanceStudios,
   Profile,
   StudioDetails,
+  BookedClasses,
 } from './components'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -24,6 +25,7 @@ export type RootStackParamList = {
   danceStudios: { id: string; type?: string }
   profile: { id: string; type?: string }
   studioDetails: { id: string }
+  userBookedClasses: { id: string }
 }
 
 const App: React.FC<RootStackParamList> = () => {
@@ -42,6 +44,7 @@ const App: React.FC<RootStackParamList> = () => {
           //TODO: Remove back button
         />
         <Stack.Screen name='studioDetails' component={StudioDetails} />
+        <Stack.Screen name='userBookedClasses' component={BookedClasses} />
       </Stack.Navigator>
     </NavigationContainer>
   )

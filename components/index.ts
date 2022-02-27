@@ -6,6 +6,7 @@ import OwnerStep2 from './OwnerStep2'
 import Profile from './Profile'
 import DanceStudios from './DanceStudios'
 import StudioDetails from './StudioDetails'
+import BookedClasses from './BookedClasses'
 
 export {
   Login,
@@ -16,4 +17,5 @@ export {
   Profile,
   DanceStudios,
   StudioDetails,
+  BookedClasses,
 }
