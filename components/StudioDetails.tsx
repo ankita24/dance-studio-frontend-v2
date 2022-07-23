@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Button,
   TouchableHighlight,
+  ScrollView,
 } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
@@ -13,6 +14,12 @@ import axios from 'axios'
 import { StudioWithSlots } from 'types'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { IP_ADDRESS } from '@env'
+
+const currentTime = new Date().toLocaleTimeString('en-US', {
+  hour: 'numeric',
+  hour12: true,
+  minute: 'numeric',
+})
 
 type Props = NativeStackScreenProps<RootStackParamList, 'studioDetails'>
 
@@ -43,68 +50,132 @@ export default function StudioDetails({ route, navigation }: Props) {
 
   const handleBooking = () => {
     //call api to send userId, ownerId, timings
-    if (selectedSlot) {
+    if (selectedSlot || selectedSlot === 0) {
       axios
         .post(`${IP_ADDRESS}/api/booking/${id}`, {
           userId,
           slot: studio?.slots[selectedSlot],
           price: studio?.cost,
+          date: new Date(),
         })
         .then(response => {
-          console.log(response.status)
           if (response.status === 200)
-            navigation.navigate('userBookedClasses', { id: userId })
+            navigation.navigate('Profile', { id: userId })
         })
         .catch(e => {
-          console.log('oops')
+          console.error('oops')
         })
     }
   }
 
-  return (
-    <View style={styles.container}>
-      <Text style={{ fontSize: 30 }}>{studio?.name}</Text>
-      {/**
-       * TODO: Add Images
-       */}
+  function to24HrTime(time: any) {
+    let [hr, min, ap] = time.toLowerCase().match(/\d+|[a-z]+/g) || []
+    return `${(hr % 12) + (ap == 'am' ? 0 : 12)}:${min}`
+  }
 
-      <Text style={styles.infoCtn}>{studio?.location}</Text>
-      <Text style={styles.infoCtn}>Rs {studio?.cost} / 1 hour</Text>
-      <Text style={styles.infoCtn}>{studio?.area} sq ft</Text>
-      <View style={styles.flexTag}>
-        {studio?.slots.map((item, index) => {
-          return (
-            <TouchableOpacity
-              key={index}
-              style={[
-                styles.tag,
-                (selectedSlot || selectedSlot === 0) && index === selectedSlot
-                  ? styles.selectedTag
-                  : null,
-              ]}
-              onPress={() => setSelectedSlot(index)}
-            >
-              <Text style={{ padding: 9 }}>{item}</Text>
-            </TouchableOpacity>
-          )
-        })}
+  const toShow = (endTime: string) => {
+    const endFullhour = to24HrTime(endTime)
+    if (currentTime > endFullhour) {
+      return false
+    }
+    return true
+  }
+
+  return (
+    <ScrollView>
+      <View style={styles.container}>
+        <View style={{ height: 260 }} />
+        <View style={styles.innerContainer}>
+          {/**
+           * TODO: Add Images
+           */}
+          <View
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              flexDirection: 'row',
+              width: 340,
+            }}
+          >
+            <Text style={{ fontSize: 24, color: '#030169' }}>
+              {studio?.name}
+            </Text>
+            <Text style={{ fontSize: 20, color: '#8F8F8F' }}>
+              {studio?.distance ?? '4kms'}
+            </Text>
+          </View>
+          <Text style={styles.infoCtn}>{studio?.location}</Text>
+          <Text style={styles.cost}>Rs {studio?.cost} / 1 hour</Text>
+          <View style={{ marginTop: 30 }}>
+            <Text style={styles.subPara}> Area: {studio?.area} sq ft</Text>
+            <Text style={[styles.subPara, styles.marginTop5]}>
+              {' '}
+              Is Soundproof?: {studio?.isSoundProof} sq ft
+            </Text>
+            <Text style={[styles.subPara, styles.marginTop5]}>
+              {' '}
+              Has changing room?: {studio?.hasChangingRoom} sq ft
+            </Text>
+          </View>
+          <Text style={[styles.subPara, styles.marginTop30]}>Book Slot</Text>
+          <View style={styles.flexTag}>
+            {studio?.slots.map((item, index) => {
+              const endTime = item.slice(item.indexOf('-') + 1)
+              const status = toShow(endTime)
+              /**
+               * TODO: replace below with status
+               */
+              if (status)
+                return (
+                  <TouchableOpacity
+                    key={index}
+                    style={[
+                      styles.tag,
+                      (selectedSlot || selectedSlot === 0) &&
+                      index === selectedSlot
+                        ? styles.selectedTag
+                        : styles.notSelectedTag,
+                    ]}
+                    onPress={() => setSelectedSlot(index)}
+                  >
+                    <Text
+                      style={{
+                        padding: 9,
+                        color:
+                          (selectedSlot || selectedSlot === 0) &&
+                          index === selectedSlot
+                            ? '#fff'
+                            : '#FF7083',
+                      }}
+                    >
+                      {item}
+                    </Text>
+                  </TouchableOpacity>
+                )
+            })}
+          </View>
+          <TouchableHighlight style={[styles.button, styles.marginTop25]}>
+            <Button
+              title='BOOK'
+              color='#fff'
+              onPress={handleBooking}
+              disabled={!selectedSlot && selectedSlot !== 0}
+            />
+          </TouchableHighlight>
+        </View>
       </View>
-      <TouchableHighlight style={[styles.button, styles.marginTop25]}>
-        <Button
-          title='BOOK'
-          color='#fff'
-          onPress={handleBooking}
-          disabled={!selectedSlot && selectedSlot !== 0}
-        />
-      </TouchableHighlight>
-    </View>
+    </ScrollView>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
     alignItems: 'flex-start',
-    padding: 20,
+    backgroundColor: '#fff',
+    paddingBottom: 50,
+  },
+  innerContainer: {
+    padding: 15,
   },
   tag: {
     backgroundColor: 'silver',
@@ -122,18 +193,41 @@ const styles = StyleSheet.create({
   },
   infoCtn: {
     fontSize: 20,
-    marginTop: 20,
+    marginTop: 5,
+    color: '#8F8F8F',
+  },
+  cost: {
+    color: '#FF7083',
+    fontSize: 20,
+    marginTop: 5,
   },
   selectedTag: {
-    backgroundColor: '#D1D100',
+    backgroundColor: '#FF7083',
+    color: '#fff',
   },
   button: {
-    height: 40,
-    width: 150,
-    backgroundColor: '#000',
-    borderRadius: 10,
+    height: 63,
+    width: 362,
+    backgroundColor: '#FF7083',
+    borderRadius: 50,
+    padding: 10,
   },
   marginTop25: {
     marginTop: 25,
+  },
+  subPara: {
+    color: '#030169',
+    fontSize: 20,
+  },
+  marginTop5: {
+    marginTop: 5,
+  },
+  marginTop30: {
+    marginTop: 30,
+  },
+  notSelectedTag: {
+    borderWidth: 1,
+    borderColor: '#FF7083',
+    backgroundColor: '#fff',
   },
 })

@@ -12,7 +12,7 @@ import { RootStackParamList } from '../App'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
-export default function UserType({ route, navigation }: Props) {
+export default function UserType({ navigation }: Props) {
   useEffect(() => {
     getData()
   }, [])
@@ -22,10 +22,8 @@ export default function UserType({ route, navigation }: Props) {
       const value = await AsyncStorage.getItem('@id')
       const type = await AsyncStorage.getItem('@type')
       if (value !== null) {
-        if (type === 'owner') navigation.navigate('profile', { id: value })
-        /**
-         * TODO:Change the booked classes to danceStudios
-         */ else navigation.navigate('userBookedClasses', { id: value })
+        if (type === 'owner') navigation.navigate('Profile', { id: value })
+        else navigation.navigate('Studios', { id: value })
       }
     } catch (e) {
       // error reading value
@@ -33,36 +31,37 @@ export default function UserType({ route, navigation }: Props) {
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Welcome to Generic Dance studio</Text>
-      <View style={styles.innerContainer}>
-        <Text>New Here? Are you a...</Text>
-        <View style={[styles.horizontalFlex, styles.marginTop25]}>
-          <TouchableHighlight style={[styles.button, styles.marginLeft30]}>
-            <Button
-              color='#D1D100'
-              title='USER'
-              onPress={() =>
-                navigation.navigate('signup', { type: 'user', id: '' })
-              }
-            />
-          </TouchableHighlight>
+      <Text style={styles.welcomeText}>Danvue</Text>
 
-          <TouchableHighlight style={[styles.button]}>
-            <Button
-              color='#D1D100'
-              title='OWNER'
-              onPress={() =>
-                navigation.navigate('signup', { type: 'owner', id: '' })
-              }
-            />
-          </TouchableHighlight>
-        </View>
+      <View style={styles.innerContainer}>
+        <Text style={styles.subtitle}>
+          Give your dancing shoes a beautiful{' '}
+          <Text style={{ color: '#FB304B' }}>background</Text>{' '}
+        </Text>
+        <TouchableHighlight
+          style={[styles.button, styles.marginTop81]}
+          onPress={() =>
+            navigation.navigate('signup', { type: 'user', id: '' })
+          }
+        >
+          <Text style={styles.userTypeText}>User</Text>
+        </TouchableHighlight>
+        <Text style={[styles.marginTop36, styles.white]}>Or</Text>
+
+        <TouchableHighlight
+          style={[styles.button, styles.marginTop36]}
+          onPress={() =>
+            navigation.navigate('signup', { type: 'owner', id: '' })
+          }
+        >
+          <Text style={styles.userTypeText}>Owner</Text>
+        </TouchableHighlight>
       </View>
-      <Text style={{ marginTop: 50 }}>
+      <Text style={styles.footerText}>
         Not the first time?{' '}
-        <TouchableHighlight>
+        <TouchableHighlight style={{ marginTop: -12 }}>
           <Button
-            color='#D1D100'
+            color='#FF7083'
             title='Login'
             onPress={() => navigation.navigate('login')}
           />
@@ -75,40 +74,54 @@ export default function UserType({ route, navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    backgroundColor: '#030169',
+    color: '#fff',
   },
   button: {
-    height: 40,
-    width: 120,
-    borderColor: '#D1D100',
-    borderWidth: 1,
+    height: 63,
+    width: 220,
+    backgroundColor: '#FF7083',
+    borderRadius: 50,
+    padding: 12,
+    textAlign: 'center',
   },
   welcomeText: {
-    marginTop: 100,
-    fontSize: 30,
+    marginTop: 80,
+    fontSize: 64,
+    color: '#FF7083',
+    marginLeft: 80,
   },
   innerContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    //flex: 1,
-    marginTop: 200,
+    marginTop: 36,
   },
-  horizontalFlex: {
-    display: 'flex',
-    flexDirection: 'row',
+  white: {
+    color: '#FFF',
   },
-  marginTop25: {
-    marginTop: 25,
+  marginTop81: {
+    marginTop: 81,
   },
-  lastText: {
-    fontWeight: 'bold',
-    color: '#D1D100',
+  marginTop36: {
+    marginTop: 36,
   },
-  marginLeft22: {
-    marginLeft: 22,
+  userTypeText: {
+    fontSize: 32,
+    textAlign: 'center',
+    color: '#FFF',
   },
-  marginLeft30: {
-    marginLeft: 30,
+  footerText: {
+    marginTop: 81,
+    fontSize: 17,
+    color: '#fff',
+    marginLeft: 90,
+  },
+  subtitle: {
+    width: 250,
+    marginLeft: 35,
+    lineHeight: 24,
+    fontSize: 17,
+    color: '#fff',
   },
 })

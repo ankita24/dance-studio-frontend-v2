@@ -1,5 +1,4 @@
-import { StatusBar } from 'expo-status-bar'
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import {
   StyleSheet,
   Text,
@@ -8,10 +7,11 @@ import {
   TouchableHighlight,
   Button,
   Alert,
+  ScrollView,
 } from 'react-native'
 import axios from 'axios'
 import UploadImage from '../partials/UploadImage'
-import { validate } from '../utils/helper'
+import { validateEmail, validPhone } from '../utils/helper'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
 import AsyncStorage from '@react-native-async-storage/async-storage'
@@ -26,6 +26,7 @@ export default function SignUp({ route, navigation }: Props) {
     email: false,
     pwd: false,
     confirmPwd: false,
+    phone: false,
   })
 
   const [data, setData] = useState({
@@ -34,8 +35,8 @@ export default function SignUp({ route, navigation }: Props) {
     password: '',
     confirmPassword: '',
     image: '',
+    phone: '',
   })
-  const { name, email, pwd, confirmPwd } = focus
 
   const handleRegister = async () => {
     axios
@@ -47,6 +48,7 @@ export default function SignUp({ route, navigation }: Props) {
           email: data.email,
           password: data.password,
           image: data.image,
+          phone: data.phone,
           type,
         }
       )
@@ -61,7 +63,7 @@ export default function SignUp({ route, navigation }: Props) {
                   id: res?.data.response._id,
                 })
               } else
-                navigation.navigate('profile', {
+                navigation.navigate('Studios', {
                   id: res?.data.response._id,
                 })
             }
@@ -69,11 +71,6 @@ export default function SignUp({ route, navigation }: Props) {
         }
       })
       .catch(e => console.error(e))
-    /**
-     * Delete next two lines once above code is uncommented
-     */
-    // if (type === 'owner')
-    //   navigate.navigate('ownerStep1', { studioId: '61acfba84c7e58a0b4f279ea' })
   }
 
   const storeProfileId = async (id: string) => {
@@ -86,89 +83,122 @@ export default function SignUp({ route, navigation }: Props) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Sign Up</Text>
-      <StatusBar style='auto' />
-      <UploadImage
-        receiveImage={(image: string) => setData({ ...data, image })}
-      />
-      <TextInput
-        placeholderTextColor='grey'
-        onBlur={() => setFocus({ ...focus, name: false })}
-        onFocus={() => setFocus({ ...focus, name: true })}
-        placeholder='Name'
-        style={[styles.input, styles.margin, name ? styles.yellow : null]}
-        onChangeText={text => setData({ ...data, name: text })}
-      />
-
-      <TextInput
-        placeholderTextColor='grey'
-        onBlur={() => setFocus({ ...focus, email: false })}
-        onFocus={() => setFocus({ ...focus, email: true })}
-        placeholder='Email'
-        style={[styles.input, styles.margin, email ? styles.yellow : null]}
-        onChangeText={text => {
-          setData({ ...data, email: text })
-        }}
-      />
-
-      <Text style={{ color: 'red' }}>
-        {!validate(data.email) && !!data.email ? `Email is invalid` : ''}
-      </Text>
-      <TextInput
-        placeholderTextColor='grey'
-        onBlur={() => setFocus({ ...focus, pwd: false })}
-        onFocus={() => setFocus({ ...focus, pwd: true })}
-        placeholder='Password'
-        textContentType='password'
-        secureTextEntry
-        style={[styles.input, styles.margin, pwd ? styles.yellow : null]}
-        onChangeText={text => setData({ ...data, password: text })}
-      />
-      <TextInput
-        placeholderTextColor='grey'
-        onBlur={() => setFocus({ ...focus, confirmPwd: false })}
-        onFocus={() => setFocus({ ...focus, confirmPwd: true })}
-        placeholder='Confirm Password'
-        textContentType='password'
-        secureTextEntry
-        style={[styles.input, styles.margin, confirmPwd ? styles.yellow : null]}
-        onChangeText={text => setData({ ...data, confirmPassword: text })}
-      />
-
-      <Text style={{ color: 'red' }}>
-        {data.confirmPassword && data.password !== data.confirmPassword
-          ? `Password and confirm password should match`
-          : ''}
-      </Text>
-
-      <TouchableHighlight style={[styles.button, styles.marginTop25]}>
-        <Button
-          title='SIGN UP'
-          color='#fff'
-          onPress={handleRegister}
-          /**
-           * Uncomment
-           */
-          // disabled={
-          //   (!data.email &&
-          //     !data.name &&
-          //     !data.password &&
-          //     !data.confirmPassword) ||
-          //   data.password !== data.confirmPassword ||
-          //   !validate(data.email)
-          // }
+      <ScrollView
+        style={{ marginLeft: 51, overflow: 'scroll', marginBottom: 25 }}
+      >
+        <Text style={styles.title}>Register</Text>
+        <UploadImage
+          receiveImage={(image: string) => setData({ ...data, image })}
+          image={data.image}
         />
-      </TouchableHighlight>
-      <Text style={[styles.signUpText, styles.marginTop25, styles.flex]}>
-        Not the first time?{' '}
-        <TouchableHighlight>
+        <Text style={[styles.label, styles.marginTop16]}>Name</Text>
+        <TextInput
+          placeholderTextColor='grey'
+          onBlur={() => setFocus({ ...focus, name: false })}
+          onFocus={() => setFocus({ ...focus, name: true })}
+          placeholder='Name'
+          style={styles.input}
+          onChangeText={text => setData({ ...data, name: text })}
+          autoCorrect={false}
+        />
+        <Text style={[styles.label, styles.marginTop16]}>Phone</Text>
+        <TextInput
+          textContentType='telephoneNumber'
+          placeholderTextColor='grey'
+          onBlur={() => setFocus({ ...focus, phone: false })}
+          onFocus={() => setFocus({ ...focus, phone: true })}
+          placeholder='Phone'
+          style={styles.input}
+          onChangeText={text => setData({ ...data, phone: text })}
+          autoCorrect={false}
+        />
+        {!validPhone(data.phone) && !!data.phone && !focus.phone ? (
+          <Text style={{ color: 'red' }}>
+            Please enter 10 digit valid phone number
+          </Text>
+        ) : null}
+
+        <Text style={[styles.label, styles.marginTop16]}>Email</Text>
+        <TextInput
+          textContentType='emailAddress'
+          placeholderTextColor='grey'
+          autoCapitalize='none'
+          autoCorrect={false}
+          onBlur={() => setFocus({ ...focus, email: false })}
+          onFocus={() => setFocus({ ...focus, email: true })}
+          placeholder='Email'
+          style={styles.input}
+          onChangeText={text => {
+            setData({ ...data, email: text })
+          }}
+        />
+
+        {!validateEmail(data.email) && !!data.email && !focus.email ? (
+          <Text style={{ color: 'red' }}>Email is invalid</Text>
+        ) : null}
+        <Text style={[styles.label, styles.marginTop16]}>Password</Text>
+        <TextInput
+          placeholderTextColor='grey'
+          onBlur={() => setFocus({ ...focus, pwd: false })}
+          onFocus={() => setFocus({ ...focus, pwd: true })}
+          placeholder='Password'
+          textContentType='password'
+          secureTextEntry
+          autoCapitalize='none'
+          autoCorrect={false}
+          style={styles.input}
+          onChangeText={text => setData({ ...data, password: text })}
+        />
+        <Text style={[styles.label, styles.marginTop16]}>Confirm Password</Text>
+        <TextInput
+          placeholderTextColor='grey'
+          onBlur={() => setFocus({ ...focus, confirmPwd: false })}
+          onFocus={() => setFocus({ ...focus, confirmPwd: true })}
+          placeholder='Confirm Password'
+          textContentType='password'
+          secureTextEntry
+          autoCapitalize='none'
+          autoCorrect={false}
+          style={styles.input}
+          onChangeText={text => setData({ ...data, confirmPassword: text })}
+        />
+
+        <Text style={{ color: 'red' }}>
+          {data.confirmPassword && data.password !== data.confirmPassword
+            ? `Password and confirm password should match`
+            : ''}
+        </Text>
+
+        <TouchableHighlight style={[styles.button, styles.marginTop25]}>
           <Button
-            color='#D1D100'
-            title='Login!'
-            onPress={() => navigation.navigate('login')}
+            title='SIGN UP'
+            color='#fff'
+            onPress={handleRegister}
+            disabled={
+              (!data.email &&
+                !validateEmail(data.email) &&
+                !data.name &&
+                !data.password &&
+                !data.confirmPassword &&
+                !data.phone &&
+                !validPhone(data.phone)) ||
+              data.password !== data.confirmPassword ||
+              !validateEmail(data.email) ||
+              !validPhone(data.phone)
+            }
           />
         </TouchableHighlight>
-      </Text>
+        <Text style={[styles.marginTop25, styles.loginText]}>
+          Not the first time?{' '}
+          <TouchableHighlight style={{ marginTop: -12 }}>
+            <Button
+              color='#FF7083'
+              title='Login!'
+              onPress={() => navigation.navigate('login')}
+            />
+          </TouchableHighlight>
+        </Text>
+      </ScrollView>
     </View>
   )
 }
@@ -176,54 +206,42 @@ export default function SignUp({ route, navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#030169',
   },
   input: {
-    height: 40,
-    width: 250,
-    borderBottomWidth: 1,
-    borderRadius: 10,
-    padding: 10,
-    borderColor: 'grey',
-    marginTop: -8,
+    height: 56,
+    width: 290,
+    borderRadius: 24,
+    padding: 20,
     color: 'grey',
-  },
-  margin: {
-    marginTop: 25,
-  },
-  yellow: {
-    borderColor: '#D1D100',
+    backgroundColor: '#fff',
   },
   button: {
-    height: 40,
-    width: 150,
-    backgroundColor: '#000',
-    borderRadius: 10,
+    height: 63,
+    width: 280,
+    backgroundColor: '#FF7083',
+    borderRadius: 50,
+    padding: 10,
   },
   marginTop25: {
     marginTop: 25,
   },
-  signUpText: {
-    color: '#fff',
-  },
-  lastText: {
-    fontWeight: 'bold',
-    color: '#D4F1F4',
-  },
-  flex: {
-    display: 'flex',
-    flexDirection: 'row',
-  },
   title: {
-    // color: '#fff',
-    marginBottom: 100,
-    fontSize: 50,
-    marginRight: 70,
+    color: '#FF7083',
+    marginTop: 80,
+    fontSize: 56,
   },
-  uploadBtn: {
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
+  label: {
+    color: '#FF7083',
+    marginBottom: 16,
+    marginLeft: 10,
+    fontSize: 17,
+  },
+  marginTop16: {
+    marginTop: 16,
+  },
+  loginText: {
+    color: '#fff',
+    marginLeft: 50,
   },
 })

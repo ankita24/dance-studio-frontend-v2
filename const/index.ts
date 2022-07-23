@@ -1,4 +1,6 @@
-export const studiosDetails = [
+import { Studio } from 'types'
+
+export const studiosDetails: Studio[] = [
   {
     __t: 'OwnerSchema',
     __v: 0,
@@ -9,7 +11,7 @@ export const studiosDetails = [
     duration: 18,
     email: 'Ankita7@yopmail.com',
     image: '',
-    images: ['kwxt4nxr5dgkxwf04t5m'],
+    images: ['zbvpng3lu0qbshb86jpo'],
     lat: 20.2867817,
     location:
       '170, E Canal Rd, Dayanandnagar, Bomikhal, Rasulgarh, Bhubaneswar, Odisha 751010, India',
@@ -27,7 +29,7 @@ export const studiosDetails = [
     duration: 561,
     email: 'dance4@yopmail.com',
     image: '',
-    images: [],
+    images: ['zbvpng3lu0qbshb86jpo', 'ykhvluilidv24qomrfqj'],
     lat: 20.2870545,
     location:
       'BMC Bhawani Mall, Ground Floor, Block-1 (INOX, Saheed Nagar, Bhubaneswar, Odisha 751007, India',
@@ -92,6 +94,7 @@ export const studiosDetails = [
     __v: 0,
     _id: '61e2f8d1a107218f4d730f13',
     cost: 0,
+    area: 1500,
     distance: 166.564,
     duration: 12734,
     email: 'dance1@yopmail.com',
@@ -101,5 +104,6 @@ export const studiosDetails = [
     location: 'Maa Tarini Temple, Ghatgaon, Odisha 758027, India',
     long: 85.89661319999999,
     name: 'Dance1',
+    rooms: 3,
   },
 ]

@@ -1,58 +1,154 @@
 import React, { useEffect, useState } from 'react'
-import { View, Text, FlatList, StyleSheet } from 'react-native'
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { RootStackParamList } from '../App'
+import {
+  View,
+  Text,
+  FlatList,
+  StyleSheet,
+  ScrollView,
+  Image,
+} from 'react-native'
 import axios from 'axios'
 import { IP_ADDRESS } from '@env'
-import { UserBookings } from 'types'
-type Props = NativeStackScreenProps<RootStackParamList, 'studioDetails'>
+import { StudioBookings } from 'types'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Loader } from '../partials'
+import EmptyStudios from '../images/EmptyStudios.png'
 
-export default function BookedClasses({ route }: Props) {
-  const { params: { id } = {} } = route
+export default function BookedClasses() {
+  const currentTime = new Date().toLocaleTimeString('en-US', {
+    hour: 'numeric',
+    hour12: true,
+    minute: 'numeric',
+  })
+  const [id, setId] = useState<string | null>()
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    fetchId()
+  }, [])
+
+  const fetchId = async () => {
+    const type = await AsyncStorage.getItem('@id')
+    setId(type)
+  }
   useEffect(() => {
     getBookingDetails()
-  }, [])
-  const [data, setData] = useState<UserBookings[] | undefined>()
+  }, [id])
+  const [data, setData] = useState<StudioBookings[] | undefined>()
 
   const getBookingDetails = () => {
-    axios
-      .get<{ data: UserBookings[] }>(`${IP_ADDRESS}/api/bookings/${id}`)
-      .then(response => {
-        setData(response.data.data)
-      })
-      .catch(er => {
-        console.error(er)
-      })
+    if (!!id) {
+      setLoading(true)
+      axios
+        .get<{ data: StudioBookings[] }>(
+          `${IP_ADDRESS}/api/studio-bookings/${id}`
+        )
+        .then(response => {
+          setData(response.data.data)
+        })
+        .catch(er => {
+          console.error(er)
+        })
+        .finally(() => {
+          setLoading(false)
+        })
+    }
   }
-  const current = new Date()
-  const date = `${current.getDate()}/${
-    current.getMonth() + 1
-  }/${current.getFullYear()}`
-  return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Booked Classes</Text>
+
+  const formatDate = (date: Date | undefined) => {
+    if (!!date)
+      return `${new Date(date).getDate()}/${
+        new Date(date).getMonth() + 1
+      }/${new Date(date).getFullYear()}`
+    return ''
+  }
+
+  const renderStatus = (startTime: string, endTime: string, date: Date) => {
+    if (date >= new Date()) {
+      if (currentTime > endTime) {
+        return 'Past Booking'
+      } else if (currentTime > startTime) {
+        return 'In Progress'
+      }
+      return 'Upcoming'
+    }
+    return 'Past Booking'
+  }
+
+  if (loading) {
+    return <Loader />
+  }
+
+  return data && data.length ? (
+    <ScrollView style={styles.container}>
       <FlatList
         key='_id'
         data={data}
-        renderItem={({ item }) => (
-          <View style={styles.listCtn}>
-            <View style={{ width: '90%' }}>
-              <Text style={{ fontWeight: 'bold' }}>
-                Studio: {item.studioDetails.name}
-              </Text>
-              <Text style={[styles.marginTop7, styles.email]}>
-                {item.studioDetails.email}
-              </Text>
-              <Text style={styles.marginTop7}>₹ {item.price}</Text>
-              <Text style={styles.marginTop7}>{date}</Text>
-              <Text style={styles.marginTop7}>{item.slot}</Text>
-              <Text style={styles.marginTop7} numberOfLines={2}>
-                {item?.studioDetails?.location}
-              </Text>
+        style={styles.listStyle}
+        renderItem={({ item, index }) => {
+          const endTime = item.slot.slice(item.slot.indexOf('-') + 1)
+          const startTime = item.slot.slice(0, item.slot.indexOf('-'))
+          const status = renderStatus(startTime, endTime, item.date)
+          return (
+            <View style={styles.listCtn} key={index}>
+              <View
+                style={[
+                  styles.marginBottom10,
+                  styles.tag,
+                  status === 'Past Booking'
+                    ? styles.green
+                    : status === 'In Progress'
+                    ? styles.yellow
+                    : styles.red,
+                ]}
+              >
+                <Text style={{ color: '#fff', textAlign: 'center' }}>
+                  {status}
+                </Text>
+              </View>
+              <View style={{ width: '90%' }}>
+                <View style={[styles.marginBottom6, styles.flex]}>
+                  <Text style={[styles.fontWeight, styles.textStyle]}>
+                    Name:
+                  </Text>
+                  <Text style={styles.textStyle}>{item.userDetails?.name}</Text>
+                </View>
+                <View style={[styles.marginBottom6, styles.flex]}>
+                  <Text style={[styles.fontWeight, styles.textStyle]}>
+                    Email:
+                  </Text>
+                  <Text style={styles.textStyle}>
+                    {item.userDetails?.email}
+                  </Text>
+                </View>
+                <View style={[styles.marginBottom6, styles.flex]}>
+                  <Text style={[styles.fontWeight, styles.textStyle]}>
+                    Price:
+                  </Text>
+                  <Text style={styles.textStyle}>{item.price}</Text>
+                </View>
+                <View style={[styles.marginBottom6, styles.flex]}>
+                  <Text style={[styles.fontWeight, styles.textStyle]}>
+                    Date:
+                  </Text>
+                  <Text style={styles.textStyle}>{formatDate(item.date)}</Text>
+                </View>
+                <View style={[styles.marginBottom6, styles.flex]}>
+                  <Text style={[styles.fontWeight, styles.textStyle]}>
+                    Slot:
+                  </Text>
+                  <Text style={styles.textStyle}>{item.slot}</Text>
+                </View>
+              </View>
             </View>
-          </View>
-        )}
+          )
+        }}
       />
+    </ScrollView>
+  ) : (
+    <View style={styles.container}>
+      <Image source={EmptyStudios} style={styles.imageStyle} />
+      <Text style={styles.noStudiosText}>No Previous Bookings</Text>
     </View>
   )
 }
@@ -60,29 +156,75 @@ export default function BookedClasses({ route }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    backgroundColor: '#fff',
+    alignContent: 'center',
   },
-  title: {
-    marginBottom: 100,
-    fontSize: 30,
-    width: 300,
-    marginTop: 20,
+  listStyle: {
+    alignSelf: 'center',
+    paddingBottom: 40,
   },
   listCtn: {
+    marginTop: 40,
+    width: 320,
+    minHeight: 150,
+    borderColor: '#FF7083',
+    borderRadius: 8,
+    alignSelf: 'center',
+    shadowColor: '#FF7083',
+    shadowOpacity: 0.7,
+    backgroundColor: '#fff',
+    elevation: 12,
+    shadowOffset: {
+      height: 1,
+      width: 1,
+    },
+    borderWidth: 1,
+    padding: 20,
+  },
+  marginBottom6: {
+    marginBottom: 6,
+  },
+  marginBottom10: {
+    marginBottom: 10,
+  },
+  textStyle: {
+    fontSize: 14,
+    color: '#030169',
+  },
+  flex: {
     display: 'flex',
     flexDirection: 'row',
-    width: 300,
-    height: 140,
-    borderColor: 'grey',
-    borderWidth: 1,
+  },
+  fontWeight: {
+    fontWeight: 'bold',
+    marginRight: 6,
+  },
+  tag: {
+    width: 110,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 20,
+    textAlign: 'center',
+  },
+  red: {
+    backgroundColor: '#FF6F91',
+  },
+  green: {
+    backgroundColor: '#A8A8A8',
+  },
+  yellow: {
+    backgroundColor: '#FFD700',
+  },
+  imageStyle: {
+    height: 400,
+    width: 330,
     marginTop: 30,
-    padding: 10,
+    marginLeft: 25,
   },
-  email: {
+  noStudiosText: {
+    textAlign: 'center',
     fontStyle: 'italic',
-    color: 'grey',
-  },
-  marginTop7: {
-    marginTop: 7,
+    color: '#030169',
+    marginLeft: -15,
   },
 })

@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar'
 import React, { useState } from 'react'
 import {
   StyleSheet,
@@ -9,10 +8,8 @@ import {
   Alert,
   Button,
 } from 'react-native'
-import { Ionicons, AntDesign } from '@expo/vector-icons'
 import axios from 'axios'
-import { useNavigation } from '@react-navigation/native'
-import { validate } from '../utils/helper'
+import { validateEmail } from '../utils/helper'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Profile } from 'types'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -22,9 +19,8 @@ import { IP_ADDRESS } from '@env'
 type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function Login({ route, navigation }: Props) {
-  const navigate = useNavigation()
   const [focus, setFocus] = useState({ pwd: false, user: false })
-  const [data, setData] = useState({ pwd: '', user: '' })
+  const [data, setData] = useState({ pwd: '', email: '' })
 
   const handleLogin = async () => {
     axios
@@ -41,7 +37,7 @@ export default function Login({ route, navigation }: Props) {
         `${IP_ADDRESS}/api/login`,
 
         {
-          username: data.user,
+          email: data.email.trim(),
           password: data.pwd,
         }
       )
@@ -49,12 +45,9 @@ export default function Login({ route, navigation }: Props) {
         if (res?.data?.status === 'error') {
           Alert.alert(res?.data?.error)
         } else if (res.status === 200 && res.data?.id) {
-          storeProfileId(res?.data?.id, res?.data?.type).then(() => {
+          if (storeProfileId(res?.data?.id, res?.data?.type)) {
             if (res?.data?.type === 'user')
-              /**
-               * TODO:Change the booked classes to danceStudios
-               */
-              navigation.navigate('userBookedClasses', { id: res.data.id })
+              navigation.navigate('Studios', { id: res.data.id })
             else {
               if (res.data?.user) {
                 const {
@@ -69,10 +62,10 @@ export default function Login({ route, navigation }: Props) {
                   !user.availabilty?.length
                 )
                   navigation.navigate('ownerStep2', { id: res.data.id })
-                else navigation.navigate('profile', { id: res.data.id })
+                else navigation.navigate('Profile', { id: res.data.id })
               }
             }
-          })
+          }
         }
       })
       .catch(e => console.error(e))
@@ -82,66 +75,63 @@ export default function Login({ route, navigation }: Props) {
     try {
       await AsyncStorage.setItem('@id', id)
       await AsyncStorage.setItem('@type', type)
+      return true
     } catch (e) {
       // saving error
+      return false
     }
   }
   const { user, pwd } = focus
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Login</Text>
-      <StatusBar style='auto' />
-      <View style={{ display: 'flex', flexDirection: 'row' }}>
-        <Ionicons
-          name='person-outline'
-          size={30}
-          color={user ? '#D1D100' : 'grey'}
-        />
+      <View style={{ marginLeft: 51 }}>
+        <Text style={styles.title}>Login</Text>
+        <Text style={[styles.label, styles.marginTop166]}>Email</Text>
+
         <TextInput
+          textContentType='emailAddress'
           placeholderTextColor='grey'
           onBlur={() => setFocus({ ...focus, user: false })}
           onFocus={() => setFocus({ ...focus, user: true })}
-          placeholder='Username'
-          style={[styles.input, user ? styles.yellow : null]}
-          onChangeText={text => setData({ ...data, user: text })}
+          placeholder='Enter email id'
+          autoCapitalize='none'
+          style={[styles.input]}
+          onChangeText={text => setData({ ...data, email: text })}
         />
-      </View>
-      <View style={{ display: 'flex', flexDirection: 'row' }}>
-        <AntDesign
-          name='lock1'
-          size={30}
-          color={pwd ? '#D1D100' : 'grey'}
-          style={{ marginTop: 32 }}
-        />
+
+        {!validateEmail(data.email) && !!data.email && !focus.user ? (
+          <Text style={{ color: 'red' }}>Email is invalid</Text>
+        ) : null}
+        <Text style={[styles.label, styles.marginTop33]}>Password</Text>
         <TextInput
           placeholderTextColor='grey'
           onBlur={() => setFocus({ ...focus, pwd: false })}
           onFocus={() => setFocus({ ...focus, pwd: true })}
-          placeholder='Password'
+          placeholder='Enter Password'
           textContentType='password'
           secureTextEntry
-          style={[styles.input, styles.margin, pwd ? styles.yellow : null]}
+          style={[styles.input]}
           onChangeText={text => setData({ ...data, pwd: text })}
         />
-      </View>
-      <TouchableHighlight style={[styles.button, styles.marginTop25]}>
-        <Button
-          title='LOGIN'
-          color='#fff'
-          onPress={handleLogin}
-          disabled={!data.user && !data.pwd}
-        />
-      </TouchableHighlight>
-      <Text style={[styles.signUpText, styles.marginTop25]}>
-        First time here?{' '}
-        <TouchableHighlight>
+        <TouchableHighlight style={[styles.button, styles.marginTop56]}>
           <Button
-            color='#D1D100'
-            title='Sign up!'
-            onPress={() => navigation.navigate('home')}
+            title='LOGIN'
+            color='#fff'
+            onPress={handleLogin}
+            disabled={!data.email || !data.pwd || !validateEmail(data.email)}
           />
         </TouchableHighlight>
-      </Text>
+        <Text style={[styles.signUpText, styles.marginTop25]}>
+          First time here?{' '}
+          <TouchableHighlight style={{ marginTop: -12.5 }}>
+            <Button
+              color='#FF7083'
+              title='Sign up!'
+              onPress={() => navigation.navigate('home')}
+            />
+          </TouchableHighlight>
+        </Text>
+      </View>
     </View>
   )
 }
@@ -149,45 +139,51 @@ export default function Login({ route, navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    //backgroundColor: '#171717',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#030169',
   },
   input: {
-    height: 40,
-    width: 250,
-    borderBottomWidth: 1,
-    borderRadius: 10,
-    padding: 10,
-    borderColor: 'grey',
+    height: 56,
+    width: 290,
+    borderRadius: 24,
+    padding: 20,
     marginTop: -8,
     color: 'grey',
-  },
-  margin: {
-    marginTop: 25,
-  },
-  yellow: {
-    borderColor: '#D1D100',
+    backgroundColor: '#fff',
   },
   button: {
-    height: 40,
-    width: 150,
-    backgroundColor: '#000',
-    borderRadius: 10,
+    height: 63,
+    width: 280,
+    backgroundColor: '#FF7083',
+    borderRadius: 50,
+    padding: 10,
   },
   marginTop25: {
     marginTop: 25,
   },
   signUpText: {
-    // color: '#fff',
+    color: '#fff',
+    marginLeft: 50,
   },
-  lastText: {
-    fontWeight: 'bold',
-  },
+
   title: {
-    // color: '#fff',
-    marginBottom: 100,
-    fontSize: 50,
+    color: '#FF7083',
+    marginTop: 80,
+    fontSize: 56,
     marginRight: 150,
+  },
+  marginTop56: {
+    marginTop: 56,
+  },
+  label: {
+    color: '#FF7083',
+    marginBottom: 16,
+    marginLeft: 10,
+    fontSize: 17,
+  },
+  marginTop166: {
+    marginTop: 166,
+  },
+  marginTop33: {
+    marginTop: 33,
   },
 })

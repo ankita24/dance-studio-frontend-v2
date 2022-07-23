@@ -1,12 +1,5 @@
-import React, { useState, useEffect } from 'react'
-import {
-  Image,
-  View,
-  Platform,
-  TouchableOpacity,
-  Text,
-  StyleSheet,
-} from 'react-native'
+import React from 'react'
+import { Image, View, TouchableOpacity, Text, StyleSheet } from 'react-native'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import axios from 'axios'
@@ -49,49 +42,55 @@ export default function UploadImage({
         name,
         size,
       }
-      formData.append('file', source)
+      formData.append('file', source as any)
       formData.append('upload_preset', 'tavlkdbq')
       axios
-        .post<{public_id:string}>(
+        .post<{ public_id: string }>(
           'https://api.cloudinary.com/v1_1/ankitadancestudio/upload',
-          formData
+          formData,
+          {
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/x-www-form-urlencoded',
+            },
+          }
         )
         .then(res => {
           receiveImage(res.data.public_id)
         })
-        .catch(e => console.error(e.message))
+        .catch(e => {
+          console.error(e.message)
+        })
     }
   }
 
   return (
     <View
       style={[
-        imageUploaderStyles.container,
+        imageUploaderStyles.container,imageUploaderStyles.border,
         squared ? null : imageUploaderStyles.circular,
       ]}
     >
-      {!!image && (
+      {!!image ? (
         <Image
           source={{ uri: cloudinaryUrl(image) }}
-          style={{ width: 100, height: 100 }}
+          style={{ width: 100, height: 100, borderRadius: !squared ? 50 : 0 }}
         />
-      )}
-
-      <View style={imageUploaderStyles.uploadBtnContainer}>
+      ) : (
         <TouchableOpacity
           onPress={addImage}
           style={imageUploaderStyles.uploadBtn}
         >
           {!addMore ? (
-            <AntDesign name='camera' size={20} color='black' />
+            <AntDesign name='camera' size={20} color='#FF7083' />
           ) : (
             <View>
-              <MaterialIcons name='add-to-photos' size={30} color='black' />
+              <MaterialIcons name='add-to-photos' size={30} color='#FF7083' />
               <Text>Add More</Text>
             </View>
           )}
         </TouchableOpacity>
-      </View>
+      )}
     </View>
   )
 }
@@ -99,27 +98,26 @@ export default function UploadImage({
 const imageUploaderStyles = StyleSheet.create({
   container: {
     elevation: 2,
-    height: 100,
-    width: 100,
-    backgroundColor: '#efefef',
-    position: 'relative',
-    overflow: 'hidden',
+    height: 90,
+    width: 90,
+    display: 'flex',
+    justifyContent: 'center',
+    alignSelf:'center',
+    marginTop:16,
+    marginLeft:-51
   },
   circular: {
     borderRadius: 999,
-  },
-  uploadBtnContainer: {
-    opacity: 0.7,
-    position: 'absolute',
-    right: 0,
-    bottom: 0,
-    backgroundColor: 'lightgrey',
-    width: '100%',
-    height: '25%',
   },
   uploadBtn: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
   },
+  border:{
+    backgroundColor:'#fff',
+    borderWidth:1,
+    borderColor:'#FF7083',
+    borderRadius:8,
+  }
 })

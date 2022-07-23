@@ -1,12 +1,3 @@
-export const validate = (text: string) => {
-  let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/
-  if (reg.test(text) === false) {
-    return false
-  } else {
-    return true
-  }
-}
-
 export function convertString(name: string): string {
   let seq = ''
   let newString = ''
@@ -42,4 +33,17 @@ export function getInitials(name: string) {
     default:
       return converted.substring(0, 2)
   }
+}
+
+export const validateEmail = (text: string) => {
+  let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/
+  if (reg.test(text) === false) {
+    return false
+  } else {
+    return true
+  }
+}
+
+export const validPhone = (str = '') => {
+  return str.length === 10
 }

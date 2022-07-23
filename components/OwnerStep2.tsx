@@ -1,5 +1,4 @@
-import { StatusBar } from 'expo-status-bar'
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   StyleSheet,
   Text,
@@ -7,97 +6,85 @@ import {
   View,
   TouchableHighlight,
   Button,
-  ScrollView,
   Alert,
 } from 'react-native'
-import { Entypo, MaterialIcons } from '@expo/vector-icons'
 import axios from 'axios'
-import { Card } from 'react-native-elements'
-import DateTimePicker from '@react-native-community/datetimepicker'
-import { AntDesign, FontAwesome } from '@expo/vector-icons'
+import {
+  GooglePlacesAutocomplete,
+  GooglePlacesAutocompleteRef,
+} from 'react-native-google-places-autocomplete'
+import UploadImage from '../partials/UploadImage'
+
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
-import { IP_ADDRESS } from '@env'
+import { Profile } from 'types'
+import { IP_ADDRESS, GOOGLE_MAPS_KEY } from '@env'
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
-  'profile' | 'ownerStep1' | 'login'
+  'signup' | 'Profile' | 'login'
 >
 
-var start = new Date()
-start.setHours(0, 0, 0, 0)
+export default function OwnerRequired({ route, navigation }: Props) {
+  const ref = useRef<GooglePlacesAutocompleteRef | null>(null)
 
-const addStartHours = 2 * 1000 * 3600
-const addEndHours = 5 * 1000 * 3600
-
-const addDefaultStartHours = start.getTime() + addStartHours
-const addDefaultEndHours = start.getTime() + addEndHours
-
-export default function OwnerStep2({ route, navigation }: Props) {
   const { id } = route.params || {}
-  const [focus, setFocus] = useState({ area: false, rooms: false })
+  const [focus, setFocus] = useState({ cost: false, location: false })
   const [data, setData] = useState({
-    area: 0,
-    rooms: 0,
+    cost: 0,
+    location: '',
+    lat: 0,
+    long: 0,
+    hour: 0,
   })
+  const [image, setImage] = useState<string[]>([])
+  const { location, cost } = focus
 
-  const [week, setWeek] = useState<
-    { day: string; timings: { start: Date; end: Date }[]; enable: boolean }[]
-  >([
-    {
-      day: 'Monday',
-      timings: [],
-      enable: false,
-    },
-    {
-      day: 'Tuesday',
-      timings: [],
-      enable: false,
-    },
-    {
-      day: 'Wednesday',
-      timings: [],
-      enable: false,
-    },
-    {
-      day: 'Thursday',
-      timings: [],
-      enable: false,
-    },
-    {
-      day: 'Friday',
-      timings: [],
-      enable: false,
-    },
-    {
-      day: 'Saturday',
-      timings: [],
-      enable: false,
-    },
-    {
-      day: 'Sunday',
-      timings: [],
-      enable: false,
-    },
-  ])
-  const { area, rooms } = focus
+  useEffect(() => {
+    fetchProfile()
+  }, [])
 
-  const handleStepTwo = () => {
+  useEffect(() => {
+    ref.current?.setAddressText(data.location)
+  }, [])
+
+  const fetchProfile = () => {
+    axios
+      .get<{ user: Profile }>(`${IP_ADDRESS}/api/profile/${id}`)
+      .then(response => {
+        const { location, cost, lat, long, duration } = response?.data?.user
+        /**
+         * TODO: Add images also(min 2) in the query.
+         * TODO: Check what is the place to check the ownerStep1, ownerStep2 and profile.
+         */
+        if (!!location && !!cost && !!duration && id) {
+          navigation.navigate('ownerStep2', { id })
+        } else
+          setData({
+            ...data,
+            location,
+            cost,
+            lat,
+            long,
+            hour: duration,
+          })
+      })
+      .catch(error => console.error(error))
+  }
+
+  const handleStepOne = () => {
+    const ownerStep1Data = { ...data, images: image }
     if (id) {
-      const availabilty = week.map(({ enable, ...keepRest }) => keepRest)
       axios
         .put<{ status: string; error: string }>(
           `${IP_ADDRESS}/api/owner/${id}`,
-          {
-            ...data,
-            availabilty,
-          }
+          ownerStep1Data
         )
         .then(res => {
           if (res?.data?.status === 'error') {
             Alert.alert(res?.data?.error)
           } else {
-            navigation.navigate('profile', { id })
+            if (id) navigation.navigate('ownerStep2', { id })
           }
         })
         .catch(e => console.error(e))
@@ -106,192 +93,131 @@ export default function OwnerStep2({ route, navigation }: Props) {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Studio Information Step 2</Text>
-      <StatusBar style='auto' />
-      <View style={{ display: 'flex', flexDirection: 'row', width: 275 }}>
-        <Entypo
-          name='area-graph'
-          size={30}
-          color='grey'
-          style={{ marginTop: 32 }}
-        />
-        <TextInput
-          placeholderTextColor='grey'
-          onBlur={() => setFocus({ ...focus, area: false })}
-          onFocus={() => setFocus({ ...focus, area: true })}
-          placeholder='Area(sq feet)'
-          style={[
-            styles.input,
-            styles.marginTop25,
-            area ? styles.yellow : null,
-          ]}
-          onChangeText={text => {
-            if (!isNaN(Number(text))) setData({ ...data, area: Number(text) })
-          }}
-          keyboardType='number-pad'
-          value={!!data.area ? data.area.toString() : ''}
-        />
-      </View>
-      <View style={{ display: 'flex', flexDirection: 'row', width: 275 }}>
-        <MaterialIcons
-          name='meeting-room'
-          size={30}
-          color='grey'
-          style={{ marginTop: 32 }}
-        />
-        <TextInput
-          placeholderTextColor='grey'
-          onBlur={() => setFocus({ ...focus, rooms: false })}
-          onFocus={() => setFocus({ ...focus, rooms: true })}
-          placeholder='No of rooms'
-          style={[
-            styles.input,
-            styles.marginTop25,
-            rooms ? styles.yellow : null,
-          ]}
-          onChangeText={text => {
-            if (!isNaN(Number(text))) setData({ ...data, rooms: Number(text) })
-          }}
-          keyboardType='number-pad'
-          value={!!data.rooms ? data.rooms.toString() : ''}
-        />
-      </View>
-      <View style={{ width: 275 }}>
-        <Text style={{ marginTop: 32, fontWeight: 'bold' }}>
-          Weekly Availabilty
+      <View style={styles.innerContainer}>
+        <Text style={styles.title}>Studio Information</Text>
+        <Text style={[styles.label, styles.marginTop16]}>Search Location</Text>
+        <View>
+          <GooglePlacesAutocomplete
+            ref={ref}
+            placeholder='Search location'
+            onPress={(data1, details) => {
+              setData({
+                ...data,
+                location: details?.formatted_address ?? '',
+                lat: details?.geometry.location.lat ?? 0,
+                long: details?.geometry.location.lng ?? 0,
+              })
+            }}
+            query={{
+              /**
+               * TODO: Keep the key in env variables
+               */
+              key: GOOGLE_MAPS_KEY,
+              language: 'en',
+            }}
+            onFail={err => console.warn(err)}
+            fetchDetails
+            textInputProps={{ style: styles.input }}
+            listUnderlayColor={'#D1D100'}
+          />
+        </View>
+        <Text style={[styles.label, styles.marginTop166]}>Rent</Text>
+        <View style={styles.cost}>
+          <TextInput
+            placeholderTextColor='grey'
+            onBlur={() => setFocus({ ...focus, cost: false })}
+            onFocus={() => setFocus({ ...focus, cost: true })}
+            placeholder='Cost'
+            style={[styles.input, styles.margin, styles.costWidth]}
+            onChangeText={text => setData({ ...data, cost: Number(text) })}
+            value={data?.cost?.toString() ?? ''}
+          />
+          <Text style={styles.hash}>/</Text>
+          <TextInput
+            placeholderTextColor='grey'
+            onBlur={() => setFocus({ ...focus, cost: false })}
+            onFocus={() => setFocus({ ...focus, cost: true })}
+            placeholder='hour'
+            style={[styles.input, styles.margin, styles.costWidth]}
+            onChangeText={text => {
+              setData({ ...data, hour: !!text ? Number(text) : 0 })
+            }}
+            value={data.hour?.toString()}
+            keyboardType='numeric'
+          />
+        </View>
+        <Text style={[styles.label, styles.marginTop30]}>
+          Upload Studio Image
         </Text>
-        <ScrollView style={{ width: 275, height: 420 }}>
-          {week.map((item, index1) => (
-            <Card
-              key={item.day}
-              containerStyle={{ width: 285, marginLeft: -10 }}
-            >
-              <Card.Title>{item.day}</Card.Title>
-              <Card.Divider />
-              {item.enable ? (
-                item.timings.map((timing, index2) => {
-                  return (
-                    <View
-                      key={item.day + timing.start}
-                      style={{
-                        display: 'flex',
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        margin: 0,
-                        justifyContent: 'center',
-                        marginTop: 10,
-                      }}
-                    >
-                      <DateTimePicker
-                        mode='time'
-                        value={timing.start}
-                        style={{ width: 90, padding: 0 }}
-                        onChange={(e, date) => {
-                          if (!!date) {
-                            const arr = [...week]
-                            arr[index1].timings[index2].start = date
-                            setWeek(arr)
-                          }
-                        }}
-                      />
-                      <Text>-</Text>
-                      <DateTimePicker
-                        mode='time'
-                        value={timing.end}
-                        style={{ width: 90, padding: 0 }}
-                        onChange={(e, date) => {
-                          if (
-                            !!date &&
-                            date.getTime() > timing.start.getTime()
-                          ) {
-                            const arr = [...week]
-                            arr[index1].timings[index2].end = date
-                            setWeek(arr)
-                          } else {
-                            const arr = [...week]
-                            arr[index1].timings[index2].end = timing.end
-                            setWeek(arr)
-                          }
-                        }}
-                      />
-                      <AntDesign
-                        name='pluscircleo'
-                        size={20}
-                        color='grey'
-                        style={{ marginLeft: 10 }}
-                        onPress={() => {
-                          const arr = [...week]
-                          arr[index1].timings.push({
-                            start: new Date(
-                              item.timings[index2].end.getTime() + addStartHours
-                            ),
-                            end: new Date(
-                              item.timings[index2].end.getTime() + addEndHours
-                            ),
-                          })
-                          setWeek(arr)
-                        }}
-                      />
-                      <FontAwesome
-                        name='remove'
-                        size={20}
-                        color='grey'
-                        style={{ marginLeft: 10 }}
-                        onPress={() => {
-                          const arr = [...week]
-                          arr[index1].timings.splice(index2, 1)
-                          if (!arr[index1].timings.length)
-                            arr[index1].enable = false
-                          setWeek(arr)
-                        }}
-                      />
-                    </View>
-                  )
-                })
-              ) : (
-                <Button
-                  title='Add Time'
-                  onPress={() => {
-                    setWeek(
-                      week.map(i => {
-                        if (i.day === item.day)
-                          return {
-                            ...i,
-                            enable: !item.enable,
-                            timings: [
-                              {
-                                start: new Date(addDefaultStartHours),
-                                end: new Date(addDefaultEndHours),
-                              },
-                            ],
-                          }
-                        else return i
-                      })
-                    )
-                  }}
+        <View style={styles.imageView}>
+          <UploadImage
+            receiveImage={(data: string) => setImage([...image, data])}
+            squared
+            image={image.length >= 1 ? image[0] : ''}
+          />
+          <UploadImage
+            receiveImage={(data: string) => setImage([...image, data])}
+            squared
+            image={image.length >= 2 ? image[1] : ''}
+          />
+          {image.length < 3 ? (
+            <UploadImage
+              receiveImage={(data: string) => setImage([...image, data])}
+              squared
+              addMore
+              image={''}
+            />
+          ) : (
+            image.map((item, index) =>
+              index === 2 ? (
+                <UploadImage
+                  key={item}
+                  receiveImage={(data: string) => setImage([...image, data])}
+                  squared
+                  image={item}
                 />
-              )}
-            </Card>
-          ))}
-        </ScrollView>
+              ) : null
+            )
+          )}
+        </View>
+        {image.length >= 3 ? (
+          <View style={[styles.imageView, styles.justifyContent]}>
+            {image.map((item, index) =>
+              index >= 3 ? (
+                <UploadImage
+                  key={item}
+                  receiveImage={(data: string) => setImage([...image, data])}
+                  squared
+                  image={item}
+                />
+              ) : null
+            )}
+            {image.length !== 6 ? (
+              <UploadImage
+                receiveImage={(data: string) => setImage([...image, data])}
+                squared
+                addMore
+                image={''}
+              />
+            ) : null}
+          </View>
+        ) : null}
+        <TouchableHighlight style={[styles.button, styles.marginTop49]}>
+          <Button
+            title='CONFIRM'
+            color='#fff'
+            onPress={handleStepOne}
+            disabled={!data.location && !data.cost}
+          />
+        </TouchableHighlight>
+        <TouchableHighlight>
+          <Button
+            color='#FF7083'
+            title='Skip'
+            onPress={() => navigation.navigate('Studios', { id: id ?? '' })} //change this
+          />
+        </TouchableHighlight>
       </View>
-
-      <TouchableHighlight style={[styles.button, styles.marginTop10]}>
-        <Button
-          title='Next'
-          color='#fff'
-          onPress={handleStepTwo}
-          disabled={!data.area && !data.rooms}
-        />
-      </TouchableHighlight>
-
-      <TouchableHighlight>
-        <Button
-          color='#D1D100'
-          title='Skip'
-          onPress={() => navigation.navigate('profile', { id: id ?? '' })}
-        />
-      </TouchableHighlight>
     </View>
   )
 }
@@ -299,35 +225,78 @@ export default function OwnerStep2({ route, navigation }: Props) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
+    backgroundColor: '#fff',
   },
+  innerContainer: { marginLeft: 40, marginTop: 50 },
   input: {
-    height: 40,
-    width: 250,
-    borderBottomWidth: 1,
-    borderRadius: 10,
-    padding: 10,
-    borderColor: 'grey',
+    height: 56,
+    width: 290,
+    borderRadius: 24,
+    padding: 20,
     marginTop: -8,
     color: 'grey',
+    backgroundColor: '#fff',
+    borderColor: '#030169',
+    borderWidth: 1,
   },
-  yellow: {
-    borderColor: '#D1D100',
+  cost: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: 275,
+  },
+  margin: {
+    marginTop: -10,
   },
   button: {
-    height: 40,
-    width: 150,
-    backgroundColor: '#000',
-    borderRadius: 10,
+    height: 63,
+    width: 280,
+    backgroundColor: '#FF7083',
+    borderRadius: 50,
+    padding: 10,
+    marginLeft: 20,
   },
-  marginTop25: {
-    marginTop: 25,
-  },
-  marginTop10: {
-    marginTop: 10,
+  marginTop49: {
+    marginTop: 49,
   },
   title: {
-    fontSize: 30,
-    marginTop: 10,
+    color: '#FF7083',
+    fontSize: 40,
+  },
+  costWidth: {
+    width: 109,
+  },
+  imageView: {
+    display: 'flex',
+    flexDirection: 'row',
+    width: 250,
+    marginLeft: 51,
+    alignContent: 'center',
+    justifyContent: 'space-between',
+    marginTop: -10,
+  },
+  justifyContent: {
+    justifyContent: 'space-evenly',
+  },
+  label: {
+    color: '#030169',
+    marginBottom: 20,
+    marginLeft: 10,
+    fontSize: 17,
+  },
+  marginTop16: {
+    marginTop: 16,
+  },
+  marginTop166: {
+    marginTop: 70,
+  },
+  marginTop30: {
+    marginTop: 30,
+  },
+  hash: {
+    fontSize: 40,
+    paddingLeft: 8,
+    paddingRight: 8,
+    marginTop: -10,
+    color: '#030169',
   },
 })
