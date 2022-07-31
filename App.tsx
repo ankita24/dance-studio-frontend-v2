@@ -12,10 +12,11 @@ import {
   Profile,
   StudioDetails,
   BookedClasses,
+  TimeSlots,
 } from './components'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Ionicons } from '@expo/vector-icons'
+import { Ionicons, Entypo } from '@expo/vector-icons'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 const Tab = createBottomTabNavigator()
@@ -51,14 +52,12 @@ const App: React.FC<RootStackParamList> = () => {
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             let iconName
-
-            if (
-              route.name === 'Bookings' ||
-              route.name === 'Studios'
-            ) {
-              iconName='reorder-four'
+            if (route.name === 'Bookings' || route.name === 'Studios') {
+              iconName = 'reorder-four'
             } else if (route.name === 'Profile') {
-              iconName='person'
+              iconName = 'person'
+            } else if (route.name === 'Slots') {
+              iconName = 'time'
             }
 
             // You can return any component that you like here!
@@ -75,6 +74,13 @@ const App: React.FC<RootStackParamList> = () => {
           }
           options={{ headerShown: typeofUser === 'owner' }}
         />
+        {typeofUser === 'owner' && (
+          <Tab.Screen
+            name='Slots'
+            component={TimeSlots}
+            options={{ headerShown: typeofUser === 'owner' }}
+          />
+        )}
         <Tab.Screen name='Profile' component={Profile} />
       </Tab.Navigator>
     )

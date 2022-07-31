@@ -6,7 +6,10 @@ export const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignContent: 'center',
   },
-  innerContainer: {},
+  innerContainer: {
+    marginLeft: 50,
+    marginBottom: 10,
+  },
   marginBottom6: {
     marginBottom: 6,
   },
@@ -46,6 +49,9 @@ export const styles = StyleSheet.create({
       height: 1,
       width: 1,
     },
+    width: 100,
+    height: 100,
+    marginRight: 35,
   },
   inputStyle: { height: 20, width: 100 },
   section: {
@@ -92,10 +98,16 @@ export const styles = StyleSheet.create({
   },
   listStyle: {
     alignSelf: 'center',
-    marginTop:-20
+    marginTop: -20,
   },
-  marginTop40:{
+  marginTop40: {
     marginTop: 40,
   },
-
+  profileText: {
+    display: 'flex',
+    alignSelf: 'center',
+    top: '30%',
+    fontSize: 30,
+    color: '#030169',
+  },
 })

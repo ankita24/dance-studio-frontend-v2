@@ -7,6 +7,7 @@ import Profile from './Profile'
 import DanceStudios from './DanceStudios'
 import StudioDetails from './StudioDetails'
 import BookedClasses from './BookedClasses'
+import TimeSlots from './TimeSlots'
 
 export {
   Login,
@@ -18,4 +19,5 @@ export {
   DanceStudios,
   StudioDetails,
   BookedClasses,
+  TimeSlots
 }

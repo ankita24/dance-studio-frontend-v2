@@ -145,7 +145,7 @@ export const styles = StyleSheet.create({
   cardStyle: {
     width: 306,
     marginLeft: 0,
-    borderColor: '#030169',
+    borderColor: '#FF7083',
     borderRadius: 24,
   },
   dateStyle: { width: 90, padding: 0, color: '#030169' },

@@ -11,15 +11,13 @@ import {
   FlatList,
 } from 'react-native'
 import { Profile as ProfileType, UserBookings } from '../../types'
-import { cloudinaryUrl } from '../../utils'
 import { getInitials } from '../../utils/helper'
-import { Avatar } from 'react-native-elements'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../../App'
 import { IP_ADDRESS } from '@env'
 import { styles } from './styles'
-import { RadioButton, Availability, Loader } from '../../partials'
+import { RadioButton, Loader, UploadImage } from '../../partials'
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -97,10 +95,10 @@ export default function Profile({ route, navigation }: Props) {
           setLoading(false)
         }
       })
-      .catch(error => 
-        {console.error(error)
-          setLoading(false)
-        })
+      .catch(error => {
+        console.error(error)
+        setLoading(false)
+      })
   }
 
   const fetchPastBookings = () => {
@@ -184,375 +182,280 @@ export default function Profile({ route, navigation }: Props) {
   return (
     <ScrollView style={styles.container}>
       <View style={styles.innerContainer}>
-        <Avatar
-          title={
-            profile?.image
-              ? cloudinaryUrl(profile?.image)
-              : getInitials(profile?.name ?? '')
-          }
-          rounded
-          containerStyle={styles.containerStyle}
-          size={100}
-        />
-
-        {!edit ? (
-          <Button title='Edit' color='#FF7083' onPress={() => setEdit(true)} />
+        {profile?.image || edit ? (
+          <UploadImage
+            image={editableData?.image}
+            receiveImage={(image: string) => {
+              if (editableData) setEditableData({ ...editableData, image })
+            }}
+            edit={edit}
+          />
         ) : (
-          <View style={[styles.flex, styles.alignSelfCenter]}>
-            <Button color='#FF7083' title='Save' onPress={SaveDetails} />
-            <Button
-              title='Cancel'
-              color='#FF7083'
-              onPress={() => {
-                setEdit(false)
-                setEditableData(profile)
-              }}
-            />
+          <View style={styles.containerStyle}>
+            <Text style={styles.profileText}>
+              {getInitials(profile?.name ?? '')}
+            </Text>
           </View>
         )}
-        {profile ? (
-          <ScrollView style={{ padding: 10 }}>
-            <View style={styles.section}>
-              <View style={[styles.marginBottom6, styles.flex]}>
-                <Text style={[styles.fontWeight, styles.textStyle]}>Name:</Text>
-                {edit ? (
-                  <TextInput
-                    style={styles.inputStyle}
-                    value={editableData?.name}
-                    onChangeText={value => handleTextChange('name', value)}
-                  />
-                ) : (
-                  <Text style={styles.textStyle}>{profile.name}</Text>
-                )}
-              </View>
-              <View style={[styles.marginBottom6, styles.flex]}>
-                <Text style={[styles.fontWeight, styles.textStyle]}>
-                  Email:
-                </Text>
-                <Text style={styles.textStyle}>{profile.email}</Text>
-              </View>
-              <View style={[styles.marginBottom6, styles.flex]}>
-                <Text style={[styles.fontWeight, styles.textStyle]}>
-                  Phone:
-                </Text>
-                <Text style={styles.textStyle}>{profile.phone}</Text>
-              </View>
-              {profile.__t == 'OwnerSchema' && (
-                <View style={[styles.marginBottom6, styles.flex]}>
-                  <Text style={[styles.fontWeight, styles.textStyle]}>
-                    Location:
-                  </Text>
-                  <Text style={[styles.textStyle, styles.flexShrink]}>
-                    {profile.location}
-                  </Text>
-                </View>
+      </View>
+
+      {!edit ? (
+        <Button title='Edit' color='#FF7083' onPress={() => setEdit(true)} />
+      ) : (
+        <View style={[styles.flex, styles.alignSelfCenter]}>
+          <Button color='#FF7083' title='Save' onPress={SaveDetails} />
+          <Button
+            title='Cancel'
+            color='#FF7083'
+            onPress={() => {
+              setEdit(false)
+              setEditableData(profile)
+            }}
+          />
+        </View>
+      )}
+      {profile ? (
+        <ScrollView style={{ padding: 10 }}>
+          <View style={styles.section}>
+            <View style={[styles.marginBottom6, styles.flex]}>
+              <Text style={[styles.fontWeight, styles.textStyle]}>Name:</Text>
+              {edit ? (
+                <TextInput
+                  style={styles.inputStyle}
+                  value={editableData?.name}
+                  onChangeText={value => handleTextChange('name', value)}
+                />
+              ) : (
+                <Text style={styles.textStyle}>{profile.name}</Text>
               )}
             </View>
-            {profile.__t == 'OwnerSchema' ? (
-              <ScrollView>
-                <View style={[styles.section, styles.marginTop26]}>
-                  <View style={[styles.marginBottom6, styles.flex]}>
-                    <Text style={[styles.fontWeight, styles.textStyle]}>
-                      Rent
-                    </Text>
-                    {edit ? (
-                      <View style={styles.flexRow}>
-                        <TextInput
-                          value={editableData?.cost?.toString()}
-                          onChangeText={value =>
-                            handleTextChange('rent', value)
-                          }
-                        />
-                        <Text style={styles.textStyle}> Rs/</Text>
-                      </View>
-                    ) : (
-                      <Text style={styles.textStyle}>{profile.cost} Rs/</Text>
-                    )}
-                    {edit ? (
+            <View style={[styles.marginBottom6, styles.flex]}>
+              <Text style={[styles.fontWeight, styles.textStyle]}>Email:</Text>
+              <Text style={styles.textStyle}>{profile.email}</Text>
+            </View>
+            <View style={[styles.marginBottom6, styles.flex]}>
+              <Text style={[styles.fontWeight, styles.textStyle]}>Phone:</Text>
+              <Text style={styles.textStyle}>{profile.phone}</Text>
+            </View>
+            {profile.__t == 'OwnerSchema' && (
+              <View style={[styles.marginBottom6, styles.flex]}>
+                <Text style={[styles.fontWeight, styles.textStyle]}>
+                  Location:
+                </Text>
+                <Text style={[styles.textStyle, styles.flexShrink]}>
+                  {profile.location}
+                </Text>
+              </View>
+            )}
+          </View>
+          {profile.__t == 'OwnerSchema' ? (
+            <ScrollView>
+              <View style={[styles.section, styles.marginTop26]}>
+                <View style={[styles.marginBottom6, styles.flex]}>
+                  <Text style={[styles.fontWeight, styles.textStyle]}>
+                    Rent
+                  </Text>
+                  {edit ? (
+                    <View style={styles.flexRow}>
                       <TextInput
-                        value={editableData?.duration?.toString()}
-                        onChangeText={value =>
-                          handleTextChange('duration', value)
-                        }
+                        value={editableData?.cost?.toString()}
+                        onChangeText={value => handleTextChange('rent', value)}
                       />
-                    ) : (
-                      <Text style={styles.textStyle}>{profile.duration}</Text>
-                    )}
-                    <Text style={styles.textStyle}>hrs</Text>
-                  </View>
-                  <View style={[styles.marginBottom6, styles.flex]}>
-                    <Text style={[styles.fontWeight, styles.textStyle]}>
-                      Area:
-                    </Text>
-                    {edit ? (
-                      <TextInput
-                        value={editableData?.area?.toString()}
-                        onChangeText={value => handleTextChange('area', value)}
-                      />
-                    ) : (
-                      <Text style={styles.textStyle}>{profile.area}</Text>
-                    )}
-                    <Text style={styles.textStyle}>sq ft</Text>
-                  </View>
-                  <View style={[styles.marginBottom6, styles.flex]}>
-                    <Text style={[styles.fontWeight, styles.textStyle]}>
-                      No of rooms:
-                    </Text>
-                    {edit ? (
-                      <TextInput
-                        value={editableData?.rooms?.toString()}
-                        onChangeText={value => handleTextChange('rooms', value)}
-                      />
-                    ) : (
-                      <Text style={styles.textStyle}>{profile.rooms}</Text>
-                    )}
-                  </View>
-                  {!edit ? (
-                    <>
-                      <View style={[styles.marginBottom6, styles.flex]}>
-                        <Text style={[styles.fontWeight, styles.textStyle]}>
-                          Is Soundproof?:
-                        </Text>
-
-                        <Text style={styles.textStyle}>
-                          {profile?.isSoundProof === true ? 'Yes' : 'No'}
-                        </Text>
-                      </View>
-                      <View style={[styles.marginBottom6, styles.flex]}>
-                        <Text style={[styles.fontWeight, styles.textStyle]}>
-                          Has changing room?:
-                        </Text>
-
-                        <Text style={styles.textStyle}>
-                          {profile?.hasChangingRoom === true ? 'Yes' : 'No'}
-                        </Text>
-                      </View>
-                    </>
-                  ) : (
-                    <View
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        flexDirection: 'row',
-                      }}
-                    >
-                      <View>
-                        <Text style={[styles.fontWeight, styles.textStyle]}>
-                          Is Soundproof?:
-                        </Text>
-
-                        <RadioButton
-                          value={editableData?.isSoundProof ?? false}
-                          onUpdate={(isSoundProof: boolean) =>
-                            handleTextChange('isSoundProof', isSoundProof)
-                          }
-                        />
-                      </View>
-                      <View>
-                        <Text style={[styles.fontWeight, styles.textStyle]}>
-                          Has changing room?:
-                        </Text>
-                        <RadioButton
-                          value={editableData?.hasChangingRoom ?? false}
-                          onUpdate={(hasChangingRoom: boolean) =>
-                            handleTextChange('hasChangingRoom', hasChangingRoom)
-                          }
-                        />
-                      </View>
+                      <Text style={styles.textStyle}> Rs/</Text>
                     </View>
+                  ) : (
+                    <Text style={styles.textStyle}>{profile.cost} Rs/</Text>
+                  )}
+                  {edit ? (
+                    <TextInput
+                      value={editableData?.duration?.toString()}
+                      onChangeText={value =>
+                        handleTextChange('duration', value)
+                      }
+                    />
+                  ) : (
+                    <Text style={styles.textStyle}>{profile.duration}</Text>
+                  )}
+                  <Text style={styles.textStyle}>hrs</Text>
+                </View>
+                <View style={[styles.marginBottom6, styles.flex]}>
+                  <Text style={[styles.fontWeight, styles.textStyle]}>
+                    Area:
+                  </Text>
+                  {edit ? (
+                    <TextInput
+                      value={editableData?.area?.toString()}
+                      onChangeText={value => handleTextChange('area', value)}
+                    />
+                  ) : (
+                    <Text style={styles.textStyle}>{profile.area}</Text>
+                  )}
+                  <Text style={styles.textStyle}>sq ft</Text>
+                </View>
+                <View style={[styles.marginBottom6, styles.flex]}>
+                  <Text style={[styles.fontWeight, styles.textStyle]}>
+                    No of rooms:
+                  </Text>
+                  {edit ? (
+                    <TextInput
+                      value={editableData?.rooms?.toString()}
+                      onChangeText={value => handleTextChange('rooms', value)}
+                    />
+                  ) : (
+                    <Text style={styles.textStyle}>{profile.rooms}</Text>
                   )}
                 </View>
-                <View>
-                  <Text
-                    style={[
-                      styles.fontWeight,
-                      styles.textStyle,
-                      styles.marginTop26,
-                      styles.marginLeft28,
-                    ]}
+                {!edit ? (
+                  <>
+                    <View style={[styles.marginBottom6, styles.flex]}>
+                      <Text style={[styles.fontWeight, styles.textStyle]}>
+                        Is Soundproof?:
+                      </Text>
+
+                      <Text style={styles.textStyle}>
+                        {profile?.isSoundProof === true ? 'Yes' : 'No'}
+                      </Text>
+                    </View>
+                    <View style={[styles.marginBottom6, styles.flex]}>
+                      <Text style={[styles.fontWeight, styles.textStyle]}>
+                        Has changing room?:
+                      </Text>
+
+                      <Text style={styles.textStyle}>
+                        {profile?.hasChangingRoom === true ? 'Yes' : 'No'}
+                      </Text>
+                    </View>
+                  </>
+                ) : (
+                  <View
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      flexDirection: 'row',
+                    }}
                   >
-                    Weekly Availabilty
-                  </Text>
-                  <Availability
-                    editableData={editableData}
-                    edit={edit}
-                    onStartChange={(date, index1, index2) => {
-                      if (!!date && editableData) {
-                        const arr = [...editableData?.availabilty]
-                        arr[index1].timings[index2].start = date
-                        setEditableData({
-                          ...editableData,
-                          availabilty: arr,
-                        })
-                      }
-                    }}
-                    onEndChange={(date, index1, index2, timing) => {
-                      if (!!editableData) {
-                        if (!!date && date.getTime() > timing.start.getTime()) {
-                          const arr = [...editableData.availabilty]
-                          arr[index1].timings[index2].end = date
-                          setEditableData({
-                            ...editableData,
-                            availabilty: arr,
-                          })
-                        } else {
-                          const arr = [...editableData.availabilty]
-                          arr[index1].timings[index2].end = timing.end
-                          setEditableData({
-                            ...editableData,
-                            availabilty: arr,
-                          })
+                    <View>
+                      <Text style={[styles.fontWeight, styles.textStyle]}>
+                        Is Soundproof?:
+                      </Text>
+
+                      <RadioButton
+                        value={editableData?.isSoundProof ?? false}
+                        onUpdate={(isSoundProof: boolean) =>
+                          handleTextChange('isSoundProof', isSoundProof)
                         }
-                      }
-                    }}
-                    onAddition={(index1, index2, item) => {
-                      if (!!editableData) {
-                        const arr = [...editableData.availabilty]
-                        arr[index1].timings.push({
-                          start: new Date(
-                            new Date(item.timings[index2].end).getTime() +
-                              addStartHours
-                          ),
-                          end: new Date(
-                            new Date(item.timings[index2].end).getTime() +
-                              addEndHours
-                          ),
-                        })
-                        setEditableData({
-                          ...editableData,
-                          availabilty: arr,
-                        })
-                      }
-                    }}
-                    onRemove={(index1, index2) => {
-                      if (!!editableData) {
-                        const arr = [...editableData.availabilty]
-                        arr[index1].timings.splice(index2, 1)
-                        setEditableData({
-                          ...editableData,
-                          availabilty: arr,
-                        })
-                      }
-                    }}
-                    onFirstTimeAddition={item => {
-                      if (editableData) {
-                        setEditableData({
-                          ...editableData,
-                          availabilty: editableData.availabilty.map(i => {
-                            if (i.day === item.day)
-                              return {
-                                day: item.day,
-                                timings: [
-                                  {
-                                    start: new Date(addDefaultStartHours),
-                                    end: new Date(addDefaultEndHours),
-                                  },
-                                ],
-                              }
-                            else return i
-                          }),
-                        })
-                      }
-                    }}
-                  />
-                </View>
-              </ScrollView>
-            ) : bookings.length ? (
-              <>
-                <Text
-                  style={[
-                    styles.fontWeight,
-                    styles.textStyle,
-                    styles.marginTop26,
-                    styles.marginLeft28,
-                  ]}
-                >
-                  Bookings
-                </Text>
-                <FlatList
-                  key='_id'
-                  data={bookings}
-                  style={styles.listStyle}
-                  renderItem={({ item, index }) => {
-                    const endTime = item.slot.slice(item.slot.indexOf('-') + 1)
-                    const startTime = item.slot.slice(0, item.slot.indexOf('-'))
-                    const status = renderStatus(startTime, endTime, item.date)
-                    return (
+                      />
+                    </View>
+                    <View>
+                      <Text style={[styles.fontWeight, styles.textStyle]}>
+                        Has changing room?:
+                      </Text>
+                      <RadioButton
+                        value={editableData?.hasChangingRoom ?? false}
+                        onUpdate={(hasChangingRoom: boolean) =>
+                          handleTextChange('hasChangingRoom', hasChangingRoom)
+                        }
+                      />
+                    </View>
+                  </View>
+                )}
+              </View>
+            </ScrollView>
+          ) : bookings.length ? (
+            <>
+              <Text
+                style={[
+                  styles.fontWeight,
+                  styles.textStyle,
+                  styles.marginTop26,
+                  styles.marginLeft28,
+                ]}
+              >
+                Bookings
+              </Text>
+              <FlatList
+                key='_id'
+                data={bookings}
+                style={styles.listStyle}
+                renderItem={({ item, index }) => {
+                  const endTime = item.slot.slice(item.slot.indexOf('-') + 1)
+                  const startTime = item.slot.slice(0, item.slot.indexOf('-'))
+                  const status = renderStatus(startTime, endTime, item.date)
+                  return (
+                    <View
+                      style={[styles.section, styles.marginTop40]}
+                      key={index}
+                    >
                       <View
-                        style={[styles.section, styles.marginTop40]}
-                        key={index}
+                        style={[
+                          styles.marginBottom10,
+                          styles.tag,
+                          status === 'Past Booking'
+                            ? styles.green
+                            : status === 'In Progress'
+                            ? styles.yellow
+                            : styles.red,
+                        ]}
                       >
-                        <View
-                          style={[
-                            styles.marginBottom10,
-                            styles.tag,
-                            status === 'Past Booking'
-                              ? styles.green
-                              : status === 'In Progress'
-                              ? styles.yellow
-                              : styles.red,
-                          ]}
-                        >
-                          <Text style={{ color: '#fff', textAlign: 'center' }}>
-                            {status}
+                        <Text style={{ color: '#fff', textAlign: 'center' }}>
+                          {status}
+                        </Text>
+                      </View>
+                      <View style={{ width: '90%' }}>
+                        <View style={[styles.marginBottom6, styles.flex]}>
+                          <Text style={[styles.fontWeight, styles.textStyle]}>
+                            Name:
+                          </Text>
+                          <Text style={styles.textStyle}>
+                            {item.studioDetails?.name}
                           </Text>
                         </View>
-                        <View style={{ width: '90%' }}>
-                          <View style={[styles.marginBottom6, styles.flex]}>
-                            <Text style={[styles.fontWeight, styles.textStyle]}>
-                              Name:
-                            </Text>
-                            <Text style={styles.textStyle}>
-                              {item.studioDetails?.name}
-                            </Text>
-                          </View>
-                          <View style={[styles.marginBottom6, styles.flex]}>
-                            <Text style={[styles.fontWeight, styles.textStyle]}>
-                              Email:
-                            </Text>
-                            <Text style={styles.textStyle}>
-                              {item.studioDetails?.email}
-                            </Text>
-                          </View>
-                          <View style={[styles.marginBottom6, styles.flex]}>
-                            <Text style={[styles.fontWeight, styles.textStyle]}>
-                              Price:
-                            </Text>
-                            <Text style={styles.textStyle}>{item.price}</Text>
-                          </View>
-                          <View style={[styles.marginBottom6, styles.flex]}>
-                            <Text style={[styles.fontWeight, styles.textStyle]}>
-                              Date:
-                            </Text>
-                            <Text style={styles.textStyle}>
-                              {formatDate(item.date)}
-                            </Text>
-                          </View>
-                          <View style={[styles.marginBottom6, styles.flex]}>
-                            <Text style={[styles.fontWeight, styles.textStyle]}>
-                              Slot:
-                            </Text>
-                            <Text style={styles.textStyle}>{item.slot}</Text>
-                          </View>
+                        <View style={[styles.marginBottom6, styles.flex]}>
+                          <Text style={[styles.fontWeight, styles.textStyle]}>
+                            Email:
+                          </Text>
+                          <Text style={styles.textStyle}>
+                            {item.studioDetails?.email}
+                          </Text>
+                        </View>
+                        <View style={[styles.marginBottom6, styles.flex]}>
+                          <Text style={[styles.fontWeight, styles.textStyle]}>
+                            Price:
+                          </Text>
+                          <Text style={styles.textStyle}>{item.price}</Text>
+                        </View>
+                        <View style={[styles.marginBottom6, styles.flex]}>
+                          <Text style={[styles.fontWeight, styles.textStyle]}>
+                            Date:
+                          </Text>
+                          <Text style={styles.textStyle}>
+                            {formatDate(item.date)}
+                          </Text>
+                        </View>
+                        <View style={[styles.marginBottom6, styles.flex]}>
+                          <Text style={[styles.fontWeight, styles.textStyle]}>
+                            Slot:
+                          </Text>
+                          <Text style={styles.textStyle}>{item.slot}</Text>
                         </View>
                       </View>
-                    )
-                  }}
-                />
-              </>
-            ) : (
-              <View />
-            )}
-            <TouchableHighlight style={{ marginTop: 20, paddingBottom: 40 }}>
-              <Button color='#FF7083' title='Log out' onPress={logOut} />
-            </TouchableHighlight>
-          </ScrollView>
-        ) : (
+                    </View>
+                  )
+                }}
+              />
+            </>
+          ) : (
+            <View />
+          )}
           <TouchableHighlight style={{ marginTop: 20, paddingBottom: 40 }}>
             <Button color='#FF7083' title='Log out' onPress={logOut} />
           </TouchableHighlight>
-        )}
-      </View>
+        </ScrollView>
+      ) : (
+        <TouchableHighlight style={{ marginTop: 20, paddingBottom: 40 }}>
+          <Button color='#FF7083' title='Log out' onPress={logOut} />
+        </TouchableHighlight>
+      )}
     </ScrollView>
   )
 }

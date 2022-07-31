@@ -25,7 +25,7 @@ export function getInitials(name: string) {
   const converted = convertString(name)
   switch (converted.length) {
     case 0:
-      return 'NB'
+      return 'DV'
     case 1:
       return converted
     case 2:

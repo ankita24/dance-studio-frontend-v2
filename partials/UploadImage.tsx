@@ -4,17 +4,20 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import axios from 'axios'
 import { cloudinaryUrl } from '../utils'
+import { styles } from 'components/Profile/styles'
 
 export default function UploadImage({
   receiveImage,
   squared,
   image,
   addMore,
+  edit,
 }: {
   receiveImage: (data: string) => void
   squared?: boolean
   image?: string
   addMore?: boolean
+  edit?: boolean
 }) {
   const addImage = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
@@ -67,15 +70,29 @@ export default function UploadImage({
   return (
     <View
       style={[
-        imageUploaderStyles.container,imageUploaderStyles.border,
+        imageUploaderStyles.container,
+        imageUploaderStyles.border,
         squared ? null : imageUploaderStyles.circular,
       ]}
     >
       {!!image ? (
-        <Image
-          source={{ uri: cloudinaryUrl(image) }}
-          style={{ width: 100, height: 100, borderRadius: !squared ? 50 : 0 }}
-        />
+        <TouchableOpacity
+          onPress={() => {
+            if (edit) addImage()
+          }}
+        >
+          <AntDesign name='camera' size={20} color='#FF7083' style={imageUploaderStyles.editIcon} />
+          <Image
+            source={{ uri: cloudinaryUrl(image) }}
+            style={{
+              width: 90,
+              height: 90,
+              borderRadius: !squared ? 50 : 0,
+              opacity: edit ? 0.2 : 1,
+              marginBottom: 20,
+            }}
+          />
+        </TouchableOpacity>
       ) : (
         <TouchableOpacity
           onPress={addImage}
@@ -102,9 +119,9 @@ const imageUploaderStyles = StyleSheet.create({
     width: 90,
     display: 'flex',
     justifyContent: 'center',
-    alignSelf:'center',
-    marginTop:16,
-    marginLeft:-51
+    alignSelf: 'center',
+    marginTop: 16,
+    marginLeft: -51,
   },
   circular: {
     borderRadius: 999,
@@ -114,10 +131,15 @@ const imageUploaderStyles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  border:{
-    backgroundColor:'#fff',
-    borderWidth:1,
-    borderColor:'#FF7083',
-    borderRadius:8,
-  }
+  border: {
+    backgroundColor: '#fff',
+    borderWidth: 1,
+    borderColor: '#FF7083',
+    borderRadius: 8,
+  },
+  editIcon: {
+    display: 'flex',
+    alignSelf: 'center',
+    top: '43%',
+  },
 })
