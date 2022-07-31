@@ -110,4 +110,20 @@ export const styles = StyleSheet.create({
     fontSize: 30,
     color: '#030169',
   },
+  justifyContent: {
+    justifyContent: 'space-between',
+  },
+  noImagesText: {
+    fontStyle: 'italic',
+    marginTop: 10,
+    textAlign: 'center',
+  },
+  statusText: {
+    color: '#fff',
+    textAlign: 'center',
+  },
+  logoutStyle: {
+    marginTop: 20,
+    paddingBottom: 40,
+  },
 })

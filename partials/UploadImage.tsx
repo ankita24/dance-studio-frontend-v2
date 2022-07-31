@@ -4,7 +4,6 @@ import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import axios from 'axios'
 import { cloudinaryUrl } from '../utils'
-import { styles } from 'components/Profile/styles'
 
 export default function UploadImage({
   receiveImage,
@@ -103,7 +102,7 @@ export default function UploadImage({
           ) : (
             <View>
               <MaterialIcons name='add-to-photos' size={30} color='#FF7083' />
-              <Text>Add More</Text>
+              {/* <Text>Add More</Text> */}
             </View>
           )}
         </TouchableOpacity>

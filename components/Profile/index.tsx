@@ -33,12 +33,6 @@ const currentTime = new Date().toLocaleTimeString('en-US', {
 let start = new Date()
 start.setHours(0, 0, 0, 0)
 
-const addStartHours = 2 * 1000 * 3600
-const addEndHours = 5 * 1000 * 3600
-
-const addDefaultStartHours = start.getTime() + addStartHours
-const addDefaultEndHours = start.getTime() + addEndHours
-
 export default function Profile({ route, navigation }: Props) {
   const [id, setId] = useState<string | null>()
   const [typeOfUser, setTypeOfUser] = useState<string | null>('')
@@ -120,6 +114,14 @@ export default function Profile({ route, navigation }: Props) {
       //   setEditableData({ ...editableData, [key]: Number(value) })
       setEditableData({ ...editableData, [key]: value })
     }
+  }
+
+  const fetchImage = (img: string) => {
+    if (editableData)
+      setEditableData({
+        ...editableData,
+        images: [...editableData.images, ...img],
+      })
   }
 
   const SaveDetails = () => {
@@ -327,13 +329,7 @@ export default function Profile({ route, navigation }: Props) {
                     </View>
                   </>
                 ) : (
-                  <View
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      flexDirection: 'row',
-                    }}
-                  >
+                  <View style={[styles.flexRow, styles.justifyContent]}>
                     <View>
                       <Text style={[styles.fontWeight, styles.textStyle]}>
                         Is Soundproof?:
@@ -359,6 +355,39 @@ export default function Profile({ route, navigation }: Props) {
                     </View>
                   </View>
                 )}
+              </View>
+              <View style={[styles.marginTop26, styles.marginLeft28]}>
+                <Text style={[styles.fontWeight, styles.textStyle]}>
+                  Photos for users to see (min 2)
+                </Text>
+                <View style={[styles.flexRow, styles.justifyContent]}>
+                  {editableData?.images.map(item => {
+                    return (
+                      <UploadImage
+                        squared
+                        image={item}
+                        receiveImage={fetchImage}
+                        edit={edit}
+                      />
+                    )
+                  })}
+                  {!editableData?.images.length && !edit && (
+                    <Text style={styles.noImagesText}>
+                      Please edit and add images
+                    </Text>
+                  )}
+                  {edit && (
+                    <View style={{ marginLeft: 50 }}>
+                      <UploadImage
+                        addMore
+                        edit={edit}
+                        squared
+                        image=''
+                        receiveImage={fetchImage}
+                      />
+                    </View>
+                  )}
+                </View>
               </View>
             </ScrollView>
           ) : bookings.length ? (
@@ -397,9 +426,7 @@ export default function Profile({ route, navigation }: Props) {
                             : styles.red,
                         ]}
                       >
-                        <Text style={{ color: '#fff', textAlign: 'center' }}>
-                          {status}
-                        </Text>
+                        <Text style={styles.statusText}>{status}</Text>
                       </View>
                       <View style={{ width: '90%' }}>
                         <View style={[styles.marginBottom6, styles.flex]}>
@@ -447,12 +474,12 @@ export default function Profile({ route, navigation }: Props) {
           ) : (
             <View />
           )}
-          <TouchableHighlight style={{ marginTop: 20, paddingBottom: 40 }}>
+          <TouchableHighlight style={styles.logoutStyle}>
             <Button color='#FF7083' title='Log out' onPress={logOut} />
           </TouchableHighlight>
         </ScrollView>
       ) : (
-        <TouchableHighlight style={{ marginTop: 20, paddingBottom: 40 }}>
+        <TouchableHighlight style={styles.logoutStyle}>
           <Button color='#FF7083' title='Log out' onPress={logOut} />
         </TouchableHighlight>
       )}
