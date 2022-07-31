@@ -2,7 +2,7 @@ export interface Profile {
   name: string
   location: string
   email: string
-  phone:number
+  phone: number
   image: string
   images: Array<string>
   lat: number
@@ -15,6 +15,7 @@ export interface Profile {
   hasChangingRoom?: boolean
   availabilty: { day: string; timings: [{ start: Date; end: Date }] }[]
   __t: 'OwnerSchema' | 'UserSchema'
+  deviceToken: string
 }
 
 export interface Studio {

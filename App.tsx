@@ -53,7 +53,7 @@ const App: React.FC<RootStackParamList> = () => {
             let iconName
 
             if (
-              route.name === 'Previous Bookings' ||
+              route.name === 'Bookings' ||
               route.name === 'Studios'
             ) {
               iconName='reorder-four'
@@ -69,7 +69,7 @@ const App: React.FC<RootStackParamList> = () => {
         })}
       >
         <Tab.Screen
-          name={typeofUser === 'owner' ? 'Previous Bookings' : 'Studios'}
+          name={typeofUser === 'owner' ? 'Bookings' : 'Studios'}
           component={
             typeofUser === 'owner' ? BookedOwnerClasses : DanceStudiosNavigator
           }

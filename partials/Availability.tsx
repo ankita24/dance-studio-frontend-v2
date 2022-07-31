@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Text, View, Button, StyleSheet } from 'react-native'
 import { Card } from 'react-native-elements'
 import DateTimePicker from '@react-native-community/datetimepicker'
@@ -53,7 +53,7 @@ export default function Availability({
 }) {
   return (
     <View style={styles.marginLeft28}>
-      {editableData?.availabilty.map((item, index1) => (
+      {editableData?.availabilty?.map((item, index1) => (
         <Card key={item.day} containerStyle={styles.cardStyle}>
           <Card.Title style={{ color: '#030169' }}>{item.day}</Card.Title>
           <Card.Divider style={styles.dividerStyle} />

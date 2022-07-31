@@ -94,15 +94,13 @@ export default function Profile({ route, navigation }: Props) {
           }
           setProfile(user)
           setEditableData(user)
+          setLoading(false)
         }
       })
       .catch(error => 
         {console.error(error)
           setLoading(false)
         })
-      .finally(() => {
-        setLoading(false)
-      })
   }
 
   const fetchPastBookings = () => {
@@ -260,7 +258,7 @@ export default function Profile({ route, navigation }: Props) {
                     {edit ? (
                       <View style={styles.flexRow}>
                         <TextInput
-                          value={editableData?.cost.toString()}
+                          value={editableData?.cost?.toString()}
                           onChangeText={value =>
                             handleTextChange('rent', value)
                           }
@@ -288,7 +286,7 @@ export default function Profile({ route, navigation }: Props) {
                     </Text>
                     {edit ? (
                       <TextInput
-                        value={editableData?.area.toString()}
+                        value={editableData?.area?.toString()}
                         onChangeText={value => handleTextChange('area', value)}
                       />
                     ) : (
@@ -302,7 +300,7 @@ export default function Profile({ route, navigation }: Props) {
                     </Text>
                     {edit ? (
                       <TextInput
-                        value={editableData?.rooms.toString()}
+                        value={editableData?.rooms?.toString()}
                         onChangeText={value => handleTextChange('rooms', value)}
                       />
                     ) : (

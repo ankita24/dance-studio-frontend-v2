@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import {
   StyleSheet,
   Text,
@@ -8,6 +8,7 @@ import {
   Button,
   Alert,
   ScrollView,
+  Platform,
 } from 'react-native'
 import axios from 'axios'
 import UploadImage from '../partials/UploadImage'
@@ -16,6 +17,27 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { IP_ADDRESS } from '@env'
+import * as Device from 'expo-device'
+import * as Notifications from 'expo-notifications'
+import { Subscription } from 'expo-modules-core'
+
+const noWeek = [
+  { day: 'Monday', timings: [] },
+  { day: 'Tuesday', timings: [] },
+  { day: 'Wednesday', timings: [] },
+  { day: 'Thursday', timings: [] },
+  { day: 'Friday', timings: [] },
+  { day: 'Saturday', timings: [] },
+  { day: 'Sunday', timings: [] },
+]
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: false,
+    shouldSetBadge: false,
+  }),
+})
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ownerStep1' | 'login'>
 
@@ -38,11 +60,40 @@ export default function SignUp({ route, navigation }: Props) {
     phone: '',
   })
 
+  const [expoPushToken, setExpoPushToken] = useState('')
+  const [notification, setNotification] = useState<Notification | undefined>()
+  const notificationListener = useRef<Subscription>()
+  const responseListener = useRef<Subscription>()
+
+  useEffect(() => {
+    registerForPushNotificationsAsync().then(token =>
+      setExpoPushToken(token ?? '')
+    )
+
+    // This listener is fired whenever a notification is received while the app is foregrounded
+    notificationListener.current = Notifications.addNotificationReceivedListener(
+      notification => {
+        setNotification(notification)
+      }
+    )
+
+    // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
+    responseListener.current = Notifications.addNotificationResponseReceivedListener(
+      response => {
+        console.log(response)
+      }
+    )
+
+    return () => {
+      Notifications.removeNotificationSubscription(notificationListener.current)
+      Notifications.removeNotificationSubscription(responseListener.current)
+    }
+  }, [])
+
   const handleRegister = async () => {
     axios
       .post<{ status: string; error: string; response: { _id: string } }>(
         `${IP_ADDRESS}/api/register`,
-
         {
           name: data.name,
           email: data.email,
@@ -50,15 +101,18 @@ export default function SignUp({ route, navigation }: Props) {
           image: data.image,
           phone: data.phone,
           type,
+          deviceToken: expoPushToken,
+          availabilty: noWeek,
         }
       )
       .then(res => {
         if (res?.data?.status === 'error') {
           Alert.alert(res?.data?.error)
         } else {
-          storeProfileId(res?.data.response._id).then(() => {
+          storeProfileId(res?.data.response._id).then(async () => {
             if (!!type) {
               if (type === 'owner') {
+                await sendPushNotification(expoPushToken)
                 navigation.navigate('ownerStep1', {
                   id: res?.data.response._id,
                 })
@@ -201,6 +255,56 @@ export default function SignUp({ route, navigation }: Props) {
       </ScrollView>
     </View>
   )
+}
+
+async function sendPushNotification(expoPushToken: string) {
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title: 'Original Title',
+    body: 'And here is the body!',
+    data: { someData: 'goes here' },
+  }
+
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  })
+}
+
+async function registerForPushNotificationsAsync() {
+  let token
+  if (Device.isDevice) {
+    const { status: existingStatus } = await Notifications.getPermissionsAsync()
+    let finalStatus = existingStatus
+    if (existingStatus !== 'granted') {
+      const { status } = await Notifications.requestPermissionsAsync()
+      finalStatus = status
+    }
+    if (finalStatus !== 'granted') {
+      alert('Failed to get push token for push notification!')
+      return
+    }
+    token = (await Notifications.getExpoPushTokenAsync()).data
+  } else {
+    alert('Must use physical device for Push Notifications')
+  }
+
+  if (Platform.OS === 'android') {
+    Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF231F7C',
+    })
+  }
+
+  return token
 }
 
 const styles = StyleSheet.create({

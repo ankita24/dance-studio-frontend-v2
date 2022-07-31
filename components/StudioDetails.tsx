@@ -58,9 +58,14 @@ export default function StudioDetails({ route, navigation }: Props) {
           price: studio?.cost,
           date: new Date(),
         })
-        .then(response => {
-          if (response.status === 200)
+        .then(async response => {
+          if (response.status === 200) {
+            await sendPushNotification(
+              studio?.deviceToken,
+              `${studio?.slots[selectedSlot]} booked for today`
+            )
             navigation.navigate('Profile', { id: userId })
+          }
         })
         .catch(e => {
           console.error('oops')
@@ -166,6 +171,26 @@ export default function StudioDetails({ route, navigation }: Props) {
       </View>
     </ScrollView>
   )
+}
+
+async function sendPushNotification(expoPushToken: string,slot:string) {
+  const message = {
+    to: expoPushToken,
+    sound: 'default',
+    title: `${slot} booked`,
+    body: 'Please check Booking tabs for more details',
+    data: { someData: 'goes here' },
+  }
+
+  await fetch('https://exp.host/--/api/v2/push/send', {
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Accept-encoding': 'gzip, deflate',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(message),
+  })
 }
 
 const styles = StyleSheet.create({

@@ -4,7 +4,7 @@ export const studiosDetails: Studio[] = [
   {
     __t: 'OwnerSchema',
     __v: 0,
-    _id: '61acfba84c7e58a0b4f279ea',
+    _id: '62e62760e9b9b39e52ca9581',
     area: 200,
     cost: 100,
     distance: 0.046,
