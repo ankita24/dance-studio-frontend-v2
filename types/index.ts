@@ -13,7 +13,7 @@ export interface Profile {
   duration: number
   isSoundProof?: boolean
   hasChangingRoom?: boolean
-  availabilty: { day: string; timings: [{ start: Date; end: Date }] }[]
+  availabilty: { day: string; timings: { start: Date; end: Date }[],enable?:boolean }[]
   __t: 'OwnerSchema' | 'UserSchema'
   deviceToken: string
 }

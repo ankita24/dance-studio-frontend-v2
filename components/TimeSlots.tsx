@@ -1,12 +1,6 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import {
-  View,
-  ScrollView,
-  StyleSheet,
-  Alert,
-  Button,
-} from 'react-native'
+import { View, ScrollView, StyleSheet, Alert, Button, Text } from 'react-native'
 import { Profile as ProfileType, UserBookings } from '../types'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -32,7 +26,7 @@ export default function Profile({ route, navigation }: Props) {
   const [id, setId] = useState<string | null>()
   const [typeOfUser, setTypeOfUser] = useState<string | null>('')
   const [profile, setProfile] = useState<ProfileType>()
-  const [edit, setEdit] = useState(false)
+  const [edit, setEdit] = useState(route.params?.signUpStep ?? false)
   const [editableData, setEditableData] = useState<ProfileType>()
   const [bookings, setBookings] = useState<UserBookings[]>([])
   const [loading, setLoading] = useState(false)
@@ -114,8 +108,12 @@ export default function Profile({ route, navigation }: Props) {
           if (res?.data?.status === 'error') {
             Alert.alert(res?.data?.error)
           } else {
-            fetchProfile()
-            setEdit(false)
+            if (route.params?.signUpStep) {
+              navigation.navigate('Profile', { id })
+            } else {
+              fetchProfile()
+              setEdit(false)
+            }
           }
         })
         .catch(e => console.error(e))
@@ -128,22 +126,25 @@ export default function Profile({ route, navigation }: Props) {
 
   return (
     <ScrollView style={styles.container}>
+      {route.params?.signUpStep && <Text style={styles.title}>Time Slots</Text>}
       {!edit ? (
         <Button title='Edit' color='#FF7083' onPress={() => setEdit(true)} />
       ) : (
         <View style={[styles.flex, styles.alignSelfCenter]}>
           <Button color='#FF7083' title='Save' onPress={SaveDetails} />
-          <Button
-            title='Cancel'
-            color='#FF7083'
-            onPress={() => {
-              if (profile) {
-                setEdit(false)
-                const data={...profile}
-                setEditableData({ ...data })
-              }
-            }}
-          />
+          {!route.params?.signUpStep && (
+            <Button
+              title='Cancel'
+              color='#FF7083'
+              onPress={() => {
+                if (profile) {
+                  setEdit(false)
+                  const data = { ...profile }
+                  setEditableData({ ...data })
+                }
+              }}
+            />
+          )}
         </View>
       )}
       <View style={{ marginLeft: 13 }}>
@@ -237,6 +238,13 @@ export const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignContent: 'center',
+  },
+  title: {
+    color: '#FF7083',
+    fontSize: 40,
+    marginTop: 45,
+    marginLeft: 28,
+    marginBottom: 20,
   },
   textStyle: {
     fontSize: 14,

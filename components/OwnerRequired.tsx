@@ -27,6 +27,7 @@ type Props = NativeStackScreenProps<
 
 export default function OwnerRequired({ route, navigation }: Props) {
   const ref = useRef<GooglePlacesAutocompleteRef | null>(null)
+ 
 
   const { id } = route.params || {}
   const [focus, setFocus] = useState({ cost: false, location: false })
@@ -35,10 +36,9 @@ export default function OwnerRequired({ route, navigation }: Props) {
     location: '',
     lat: 0,
     long: 0,
-    hour: 0,
+    duration: 0,
   })
   const [image, setImage] = useState<string[]>([])
-  const { location, cost } = focus
 
   useEffect(() => {
     fetchProfile()
@@ -66,7 +66,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
             cost,
             lat,
             long,
-            hour: duration,
+            duration,
           })
       })
       .catch(error => console.error(error))
@@ -140,9 +140,9 @@ export default function OwnerRequired({ route, navigation }: Props) {
             placeholder='hour'
             style={[styles.input, styles.margin, styles.costWidth]}
             onChangeText={text => {
-              setData({ ...data, hour: !!text ? Number(text) : 0 })
+              setData({ ...data, duration: !!text ? Number(text) : 0 })
             }}
-            value={data.hour?.toString()}
+            value={data.duration?.toString()}
             keyboardType='numeric'
           />
         </View>

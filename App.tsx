@@ -17,7 +17,7 @@ import {
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
 import { Provider, useSelector } from 'react-redux'
-import { store,RootState } from './redux/store'
+import { store, RootState } from './redux/store'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { useDispatch } from 'react-redux'
 import { setType } from './redux/typeSlice'
@@ -37,6 +37,7 @@ export type RootStackParamList = {
   userBookedClasses: { id: string }
   Tabs: any
   bookedClasses: { id: string }
+  ownerStep3: { id: string; signUpStep?: boolean }
 }
 
 const AppWrapper: React.FC<RootStackParamList> = () => {
@@ -132,6 +133,7 @@ const App = () => {
             <Stack.Screen name='signup' component={SignUp} />
             <Stack.Screen name='ownerStep1' component={OwnerRequired} />
             <Stack.Screen name='ownerStep2' component={OwnerStep2} />
+            <Stack.Screen name='ownerStep3' component={TimeSlots} />
 
             <Stack.Screen
               name='userBookedClasses'
