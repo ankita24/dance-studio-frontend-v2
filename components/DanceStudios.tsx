@@ -20,6 +20,7 @@ import { RootStackParamList } from '../App'
 import { IP_ADDRESS, GOOGLE_MAPS_KEY } from '@env'
 import { EvilIcons } from '@expo/vector-icons'
 import { cloudinaryUrl } from '../utils'
+import { useIsFocused } from '@react-navigation/native'
 import EmptyStudios from '../images/EmptyStudios.png'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'studioDetails'>
@@ -30,10 +31,10 @@ export default function DanceStudios({ route, navigation }: Props) {
     lat: 0,
     long: 0,
   })
-
+  const isFocused = useIsFocused()
   useEffect(() => {
     handleCurrentLocation()
-  }, [])
+  }, [isFocused])
 
   useEffect(() => {
     if (!!location.lat && !!location.long) {

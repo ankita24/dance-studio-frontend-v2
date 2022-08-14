@@ -1,5 +1,5 @@
 import React from 'react'
-import { Image, View, TouchableOpacity, Text, StyleSheet } from 'react-native'
+import { Image, View, TouchableOpacity, StyleSheet } from 'react-native'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import axios from 'axios'
@@ -80,7 +80,12 @@ export default function UploadImage({
             if (edit) addImage()
           }}
         >
-          <AntDesign name='camera' size={20} color='#FF7083' style={imageUploaderStyles.editIcon} />
+          <AntDesign
+            name='camera'
+            size={20}
+            color='#FF7083'
+            style={imageUploaderStyles.editIcon}
+          />
           <Image
             source={{ uri: cloudinaryUrl(image) }}
             style={{

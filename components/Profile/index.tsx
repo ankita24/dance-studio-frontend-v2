@@ -13,11 +13,14 @@ import {
 import { Profile as ProfileType, UserBookings } from '../../types'
 import { getInitials } from '../../utils/helper'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { useIsFocused } from '@react-navigation/native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../../App'
 import { IP_ADDRESS } from '@env'
 import { styles } from './styles'
 import { RadioButton, Loader, UploadImage } from '../../partials'
+import { useDispatch } from 'react-redux'
+import { setType } from '../../redux/typeSlice'
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -41,10 +44,12 @@ export default function Profile({ route, navigation }: Props) {
   const [editableData, setEditableData] = useState<ProfileType>()
   const [bookings, setBookings] = useState<UserBookings[]>([])
   const [loading, setLoading] = useState(false)
+  const isFocused = useIsFocused()
+  const dispatch=useDispatch()
 
   useEffect(() => {
     getData()
-  }, [])
+  }, [isFocused])
 
   const getData = async () => {
     try {
@@ -148,7 +153,13 @@ export default function Profile({ route, navigation }: Props) {
       await AsyncStorage.removeItem('@id')
       await AsyncStorage.removeItem('@type')
       const id = await AsyncStorage.getItem('@id')
-      if (!id) {
+      const type = await AsyncStorage.getItem('@id')
+      dispatch(setType(''))
+      if (!id && !type) {
+        // navigation.reset({
+        //   index: 0,
+        //   routes: [{ name: 'home' }],
+        // })
         navigation.navigate('home')
         return true
       }
@@ -360,7 +371,13 @@ export default function Profile({ route, navigation }: Props) {
                 <Text style={[styles.fontWeight, styles.textStyle]}>
                   Photos for users to see (min 2)
                 </Text>
-                <View style={[styles.flexRow, styles.justifyContent]}>
+                <View
+                  style={[
+                    styles.flexRow,
+                    styles.justifyContent,
+                    styles.marginLeft75,
+                  ]}
+                >
                   {editableData?.images.map(item => {
                     return (
                       <UploadImage

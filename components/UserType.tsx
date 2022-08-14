@@ -8,14 +8,16 @@ import {
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { useIsFocused } from '@react-navigation/native'
 import { RootStackParamList } from '../App'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function UserType({ navigation }: Props) {
+  const isFocused=useIsFocused()
   useEffect(() => {
     getData()
-  }, [])
+  }, [isFocused])
 
   const getData = async () => {
     try {

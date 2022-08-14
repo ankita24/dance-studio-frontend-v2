@@ -14,11 +14,15 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import { Profile } from 'types'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
+import {useDispatch} from 'react-redux'
 import { IP_ADDRESS } from '@env'
+import { setType } from '../redux/typeSlice'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function Login({ route, navigation }: Props) {
+
+  const dispatch=useDispatch()
   const [focus, setFocus] = useState({ pwd: false, user: false })
   const [data, setData] = useState({ pwd: '', email: '' })
 
@@ -41,30 +45,37 @@ export default function Login({ route, navigation }: Props) {
           password: data.pwd,
         }
       )
-      .then(res => {
+      .then(async res => {
         if (res?.data?.status === 'error') {
           Alert.alert(res?.data?.error)
         } else if (res.status === 200 && res.data?.id) {
-          if (storeProfileId(res?.data?.id, res?.data?.type)) {
-            if (res?.data?.type === 'user')
-              navigation.navigate('Studios', { id: res.data.id })
-            else {
-              if (res.data?.user) {
-                const {
-                  data: { user },
-                } = res
-                if (!user.location && !user.cost && !user.duration)
-                  navigation.navigate('ownerStep1', { id: res.data.id })
-                else if (
-                  !user.rooms &&
-                  !user.area &&
-                  !user?.availabilty &&
-                  !user.availabilty?.length
-                )
-                  navigation.navigate('ownerStep2', { id: res.data.id })
-                else navigation.navigate('Profile', { id: res.data.id })
+          const storeValue = await storeProfileId(
+            res?.data?.id,
+            res?.data?.type
+          )
+          if (storeValue) {
+
+
+              if (res?.data?.type === 'user')
+                navigation.navigate('Tabs', { id: res.data.id,Screen:'Studios' })
+              else {
+                if (res.data?.user) {
+                  const {
+                    data: { user },
+                  } = res
+                  if (!user.location && !user.cost && !user.duration)
+                    navigation.navigate('ownerStep1', { id: res.data.id })
+                  else if (
+                    !user.rooms &&
+                    !user.area &&
+                    !user?.availabilty &&
+                    !user.availabilty?.length
+                  )
+                    navigation.navigate('ownerStep2', { id: res.data.id })
+                  else navigation.navigate('Tabs', { id: res.data.id,Screen:'Profile' })
+                }
               }
-            }
+            
           }
         }
       })
@@ -75,6 +86,7 @@ export default function Login({ route, navigation }: Props) {
     try {
       await AsyncStorage.setItem('@id', id)
       await AsyncStorage.setItem('@type', type)
+      dispatch(setType(type))
       return true
     } catch (e) {
       // saving error

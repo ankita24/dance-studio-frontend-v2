@@ -15,8 +15,12 @@ import {
   TimeSlots,
 } from './components'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
+import { Ionicons } from '@expo/vector-icons'
+import { Provider, useSelector } from 'react-redux'
+import { store,RootState } from './redux/store'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { Ionicons, Entypo } from '@expo/vector-icons'
+import { useDispatch } from 'react-redux'
+import { setType } from './redux/typeSlice'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 const Tab = createBottomTabNavigator()
@@ -31,21 +35,21 @@ export type RootStackParamList = {
   Profile: { id: string; type?: string }
   studioDetails: { id: string }
   userBookedClasses: { id: string }
-  Tabs: undefined
+  Tabs: any
   bookedClasses: { id: string }
 }
 
-const App: React.FC<RootStackParamList> = () => {
-  const [typeofUser, setTypeOfUser] = useState<string | null>()
+const AppWrapper: React.FC<RootStackParamList> = () => {
+  return (
+    <Provider store={store}>
+      <App />
+    </Provider>
+  )
+}
 
-  useEffect(() => {
-    fetchType()
-  }, [])
+const App = () => {
+  const { type: typeofUser } = useSelector((state: RootState) => state.type)
 
-  const fetchType = async () => {
-    const type = await AsyncStorage.getItem('@type')
-    setTypeOfUser(type)
-  }
   function Tabs() {
     return (
       <Tab.Navigator
@@ -110,33 +114,35 @@ const App: React.FC<RootStackParamList> = () => {
     )
   }
   return (
-    <SafeAreaProvider>
-      <NavigationContainer>
-        <Stack.Navigator>
-          <Stack.Screen
-            name='Tabs'
-            component={Tabs}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name='home'
-            component={UserType}
-            options={{ headerBackVisible: false }}
-          />
-          <Stack.Screen name='login' component={Login} />
-          <Stack.Screen name='signup' component={SignUp} />
-          <Stack.Screen name='ownerStep1' component={OwnerRequired} />
-          <Stack.Screen name='ownerStep2' component={OwnerStep2} />
+    <Provider store={store}>
+      <SafeAreaProvider>
+        <NavigationContainer>
+          <Stack.Navigator>
+            <Stack.Screen
+              name='Tabs'
+              component={Tabs}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name='home'
+              component={UserType}
+              options={{ headerBackVisible: false }}
+            />
+            <Stack.Screen name='login' component={Login} />
+            <Stack.Screen name='signup' component={SignUp} />
+            <Stack.Screen name='ownerStep1' component={OwnerRequired} />
+            <Stack.Screen name='ownerStep2' component={OwnerStep2} />
 
-          <Stack.Screen
-            name='userBookedClasses'
-            component={BookedClasses}
-            options={{ headerBackVisible: false }}
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
-    </SafeAreaProvider>
+            <Stack.Screen
+              name='userBookedClasses'
+              component={BookedClasses}
+              options={{ headerBackVisible: false }}
+            />
+          </Stack.Navigator>
+        </NavigationContainer>
+      </SafeAreaProvider>
+    </Provider>
   )
 }
 
-export default App
+export default AppWrapper
