@@ -45,7 +45,7 @@ export default function Profile({ route, navigation }: Props) {
   const [bookings, setBookings] = useState<UserBookings[]>([])
   const [loading, setLoading] = useState(false)
   const isFocused = useIsFocused()
-  const dispatch=useDispatch()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     getData()
@@ -76,17 +76,7 @@ export default function Profile({ route, navigation }: Props) {
           data: { user },
         } = response
         if (!!id) {
-          if (typeOfUser === 'owner') {
-            if (!user.location && !user.cost && !user.duration)
-              navigation.navigate('ownerStep1', { id })
-            else if (
-              !user.rooms &&
-              !user.area &&
-              !user?.availabilty &&
-              !user.availabilty?.length
-            )
-              navigation.navigate('ownerStep2', { id })
-          } else {
+          if (typeOfUser !== 'owner') {
             fetchPastBookings()
           }
           setProfile(user)

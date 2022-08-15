@@ -1,6 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
-import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import {
+  createNativeStackNavigator,
+  NativeStackScreenProps,
+} from '@react-navigation/native-stack'
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
 import {
   UserType,
@@ -16,14 +19,19 @@ import {
 } from './components'
 import { SafeAreaProvider } from 'react-native-safe-area-context'
 import { Ionicons } from '@expo/vector-icons'
-import { Provider, useSelector } from 'react-redux'
+import { Provider, useSelector, useDispatch } from 'react-redux'
 import { store, RootState } from './redux/store'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import { useDispatch } from 'react-redux'
+import axios from 'axios'
+import { Profile as ProfileType } from 'types'
+import { IP_ADDRESS } from '@env'
 import { setType } from './redux/typeSlice'
+import { navigationRef } from './RootNavigation';
+import * as RootNavigation from './RootNavigation';
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 const Tab = createBottomTabNavigator()
+type Props = NativeStackScreenProps<RootStackParamList>
 
 export type RootStackParamList = {
   home: undefined
@@ -50,6 +58,44 @@ const AppWrapper: React.FC<RootStackParamList> = () => {
 
 const App = () => {
   const { type: typeofUser } = useSelector((state: RootState) => state.type)
+  const dispatch = useDispatch()
+  useEffect(() => {
+    fetchProfile()
+  }, [typeofUser])
+
+  const fetchProfile = async () => {
+    const id = await AsyncStorage.getItem('@id')
+    if (!!id) {
+      axios
+        .get<{ user: ProfileType }>(`${IP_ADDRESS}/api/profile/${id}`)
+        .then(response => {
+          const {
+            data: { user },
+          } = response
+          console.log(response.data.user.name, typeofUser)
+          const ifOwner = user.__t === 'OwnerSchema'
+          if (ifOwner) {
+            dispatch(setType('owner'))
+            if (!user.location || !user.cost || !user.duration)
+            RootNavigation.navigate('ownerStep1', { id })
+            else if (
+              !user.rooms ||
+              !user.area ||
+              !user?.availabilty ||
+              !user.availabilty?.length
+            )
+            RootNavigation.navigate('ownerStep2', { id})
+            else if (!user.availabilty.find(item => item.timings.length))
+            RootNavigation.navigate('ownerStep3', { id })
+          } else {
+            dispatch(setType('user'))
+          }
+        })
+        .catch(error => {
+          console.error(error)
+        })
+    }
+  }
 
   function Tabs() {
     return (
@@ -117,7 +163,7 @@ const App = () => {
   return (
     <Provider store={store}>
       <SafeAreaProvider>
-        <NavigationContainer>
+        <NavigationContainer ref={navigationRef}>
           <Stack.Navigator>
             <Stack.Screen
               name='Tabs'

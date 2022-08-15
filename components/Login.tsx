@@ -68,8 +68,7 @@ export default function Login({ route, navigation }: Props) {
                 else if (
                   !user.rooms ||
                   !user.area ||
-                  !user?.availabilty ||
-                  !user.availabilty?.length
+                  !user?.availabilty
                 )
                   navigation.navigate('ownerStep2', { id: res.data.id })
                 else if (!user.availabilty.find(item => item.timings.length))
