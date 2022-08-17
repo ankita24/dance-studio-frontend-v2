@@ -181,7 +181,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
           )}
         </View>
         {image.length >= 3 ? (
-          <View style={[styles.imageView, styles.justifyContent]}>
+          <View style={styles.imageView}>
             {image.map((item, index) =>
               index >= 3 ? (
                 <UploadImage
@@ -273,9 +273,6 @@ const styles = StyleSheet.create({
     alignContent: 'center',
     justifyContent: 'space-between',
     marginTop: -10,
-  },
-  justifyContent: {
-    justifyContent: 'space-evenly',
   },
   label: {
     color: '#030169',

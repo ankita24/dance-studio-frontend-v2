@@ -115,7 +115,7 @@ export default function Profile({ route, navigation }: Props) {
     if (editableData)
       setEditableData({
         ...editableData,
-        images: [...editableData.images, ...img],
+        images: [...editableData.images, img],
       })
   }
 
@@ -357,34 +357,45 @@ export default function Profile({ route, navigation }: Props) {
                   </View>
                 )}
               </View>
-              <View style={[styles.marginTop26, styles.marginLeft28]}>
-                <Text style={[styles.fontWeight, styles.textStyle]}>
-                  Photos for users to see (min 2)
-                </Text>
-                <View
+              <View style={[styles.marginTop26]}>
+                <Text
                   style={[
-                    styles.flexRow,
-                    styles.justifyContent,
-                    styles.marginLeft75,
+                    styles.fontWeight,
+                    styles.textStyle,
+                    styles.marginLeft28,
                   ]}
                 >
-                  {editableData?.images.map(item => {
+                  Photos for users to see (min 2)
+                </Text>
+                {!editableData?.images.length && !edit && (
+                  <Text style={styles.noImagesText}>
+                    Please edit and add images
+                  </Text>
+                )}
+                <View style={[styles.flexRow, styles.marginLeft75]}>
+                  {editableData?.images.map((item, index) => {
                     return (
-                      <UploadImage
-                        squared
-                        image={item}
-                        receiveImage={fetchImage}
-                        edit={edit}
-                      />
+                      <View style={{ marginLeft: index !== 0 ? 80 : 0 }}>
+                        <UploadImage
+                          squared
+                          image={item}
+                          receiveImage={fetchImage}
+                          edit={edit}
+                        />
+                      </View>
                     )
                   })}
-                  {!editableData?.images.length && !edit && (
-                    <Text style={styles.noImagesText}>
-                      Please edit and add images
-                    </Text>
-                  )}
+
                   {edit && (
-                    <View style={{ marginLeft: 50 }}>
+                    <View
+                      style={{
+                        marginLeft:
+                          editableData?.images &&
+                          editableData?.images?.length > 0
+                            ? 80
+                            : 0,
+                      }}
+                    >
                       <UploadImage
                         addMore
                         edit={edit}

@@ -45,17 +45,21 @@ export default function DanceStudios({ route, navigation }: Props) {
   const [studios, setStudios] = useState(studiosDetails)
 
   const getStudios = () => {
-    const { lat, long } = location
-    axios
-      .get<{ data: Studio[] }>(`${IP_ADDRESS}/api/studios`, {
-        params: { lat, long },
-      })
-      .then(response => {
-        console.log('user', response.data.data)
-      })
-      .catch(err => {
-        console.error(err)
-      })
+    /**
+     * TODO: Add API after location api is enabled
+     */
+    console.log('add api')
+    // const { lat, long } = location
+    // axios
+    //   .get<{ data: Studio[] }>(`${IP_ADDRESS}/api/studios`, {
+    //     params: { lat, long },
+    //   })
+    //   .then(response => {
+    //     console.log('user', response.data.data)
+    //   })
+    //   .catch(err => {
+    //     console.error(err)
+    //   })
   }
 
   const handleCurrentLocation = async () => {

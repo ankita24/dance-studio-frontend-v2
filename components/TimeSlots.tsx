@@ -132,7 +132,7 @@ export default function Profile({ route, navigation }: Props) {
       ) : (
         <View style={[styles.flex, styles.alignSelfCenter]}>
           <Button color='#FF7083' title='Save' onPress={SaveDetails} />
-          {!route.params?.signUpStep && (
+          {!route.params?.signUpStep ? (
             <Button
               title='Cancel'
               color='#FF7083'
@@ -142,6 +142,14 @@ export default function Profile({ route, navigation }: Props) {
                   const data = { ...profile }
                   setEditableData({ ...data })
                 }
+              }}
+            />
+          ) : (
+            <Button
+              title='Skip'
+              color='#FF7083'
+              onPress={() => {
+                navigation.navigate('Profile', { id: id ?? '' })
               }}
             />
           )}

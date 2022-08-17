@@ -24,7 +24,7 @@ export default function UploadImage({
       allowsEditing: true,
       aspect: [4, 3],
       quality: 1,
-      allowsMultipleSelection: !!squared,
+      allowsMultipleSelection: false,
     })
     if (result.cancelled) {
       return
