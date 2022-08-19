@@ -111,12 +111,23 @@ export default function Profile({ route, navigation }: Props) {
     }
   }
 
-  const fetchImage = (img: string) => {
-    if (editableData)
-      setEditableData({
-        ...editableData,
-        images: [...editableData.images, img],
-      })
+  const fetchImage = (img: string, index?: number) => {
+    if (editableData) {
+      if (index || index===0) {
+        const imageWIthIndex = editableData.images.map((item, index1) => {
+          if (index === index1) return img
+          return item
+        })
+        setEditableData({
+          ...editableData,
+          images: imageWIthIndex,
+        })
+      } else
+        setEditableData({
+          ...editableData,
+          images: [...editableData.images, img],
+        })
+    }
   }
 
   const SaveDetails = () => {
@@ -372,39 +383,42 @@ export default function Profile({ route, navigation }: Props) {
                     Please edit and add images
                   </Text>
                 )}
-                <View style={[styles.flexRow, styles.marginLeft75]}>
+                <View
+                  style={[
+                    styles.flexRow,
+                    styles.imageStyle,
+                  ]}
+                >
                   {editableData?.images.map((item, index) => {
                     return (
-                      <View style={{ marginLeft: index !== 0 ? 80 : 0 }}>
+                      <View style={{ width: '30%' }}>
                         <UploadImage
                           squared
                           image={item}
-                          receiveImage={fetchImage}
+                          receiveImage={img => fetchImage(img, index)}
                           edit={edit}
                         />
                       </View>
                     )
                   })}
 
-                  {edit && (
-                    <View
-                      style={{
-                        marginLeft:
-                          editableData?.images &&
-                          editableData?.images?.length > 0
-                            ? 80
-                            : 0,
-                      }}
-                    >
-                      <UploadImage
-                        addMore
-                        edit={edit}
-                        squared
-                        image=''
-                        receiveImage={fetchImage}
-                      />
-                    </View>
-                  )}
+                  {edit &&
+                    editableData?.images &&
+                    editableData?.images?.length < 6 && (
+                      <View
+                        style={{
+                          width: '30%',
+                        }}
+                      >
+                        <UploadImage
+                          addMore
+                          edit={edit}
+                          squared
+                          image=''
+                          receiveImage={fetchImage}
+                        />
+                      </View>
+                    )}
                 </View>
               </View>
             </ScrollView>

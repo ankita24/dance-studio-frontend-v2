@@ -35,6 +35,9 @@ export const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
   },
+  justifyContent:{
+    justifyContent:'space-between'
+  },
   containerStyle: {
     alignSelf: 'center',
     marginTop: 18,
@@ -110,9 +113,6 @@ export const styles = StyleSheet.create({
     fontSize: 30,
     color: '#030169',
   },
-  justifyContent: {
-    justifyContent: 'space-between',
-  },
   noImagesText: {
     fontStyle: 'italic',
     marginTop: 10,
@@ -126,7 +126,9 @@ export const styles = StyleSheet.create({
     marginTop: 20,
     paddingBottom: 40,
   },
-  marginLeft75: {
-    marginLeft: 75,
+  imageStyle: {
+    marginLeft: 55,
+    flexWrap:'wrap',
+    width:360
   },
 })
