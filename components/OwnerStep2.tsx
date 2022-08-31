@@ -138,10 +138,10 @@ export default function OwnerStep2({ route, navigation }: Props) {
           </View>
         </View>
 
-        <TouchableHighlight style={[styles.button, styles.marginTop45]}>
+        <TouchableHighlight style={[styles.button, styles.marginTop45,styles.marginRight30]}>
           <Button
             title='CONFIRM'
-            color='#FF7083'
+            color='#FFF'
             onPress={handleStepTwo}
             disabled={!data.area && !data.rooms}
           />

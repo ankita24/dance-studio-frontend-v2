@@ -210,7 +210,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
             disabled={!data.location && !data.cost}
           />
         </TouchableHighlight>
-        <TouchableHighlight>
+        <TouchableHighlight style={{marginRight:22}}>
           <Button
             color='#FF7083'
             title='Skip'
