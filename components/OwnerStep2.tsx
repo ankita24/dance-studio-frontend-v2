@@ -6,8 +6,7 @@ import {
   View,
   TouchableHighlight,
   Button,
-  ScrollView,
-  Alert,
+  Alert,Platform
 } from 'react-native'
 import axios from 'axios'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -72,12 +71,13 @@ export default function OwnerStep2({ route, navigation }: Props) {
           if (res?.data?.status === 'error') {
             Alert.alert(res?.data?.error)
           } else {
-            navigation.navigate('ownerStep3', { id })
+            navigation.navigate('ownerStep3', { id,signUpStep:true })
           }
         })
         .catch(e => console.error(e))
     }
   }
+  console.log(id)
 
   return (
     <View style={styles.container}>
@@ -139,25 +139,54 @@ export default function OwnerStep2({ route, navigation }: Props) {
         </View>
 
         <TouchableHighlight style={[styles.button, styles.marginTop45,styles.marginRight30]}>
-          <Button
-            title='CONFIRM'
-            color='#FFF'
-            onPress={handleStepTwo}
-            disabled={!data.area && !data.rooms}
-          />
+        {Platform.OS === 'android' ? (
+            <Text
+              style={{
+                textAlign: 'center',
+                marginTop: 10,
+                fontSize: 16,
+                color: !data.area && !data.rooms ? 'grey' : '#fff',
+              }}
+              onPress={() => {
+                if (!!data.area && !!data.rooms) handleStepTwo()
+              }}
+            >
+              CONFIRM
+            </Text>
+          ) : (
+            <Button
+              title='CONFIRM'
+              color='#fff'
+              onPress={handleStepTwo}
+              disabled={!data.area && !data.rooms}
+            />
+          )}
         </TouchableHighlight>
 
         <TouchableHighlight style={{ marginRight: 50 }}>
-          <Button
-            color='#FF7083'
-            title='Skip'
-            onPress={() =>
-              navigation.navigate('ownerStep3', {
-                id: id ?? '',
-                signUpStep: true,
-              })
-            }
-          />
+        {Platform.OS === 'android' ? (
+            <Text
+              style={{
+                marginTop: 22,
+                textAlign: 'center',
+                fontSize: 16,
+                color: '#FF7083',
+              }}
+              onPress={() =>
+                navigation.navigate('ownerStep3', { id: id ?? '',signUpStep:true })
+              }
+            >
+              Skip
+            </Text>
+          ) : (
+            <Button
+              color='#FF7083'
+              title='Skip'
+              onPress={() =>
+                navigation.navigate('ownerStep3', { id: id ?? '',signUpStep:true })
+              } //change this
+            />
+          )}
         </TouchableHighlight>
       </View>
     </View>

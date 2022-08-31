@@ -7,6 +7,7 @@ import {
   TouchableHighlight,
   Button,
   Alert,
+  Platform,
 } from 'react-native'
 import axios from 'axios'
 import {
@@ -27,7 +28,6 @@ type Props = NativeStackScreenProps<
 
 export default function OwnerRequired({ route, navigation }: Props) {
   const ref = useRef<GooglePlacesAutocompleteRef | null>(null)
- 
 
   const { id } = route.params || {}
   const [focus, setFocus] = useState({ cost: false, location: false })
@@ -203,19 +203,53 @@ export default function OwnerRequired({ route, navigation }: Props) {
           </View>
         ) : null}
         <TouchableHighlight style={[styles.button, styles.marginTop49]}>
-          <Button
-            title='CONFIRM'
-            color='#fff'
-            onPress={handleStepOne}
-            disabled={!data.location && !data.cost}
-          />
+          {Platform.OS === 'android' ? (
+            <Text
+              style={{
+                textAlign: 'center',
+                marginTop: 10,
+                fontSize: 16,
+                color: !data.location && !data.cost ? 'grey' : '#fff',
+              }}
+              onPress={() => {
+                if (!!data.location && !!data.cost) handleStepOne()
+              }}
+            >
+              CONFIRM
+            </Text>
+          ) : (
+            <Button
+              title='CONFIRM'
+              color='#fff'
+              onPress={handleStepOne}
+              disabled={!data.location && !data.cost}
+            />
+          )}
         </TouchableHighlight>
-        <TouchableHighlight style={{marginRight:22}}>
-          <Button
-            color='#FF7083'
-            title='Skip'
-            onPress={() => navigation.navigate('ownerStep2', { id: id ?? '' })} //change this
-          />
+        <TouchableHighlight style={{ marginRight: 22 }}>
+          {Platform.OS === 'android' ? (
+            <Text
+              style={{
+                marginTop: 22,
+                textAlign: 'center',
+                fontSize: 16,
+                color: '#FF7083',
+              }}
+              onPress={() =>
+                navigation.navigate('ownerStep2', { id: id ?? '' })
+              }
+            >
+              Skip
+            </Text>
+          ) : (
+            <Button
+              color='#FF7083'
+              title='Skip'
+              onPress={() =>
+                navigation.navigate('ownerStep2', { id: id ?? '' })
+              } //change this
+            />
+          )}
         </TouchableHighlight>
       </View>
     </View>

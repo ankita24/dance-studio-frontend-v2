@@ -1,5 +1,12 @@
 import React, { useState } from 'react'
-import { Text, View, Button, StyleSheet } from 'react-native'
+import {
+  Text,
+  View,
+  Button,
+  StyleSheet,
+  Platform,
+  TouchableOpacity,
+} from 'react-native'
 import { Card } from 'react-native-elements'
 import DateTimePicker from '@react-native-community/datetimepicker'
 import { AntDesign, FontAwesome } from '@expo/vector-icons'
@@ -51,6 +58,8 @@ export default function Availability({
     ]
   }) => void
 }) {
+  const [startIndex, setStartIndex] = useState<number | undefined>()
+  const [endIndex, setEndIndex] = useState<number | undefined>()
   return (
     <View style={styles.marginLeft28}>
       {editableData?.availabilty?.map((item, index1) => (
@@ -61,25 +70,43 @@ export default function Availability({
             item.timings.map((timing, index2) => {
               return (
                 <View key={item.day + timing.start} style={styles.timings}>
-                  <DateTimePicker
-                    mode='time'
-                    disabled={!edit}
-                    value={new Date(timing.start)}
-                    style={styles.dateStyle}
-                    onChange={(e, date) => {
-                      onStartChange(date, index1, index2)
-                    }}
-                  />
+                  {Platform.OS === 'android' && startIndex !== index1 ? (
+                    <TouchableOpacity>
+                      <Text onPress={() => setStartIndex(index1)}>
+                        {new Date(timing.start)
+                          .toLocaleTimeString()
+                          .slice(0, -3)}
+                      </Text>
+                    </TouchableOpacity>
+                  ) : (
+                    <DateTimePicker
+                      mode='time'
+                      disabled={!edit}
+                      value={new Date(timing.start)}
+                      style={styles.dateStyle}
+                      onChange={(e, date) => {
+                        onStartChange(date, index1, index2)
+                        setStartIndex(undefined)
+                      }}
+                    />
+                  )}
                   <Text>-</Text>
-                  <DateTimePicker
-                    mode='time'
-                    disabled={!edit}
-                    value={new Date(timing.end)}
-                    style={styles.dateStyle}
-                    onChange={(e, date) =>
-                      onEndChange(date, index1, index2, timing)
-                    }
-                  />
+                  {Platform.OS === 'android' && endIndex !== index1 ? (
+                    <Text onPress={() => setEndIndex(index1)}>
+                      {new Date(timing.end).toLocaleTimeString().slice(0, -3)}
+                    </Text>
+                  ) : (
+                    <DateTimePicker
+                      mode='time'
+                      disabled={!edit}
+                      value={new Date(timing.end)}
+                      style={styles.dateStyle}
+                      onChange={(e, date) => {
+                        onEndChange(date, index1, index2, timing)
+                        setEndIndex(undefined)
+                      }}
+                    />
+                  )}
                   {edit && (
                     <AntDesign
                       name='pluscircleo'

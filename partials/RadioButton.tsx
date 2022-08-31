@@ -1,5 +1,5 @@
 import React from 'react'
-import { View, TouchableHighlight, Button } from 'react-native'
+import { View, TouchableHighlight, Button, Platform, Text } from 'react-native'
 
 export default function RadioButton({
   value,
@@ -23,15 +23,30 @@ export default function RadioButton({
             borderColor: '#030169',
             borderWidth: 1,
             borderTopLeftRadius: 24,
-            borderBottomLeftRadius: 24,height:50,width:55,
-            padding:4
+            borderBottomLeftRadius: 24,
+            height: 50,
+            width: 55,
+            padding: 4,
           }}
         >
-          <Button
-            title='Yes'
-            color={!!value ? '#fff' : '#030169'}
-            onPress={() => onUpdate(true)}
-          />
+          {Platform.OS === 'android' ? (
+            <Text
+              style={{
+                color: !!value ? '#fff' : '#030169',
+                textAlign: 'center',
+                marginTop: 8,
+              }}
+              onPress={() => onUpdate(true)}
+            >
+              Yes
+            </Text>
+          ) : (
+            <Button
+              title='Yes'
+              color={!!value ? '#fff' : '#030169'}
+              onPress={() => onUpdate(true)}
+            />
+          )}
         </TouchableHighlight>
       </View>
       <View>
@@ -41,14 +56,30 @@ export default function RadioButton({
             borderColor: '#030169',
             borderWidth: 1,
             borderTopRightRadius: 24,
-            borderBottomRightRadius: 24,height:50,width:55,padding:4
+            borderBottomRightRadius: 24,
+            height: 50,
+            width: 55,
+            padding: 4,
           }}
         >
-          <Button
-            title='No'
-            color={!value ? '#fff' : '#030169'}
-            onPress={() => onUpdate(false)}
-          />
+          {Platform.OS === 'android' ? (
+            <Text
+              style={{
+                color: !value ? '#fff' : '#030169',
+                textAlign: 'center',
+                marginTop: 8,
+              }}
+              onPress={() => onUpdate(false)}
+            >
+              No
+            </Text>
+          ) : (
+            <Button
+              title='No'
+              color={!value ? '#fff' : '#030169'}
+              onPress={() => onUpdate(false)}
+            />
+          )}
         </TouchableHighlight>
       </View>
     </View>
