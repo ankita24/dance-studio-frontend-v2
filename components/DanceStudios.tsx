@@ -95,9 +95,6 @@ export default function DanceStudios({ route, navigation }: Props) {
               })
             }}
             query={{
-              /**
-               * TODO: Keep the key in env variables
-               */
               key: GOOGLE_MAPS_KEY,
               language: 'en',
             }}
