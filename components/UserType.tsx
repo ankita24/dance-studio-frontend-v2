@@ -114,8 +114,7 @@ const styles = StyleSheet.create({
     color: '#FFF',
   },
   footerText: {
-    marginTop: 81,
-    fontSize: 17,
+    marginTop: 10,
     color: '#fff',
     marginLeft: 90,
   },
@@ -124,6 +123,6 @@ const styles = StyleSheet.create({
     marginLeft: 35,
     lineHeight: 24,
     fontSize: 17,
-    color: '#fff',
+    color: '#fff', 
   },
 })

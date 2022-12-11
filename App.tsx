@@ -77,16 +77,16 @@ const App = () => {
           if (ifOwner) {
             dispatch(setType('owner'))
             if (!user.location || !user.cost || !user.duration)
-            RootNavigation.navigate('ownerStep1', { id })
+              RootNavigation.navigate('ownerStep1', { id })
             else if (
               !user.rooms ||
               !user.area ||
               !user?.availabilty ||
               !user.availabilty?.length
             )
-            RootNavigation.navigate('ownerStep2', { id})
+              RootNavigation.navigate('ownerStep2', { id })
             else if (!user.availabilty.find(item => item.timings.length))
-            RootNavigation.navigate('ownerStep3', { id })
+              RootNavigation.navigate('ownerStep3', { id })
           } else {
             dispatch(setType('user'))
           }
@@ -173,7 +173,7 @@ const App = () => {
             <Stack.Screen
               name='home'
               component={UserType}
-              options={{ headerBackVisible: false }}
+              options={{ headerBackVisible: false, headerShown: false }}
             />
             <Stack.Screen name='login' component={Login} />
             <Stack.Screen name='signup' component={SignUp} />

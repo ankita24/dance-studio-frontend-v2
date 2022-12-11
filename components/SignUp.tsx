@@ -101,7 +101,10 @@ export default function SignUp({ route, navigation }: Props) {
           image: data.image,
           phone: data.phone,
           type,
-          deviceToken: expoPushToken,
+          /**
+           * TODO: change below to expoPushToken
+           */
+          deviceToken: 'abc',//expoPushToken,
           availabilty: noWeek,
         }
       )
@@ -242,7 +245,7 @@ export default function SignUp({ route, navigation }: Props) {
             }
           />
         </TouchableHighlight>
-        <Text style={[styles.marginTop25, styles.loginText]}>
+        <Text style={[styles.marginTop10, styles.loginText]}>
           Not the first time?{' '}
           <TouchableHighlight style={{ marginTop: -12 }}>
             <Button
@@ -348,4 +351,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginLeft: 50,
   },
+  marginTop10:{
+    marginTop: 10,
+  }
 })

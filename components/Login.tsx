@@ -21,6 +21,7 @@ import { setType } from '../redux/typeSlice'
 type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function Login({ route, navigation }: Props) {
+  console.log(IP_ADDRESS)
   const dispatch = useDispatch()
   const [focus, setFocus] = useState({ pwd: false, user: false })
   const [data, setData] = useState({ pwd: '', email: '' })
@@ -102,7 +103,7 @@ export default function Login({ route, navigation }: Props) {
     <View style={styles.container}>
       <View style={{ marginLeft: 51 }}>
         <Text style={styles.title}>Login</Text>
-        <Text style={[styles.label, styles.marginTop166]}>Email</Text>
+        <Text style={[styles.label, styles.marginTop16]}>Email</Text>
 
         <TextInput
           textContentType='emailAddress'
@@ -174,7 +175,7 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   marginTop25: {
-    marginTop: 25,
+    marginTop: 10,
   },
   signUpText: {
     color: '#fff',
@@ -196,8 +197,8 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 17,
   },
-  marginTop166: {
-    marginTop: 166,
+  marginTop16: {
+    marginTop: 16,
   },
   marginTop33: {
     marginTop: 33,

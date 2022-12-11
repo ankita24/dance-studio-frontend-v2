@@ -47,3 +47,8 @@ export const validateEmail = (text: string) => {
 export const validPhone = (str = '') => {
   return str.length === 10
 }
+
+export const stringEllipse = (str = '', char = 25) => {
+  if (str.length < char) return str
+  else return str.substring(0, char) + '...'
+}

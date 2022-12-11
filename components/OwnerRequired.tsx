@@ -62,7 +62,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
         } else
           setData({
             ...data,
-            location,
+
             cost,
             lat,
             long,
@@ -96,29 +96,34 @@ export default function OwnerRequired({ route, navigation }: Props) {
       <View style={styles.innerContainer}>
         <Text style={styles.title}>Studio Information</Text>
         <Text style={[styles.label, styles.marginTop16]}>Search Location</Text>
-        <View>
+        <View style={styles.locationCtn}>
           <GooglePlacesAutocomplete
-            ref={ref}
             placeholder='Search location'
             onPress={(data1, details) => {
               setData({
                 ...data,
-                location: details?.formatted_address ?? '',
                 lat: details?.geometry.location.lat ?? 0,
                 long: details?.geometry.location.lng ?? 0,
+                location: data1.description
               })
             }}
             query={{
-              /**
-               * TODO: Keep the key in env variables
-               */
               key: GOOGLE_MAPS_KEY,
               language: 'en',
             }}
             onFail={err => console.warn(err)}
             fetchDetails
-            textInputProps={{ style: styles.input }}
             listUnderlayColor={'#D1D100'}
+            renderRow={(rowData) => {
+              const title = rowData.structured_formatting.main_text;
+              const address = rowData.structured_formatting.secondary_text;
+              return (
+                <View>
+                  <Text style={{ fontSize: 14 }}>{title}</Text>
+                  <Text style={{ fontSize: 14 }}>{address}</Text>
+                </View>
+              );
+            }}
           />
         </View>
         <Text style={[styles.label, styles.marginTop166]}>Rent</Text>
@@ -146,7 +151,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
             keyboardType='numeric'
           />
         </View>
-        <Text style={[styles.label, styles.marginTop30]}>
+        <Text style={[styles.label, styles.marginTop20]}>
           Upload Studio Image
         </Text>
         <View style={styles.imageView}>
@@ -202,17 +207,16 @@ export default function OwnerRequired({ route, navigation }: Props) {
             ) : null}
           </View>
         ) : null}
-        <TouchableHighlight style={[styles.button, styles.marginTop49]}>
+        <TouchableHighlight style={[styles.button, styles.marginTop20]}>
           {Platform.OS === 'android' ? (
             <Text
               style={{
                 textAlign: 'center',
-                marginTop: 10,
                 fontSize: 16,
                 color: !data.location && !data.cost ? 'grey' : '#fff',
               }}
               onPress={() => {
-                if (!!data.location && !!data.cost) handleStepOne()
+                if (!!data.location && !!data.cost && !!data.lat && !!data.long) handleStepOne()
               }}
             >
               CONFIRM
@@ -262,17 +266,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   innerContainer: { marginLeft: 40, marginTop: 50 },
-  input: {
-    height: 56,
-    width: 290,
-    borderRadius: 24,
-    padding: 20,
-    marginTop: -8,
-    color: 'grey',
-    backgroundColor: '#fff',
-    borderColor: '#030169',
-    borderWidth: 1,
-  },
+  
   cost: {
     display: 'flex',
     flexDirection: 'row',
@@ -289,8 +283,8 @@ const styles = StyleSheet.create({
     padding: 10,
     marginLeft: 20,
   },
-  marginTop49: {
-    marginTop: 49,
+  marginTop20: {
+    marginTop: 20,
   },
   title: {
     color: '#FF7083',
@@ -306,7 +300,7 @@ const styles = StyleSheet.create({
     marginLeft: 51,
     alignContent: 'center',
     justifyContent: 'space-between',
-    marginTop: -10,
+    marginTop: -20,
   },
   label: {
     color: '#030169',
@@ -318,10 +312,7 @@ const styles = StyleSheet.create({
     marginTop: 16,
   },
   marginTop166: {
-    marginTop: 70,
-  },
-  marginTop30: {
-    marginTop: 30,
+    marginTop: 20,
   },
   hash: {
     fontSize: 40,
@@ -329,5 +320,27 @@ const styles = StyleSheet.create({
     paddingRight: 8,
     marginTop: -10,
     color: '#030169',
+  },
+  locationCtn: {
+    display: 'flex',
+    borderColor: '#030169',
+    minHeight:56,
+    width: 290,
+    borderRadius: 24,
+    color: 'grey',
+    borderWidth: 1,
+    flexDirection: 'row',
+    padding:10,
+  },
+  input: {
+    height: 56,
+    width: 290,
+    borderRadius: 24,
+    padding: 20,
+    marginTop: -8,
+    color: 'grey',
+    backgroundColor: '#fff',
+    borderColor: '#030169',
+    borderWidth: 1,
   },
 })

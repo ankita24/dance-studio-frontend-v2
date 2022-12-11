@@ -9,11 +9,10 @@ import {
   ScrollView,
   Animated,
 } from 'react-native'
-import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import { DescriptionRow, GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import * as Location from 'expo-location'
 import { MaterialIcons } from '@expo/vector-icons'
 import axios from 'axios'
-import { studiosDetails } from '../const'
 import { Studio } from 'types'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
@@ -21,15 +20,17 @@ import { IP_ADDRESS, GOOGLE_MAPS_KEY } from '@env'
 import { EvilIcons } from '@expo/vector-icons'
 import { cloudinaryUrl } from '../utils'
 import { useIsFocused } from '@react-navigation/native'
+import { stringEllipse } from '../utils/helper'
 import EmptyStudios from '../images/EmptyStudios.png'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'studioDetails'>
 
 export default function DanceStudios({ route, navigation }: Props) {
   let animVal = new Animated.Value(0)
-  const [location, setLocation] = useState<{ lat: number; long: number }>({
+  const [location, setLocation] = useState<{ lat: number; long: number, name: string }>({
     lat: 0,
     long: 0,
+    name: ''
   })
   const isFocused = useIsFocused()
   useEffect(() => {
@@ -42,24 +43,18 @@ export default function DanceStudios({ route, navigation }: Props) {
     }
   }, [location])
 
-  const [studios, setStudios] = useState(studiosDetails)
+  const [studios, setStudios] = useState([])
+  console.log(location, IP_ADDRESS)
 
   const getStudios = () => {
-    /**
-     * TODO: Add API after location api is enabled
-     */
-    console.log('add api')
-    // const { lat, long } = location
-    // axios
-    //   .get<{ data: Studio[] }>(`${IP_ADDRESS}/api/studios`, {
-    //     params: { lat, long },
-    //   })
-    //   .then(response => {
-    //     console.log('user', response.data.data)
-    //   })
-    //   .catch(err => {
-    //     console.error(err)
-    //   })
+    const { lat, long } = location
+    axios.post<{ data: Studio[] }>(`${IP_ADDRESS}/api/studios`, {
+      params: { lat, long },
+    }).then(response => { 
+      setStudios(response.data.data)
+    }).catch(err => {
+      console.error(err)
+    })
   }
 
   const handleCurrentLocation = async () => {
@@ -73,25 +68,30 @@ export default function DanceStudios({ route, navigation }: Props) {
         setLocation({
           lat: coords.latitude,
           long: coords.longitude,
+          name: ''
         })
     })
+
   }
 
   return (
     <View style={styles.container}>
       <View style={styles.heading}>
-        <EvilIcons name='location' size={24} color='#FF7083' />
-        <Text style={styles.title}>1C Lopamudra Enclave...</Text>
+        {location.name && <>
+          <EvilIcons name='location' size={24} color='#FF7083' />
+          <Text style={styles.title}>{stringEllipse(location.name, 40)}</Text>
+        </>}
       </View>
       <View style={{ marginLeft: 44 }}>
         <View style={styles.locationCtn}>
           <GooglePlacesAutocomplete
             placeholder='Search location'
-            onPress={(data1, details) => {
+            onPress={(data, details) => {
               setLocation({
                 ...location,
                 lat: details?.geometry.location.lat ?? 0,
                 long: details?.geometry.location.lng ?? 0,
+                name: data.description
               })
             }}
             query={{
@@ -104,6 +104,16 @@ export default function DanceStudios({ route, navigation }: Props) {
             onFail={err => console.warn(err)}
             fetchDetails
             textInputProps={{ style: styles.input }}
+            renderRow={(rowData) => {
+              const title = rowData.structured_formatting.main_text;
+              const address = rowData.structured_formatting.secondary_text;
+              return (
+                <View>
+                  <Text style={{ fontSize: 14 }}>{title}</Text>
+                  <Text style={{ fontSize: 14 }}>{address}</Text>
+                </View>
+              );
+            }}
           />
           <MaterialIcons
             name='my-location'
@@ -170,10 +180,7 @@ export default function DanceStudios({ route, navigation }: Props) {
           />
         ) : (
           <View>
-            {/* <Image source={EmptyStudios} style={styles.imageStyle} /> */}
-            <Text style={styles.noStudiosText}>
-              No Studios Found around you
-            </Text>
+            <Image source={EmptyStudios} style={styles.imageStyle} />
           </View>
         )}
       </View>
@@ -191,6 +198,8 @@ const styles = StyleSheet.create({
     width: 300,
     marginLeft: 8,
     color: '#030169',
+    flex: 1,
+    flexWrap: 'wrap'
   },
   listCtn: {
     width: 300,

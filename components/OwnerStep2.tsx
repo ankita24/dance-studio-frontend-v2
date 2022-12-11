@@ -77,7 +77,6 @@ export default function OwnerStep2({ route, navigation }: Props) {
         .catch(e => console.error(e))
     }
   }
-  console.log(id)
 
   return (
     <View style={styles.container}>

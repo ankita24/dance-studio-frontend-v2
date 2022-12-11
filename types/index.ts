@@ -35,7 +35,8 @@ export interface Studio {
   name: string
   rooms: number
   isSoundProof?: boolean
-  hasChangingRoom?: boolean
+  hasChangingRoom?: boolean,
+  deviceToken?:string
 }
 
 export interface StudioWithSlots extends Studio {

@@ -127,9 +127,6 @@ export default function StudioDetails({ route, navigation }: Props) {
             {studio?.slots.map((item, index) => {
               const endTime = item.slice(item.indexOf('-') + 1)
               const status = toShow(endTime)
-              /**
-               * TODO: replace below with status
-               */
               if (status)
                 return (
                   <TouchableOpacity

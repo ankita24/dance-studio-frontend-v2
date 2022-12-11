@@ -37,6 +37,7 @@ let start = new Date()
 start.setHours(0, 0, 0, 0)
 
 export default function Profile({ route, navigation }: Props) {
+  console.log(IP_ADDRESS)
   const [id, setId] = useState<string | null>()
   const [typeOfUser, setTypeOfUser] = useState<string | null>('')
   const [profile, setProfile] = useState<ProfileType>()
@@ -171,10 +172,13 @@ export default function Profile({ route, navigation }: Props) {
   }
 
   const renderStatus = (startTime: string, endTime: string, date: Date) => {
-    if (date >= new Date()) {
-      if (currentTime > endTime) {
+    const currentTimeA=new Date()
+    const endTimeA=new Date()
+    const startTimeA=new Date()
+    if (new Date(date).getDate() >= new Date().getDate()) {
+      if (currentTimeA > endTimeA) {
         return 'Past Booking'
-      } else if (currentTime > startTime) {
+      } else if (currentTimeA > startTimeA) {
         return 'In Progress'
       }
       return 'Upcoming'
@@ -214,7 +218,8 @@ export default function Profile({ route, navigation }: Props) {
       </View>
 
       {!edit ? (
-        <Button title='Edit' color='#FF7083' onPress={() => setEdit(true)} />
+        <View style={[ styles.marginLeft15]}>
+        <Button title='Edit' color='#FF7083' onPress={() => setEdit(true)} /></View>
       ) : (
         <View style={[styles.flex, styles.alignSelfCenter]}>
           <Button color='#FF7083' title='Save' onPress={SaveDetails} />

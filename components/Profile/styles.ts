@@ -131,4 +131,7 @@ export const styles = StyleSheet.create({
     flexWrap:'wrap',
     width:360
   },
+  marginLeft15:{
+    marginLeft:15
+  }
 })
