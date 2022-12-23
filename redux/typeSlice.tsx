@@ -1,4 +1,4 @@
-import { createSlice,PayloadAction } from "@reduxjs/toolkit"
+import { createSlice, PayloadAction } from "@reduxjs/toolkit"
 
 const typeSlice = createSlice({
   name: "type",
@@ -7,8 +7,8 @@ const typeSlice = createSlice({
   },
   reducers: {
     setType(state, action: PayloadAction<string>) {
-        state.type = action.payload
-      }
+      state.type = action.payload
+    }
   }
 })
 

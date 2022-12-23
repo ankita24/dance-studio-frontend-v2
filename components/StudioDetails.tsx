@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   Button,
   TouchableHighlight,
-  ScrollView,
+  ScrollView, Image, Animated
 } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
@@ -14,6 +14,7 @@ import axios from 'axios'
 import { StudioWithSlots } from 'types'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { IP_ADDRESS } from '@env'
+import { cloudinaryUrl } from '../utils'
 
 const currentTime = new Date().toLocaleTimeString('en-US', {
   hour: 'numeric',
@@ -27,6 +28,7 @@ export default function StudioDetails({ route, navigation }: Props) {
   const { params: { id } = {} } = route
   const [studio, setStudios] = useState<StudioWithSlots | undefined>()
   const [userId, setUserId] = useState('')
+  let animVal = new Animated.Value(0)
 
   useEffect(() => {
     getUserId()
@@ -61,7 +63,7 @@ export default function StudioDetails({ route, navigation }: Props) {
         .then(async response => {
           if (response.status === 200) {
             await sendPushNotification(
-              studio?.deviceToken,
+              studio?.deviceToken ?? '',
               `${studio?.slots[selectedSlot]} booked for today`
             )
             navigation.navigate('Profile', { id: userId })
@@ -85,15 +87,37 @@ export default function StudioDetails({ route, navigation }: Props) {
     }
     return true
   }
+  console.log(studio)
 
   return (
     <ScrollView>
       <View style={styles.container}>
-        <View style={{ height: 260 }} />
+        <View />
+        <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            scrollEventThrottle={10}
+            pagingEnabled
+            onScroll={Animated.event([
+              { nativeEvent: { contentOffset: { x: animVal } } },
+            ])}
+            style={styles.carousal}
+          >
+              {studio?.images.length ? (
+                studio?.images?.map(item => {
+                  return (
+                    <Image
+                      source={{ uri: cloudinaryUrl(item) }}
+                      style={styles.image}
+                    />
+                  )
+                })
+              ) : (
+                <View />
+              )}
+            </ScrollView>
         <View style={styles.innerContainer}>
-          {/**
-           * TODO: Add Images
-           */}
+        
           <View
             style={{
               display: 'flex',
@@ -102,6 +126,7 @@ export default function StudioDetails({ route, navigation }: Props) {
               width: 340,
             }}
           >
+
             <Text style={{ fontSize: 24, color: '#030169' }}>
               {studio?.name}
             </Text>
@@ -112,14 +137,12 @@ export default function StudioDetails({ route, navigation }: Props) {
           <Text style={styles.infoCtn}>{studio?.location}</Text>
           <Text style={styles.cost}>Rs {studio?.cost} / 1 hour</Text>
           <View style={{ marginTop: 30 }}>
-            <Text style={styles.subPara}> Area: {studio?.area} sq ft</Text>
+            <Text style={styles.subPara}>Area: {studio?.area} sq ft</Text>
             <Text style={[styles.subPara, styles.marginTop5]}>
-              {' '}
-              Is Soundproof?: {studio?.isSoundProof} sq ft
+              Is Soundproof?: {studio?.isSoundProof ?? 'No'}
             </Text>
             <Text style={[styles.subPara, styles.marginTop5]}>
-              {' '}
-              Has changing room?: {studio?.hasChangingRoom} sq ft
+              Has changing room?: {studio?.hasChangingRoom ?? 'No'}
             </Text>
           </View>
           <Text style={[styles.subPara, styles.marginTop30]}>Book Slot</Text>
@@ -134,7 +157,7 @@ export default function StudioDetails({ route, navigation }: Props) {
                     style={[
                       styles.tag,
                       (selectedSlot || selectedSlot === 0) &&
-                      index === selectedSlot
+                        index === selectedSlot
                         ? styles.selectedTag
                         : styles.notSelectedTag,
                     ]}
@@ -145,7 +168,7 @@ export default function StudioDetails({ route, navigation }: Props) {
                         padding: 9,
                         color:
                           (selectedSlot || selectedSlot === 0) &&
-                          index === selectedSlot
+                            index === selectedSlot
                             ? '#fff'
                             : '#FF7083',
                       }}
@@ -170,7 +193,7 @@ export default function StudioDetails({ route, navigation }: Props) {
   )
 }
 
-async function sendPushNotification(expoPushToken: string,slot:string) {
+async function sendPushNotification(expoPushToken: string, slot: string) {
   const message = {
     to: expoPushToken,
     sound: 'default',
@@ -214,13 +237,13 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   infoCtn: {
-    fontSize: 20,
+    fontSize: 16,
     marginTop: 5,
     color: '#8F8F8F',
   },
   cost: {
     color: '#FF7083',
-    fontSize: 20,
+    fontSize: 16,
     marginTop: 5,
   },
   selectedTag: {
@@ -229,7 +252,7 @@ const styles = StyleSheet.create({
   },
   button: {
     height: 63,
-    width: 362,
+
     backgroundColor: '#FF7083',
     borderRadius: 50,
     padding: 10,
@@ -239,7 +262,7 @@ const styles = StyleSheet.create({
   },
   subPara: {
     color: '#030169',
-    fontSize: 20,
+    fontSize: 16,
   },
   marginTop5: {
     marginTop: 5,
@@ -251,5 +274,12 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FF7083',
     backgroundColor: '#fff',
+  },
+  image: {
+    width: 400,
+    height: 300,
+  },
+  carousal: {
+    height: 156,
   },
 })

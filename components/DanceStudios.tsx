@@ -9,7 +9,7 @@ import {
   ScrollView,
   Animated,
 } from 'react-native'
-import { DescriptionRow, GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
+import { GooglePlacesAutocomplete } from 'react-native-google-places-autocomplete'
 import * as Location from 'expo-location'
 import { MaterialIcons } from '@expo/vector-icons'
 import axios from 'axios'
@@ -20,8 +20,8 @@ import { IP_ADDRESS, GOOGLE_MAPS_KEY } from '@env'
 import { EvilIcons } from '@expo/vector-icons'
 import { cloudinaryUrl } from '../utils'
 import { useIsFocused } from '@react-navigation/native'
-import { stringEllipse } from '../utils/helper'
 import EmptyStudios from '../images/EmptyStudios.png'
+import { stringEllipse } from '../utils/helper'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'studioDetails'>
 
@@ -32,6 +32,8 @@ export default function DanceStudios({ route, navigation }: Props) {
     long: 0,
     name: ''
   })
+  const [show, setShow] = useState(false)
+
   const isFocused = useIsFocused()
   useEffect(() => {
     handleCurrentLocation()
@@ -43,15 +45,14 @@ export default function DanceStudios({ route, navigation }: Props) {
     }
   }, [location])
 
-  const [studios, setStudios] = useState([])
-  console.log(location, IP_ADDRESS)
+  const [studios, setStudios] = useState<Studio[]>([])
 
   const getStudios = () => {
     const { lat, long } = location
     axios.post<{ data: Studio[] }>(`${IP_ADDRESS}/api/studios`, {
       params: { lat, long },
-    }).then(response => { 
-      setStudios(response.data.data)
+    }).then((response) => {
+      setStudios(response?.data?.data ?? [])
     }).catch(err => {
       console.error(err)
     })
@@ -63,63 +64,82 @@ export default function DanceStudios({ route, navigation }: Props) {
       return
     }
     Location.installWebGeolocationPolyfill()
-    navigator.geolocation.getCurrentPosition(({ coords }) => {
-      if (coords)
-        setLocation({
-          lat: coords.latitude,
-          long: coords.longitude,
-          name: ''
-        })
-    })
+
+    if (navigator.geolocation) {
+
+      navigator.geolocation.getCurrentPosition(({ coords }) => {
+        if (coords) {
+          setLocation({
+            lat: coords.latitude,
+            long: coords.longitude,
+            name: ''
+          })
+          axios.get(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${coords.latitude},${coords.longitude}&sensor=true&key=${GOOGLE_MAPS_KEY}`
+          ).then((response: any) => {
+            setLocation({ ...location, name: response?.data?.plus_code?.compound_code ?? '' })
+            setShow(false)
+          })
+
+        }
+      }, function (e) {
+        //Your error handling here
+      }, {
+        enableHighAccuracy: true
+      })
+    }
 
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.heading}>
-        {location.name && <>
-          <EvilIcons name='location' size={24} color='#FF7083' />
-          <Text style={styles.title}>{stringEllipse(location.name, 40)}</Text>
-        </>}
-      </View>
+      {location.name && <TouchableOpacity style={styles.heading} onPress={() => setShow(true
+      )}>
+        <EvilIcons name='location' size={24} color='#FF7083' />
+        <Text style={styles.title}>{stringEllipse(location.name, 40)}</Text>
+      </TouchableOpacity>}
       <View style={{ marginLeft: 44 }}>
-        <View style={styles.locationCtn}>
-          <GooglePlacesAutocomplete
-            placeholder='Search location'
-            onPress={(data, details) => {
-              setLocation({
-                ...location,
-                lat: details?.geometry.location.lat ?? 0,
-                long: details?.geometry.location.lng ?? 0,
-                name: data.description
-              })
-            }}
-            query={{
-              key: GOOGLE_MAPS_KEY,
-              language: 'en',
-            }}
-            onFail={err => console.warn(err)}
-            fetchDetails
-            textInputProps={{ style: styles.input }}
-            renderRow={(rowData) => {
-              const title = rowData.structured_formatting.main_text;
-              const address = rowData.structured_formatting.secondary_text;
-              return (
-                <View>
-                  <Text style={{ fontSize: 14 }}>{title}</Text>
-                  <Text style={{ fontSize: 14 }}>{address}</Text>
-                </View>
-              );
-            }}
-          />
-          <MaterialIcons
-            name='my-location'
-            size={24}
-            color='#FF7083'
-            style={styles.marginTop8}
-            onPress={handleCurrentLocation}
-          />
-        </View>
+        {show && <View>
+          <View style={styles.locationCtn}>
+            <GooglePlacesAutocomplete
+              placeholder='Search location'
+              onPress={(data, details) => {
+                setLocation({
+                  ...location,
+                  lat: details?.geometry.location.lat ?? 0,
+                  long: details?.geometry.location.lng ?? 0,
+                  name: data.description
+                })
+                setShow(false)
+              }}
+              query={{
+                key: GOOGLE_MAPS_KEY,
+                language: 'en',
+              }}
+              onFail={err => console.warn(err)}
+              fetchDetails
+              textInputProps={{ style: styles.input }}
+              renderRow={(rowData) => {
+                const title = rowData.structured_formatting?.main_text;
+                const address = rowData.structured_formatting.secondary_text;
+                return (
+                  <View>
+                    <Text style={{ fontSize: 14 }}>{title}</Text>
+                    <Text style={{ fontSize: 14 }}>{address}</Text>
+                  </View>
+                );
+              }}
+            />
+
+          </View>
+          <TouchableOpacity style={styles.currentLocation} onPress={handleCurrentLocation}>
+            <MaterialIcons
+              name='my-location'
+              size={24}
+              color='#FF7083'
+            />
+            <Text style={{ marginTop: 4, marginLeft: 8, color: '#030169' }}>Fetch current Location</Text>
+          </TouchableOpacity>
+        </View>}
         {location.lat !== 0 && studios.length ? (
           <FlatList
             key='_id'
@@ -233,9 +253,6 @@ const styles = StyleSheet.create({
     marginTop: 28,
     padding: 4,
   },
-  marginTop8: {
-    marginTop: 8,
-  },
   danceClassName: {
     fontWeight: 'bold',
     color: '#030169',
@@ -269,5 +286,10 @@ const styles = StyleSheet.create({
     fontStyle: 'italic',
     color: '#030169',
     marginLeft: -15,
+  },
+  currentLocation: {
+    display: 'flex',
+    flexDirection: 'row',
+    marginTop: 20,
   },
 })
