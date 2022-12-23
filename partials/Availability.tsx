@@ -12,7 +12,7 @@ import DateTimePicker from '@react-native-community/datetimepicker'
 import { AntDesign, FontAwesome } from '@expo/vector-icons'
 import { Profile } from 'types'
 
-export default function Availability({
+export default function xAvailability({
   editableData,
   edit,
   onStartChange,

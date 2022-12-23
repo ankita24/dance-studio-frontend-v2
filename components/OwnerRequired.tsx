@@ -36,7 +36,6 @@ export default function OwnerRequired({ route, navigation }: Props) {
     location: '',
     lat: 0,
     long: 0,
-    duration: 0,
   })
   const [image, setImage] = useState<string[]>([])
 
@@ -52,21 +51,15 @@ export default function OwnerRequired({ route, navigation }: Props) {
     axios
       .get<{ user: Profile }>(`${IP_ADDRESS}/api/profile/${id}`)
       .then(response => {
-        const { location, cost, lat, long, duration } = response?.data?.user
-        /**
-         * TODO: Add images also(min 2) in the query.
-         * TODO: Check what is the place to check the ownerStep1, ownerStep2 and profile.
-         */
-        if (!!location && !!cost && !!duration && id) {
+        const { location, cost, lat, long } = response?.data?.user
+        if (!!location && !!cost  && id) {
           navigation.navigate('ownerStep2', { id })
         } else
           setData({
             ...data,
-
             cost,
             lat,
-            long,
-            duration,
+            long
           })
       })
       .catch(error => console.error(error))
@@ -114,6 +107,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
             onFail={err => console.warn(err)}
             fetchDetails
             listUnderlayColor={'#D1D100'}
+            textInputProps={{ style: styles.input }}
             renderRow={(rowData) => {
               const title = rowData.structured_formatting.main_text;
               const address = rowData.structured_formatting.secondary_text;
@@ -126,7 +120,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
             }}
           />
         </View>
-        <Text style={[styles.label, styles.marginTop166]}>Rent</Text>
+        <Text style={[styles.label, styles.marginTop166]}>Rent (per hour)</Text>
         <View style={styles.cost}>
           <TextInput
             placeholderTextColor='grey'
@@ -137,19 +131,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
             onChangeText={text => setData({ ...data, cost: Number(text) })}
             value={data?.cost?.toString() ?? ''}
           />
-          <Text style={styles.hash}>/</Text>
-          <TextInput
-            placeholderTextColor='grey'
-            onBlur={() => setFocus({ ...focus, cost: false })}
-            onFocus={() => setFocus({ ...focus, cost: true })}
-            placeholder='hour'
-            style={[styles.input, styles.margin, styles.costWidth]}
-            onChangeText={text => {
-              setData({ ...data, duration: !!text ? Number(text) : 0 })
-            }}
-            value={data.duration?.toString()}
-            keyboardType='numeric'
-          />
+          
         </View>
         <Text style={[styles.label, styles.marginTop20]}>
           Upload Studio Image
@@ -216,7 +198,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
                 color: !data.location && !data.cost ? 'grey' : '#fff',
               }}
               onPress={() => {
-                if (!!data.location && !!data.cost && !!data.lat && !!data.long) handleStepOne()
+                if (!!data.location && !!data.cost && !!data.lat && !!data.long && image?.length) handleStepOne()
               }}
             >
               CONFIRM
@@ -324,13 +306,9 @@ const styles = StyleSheet.create({
   locationCtn: {
     display: 'flex',
     borderColor: '#030169',
-    minHeight:56,
     width: 290,
-    borderRadius: 24,
-    color: 'grey',
-    borderWidth: 1,
     flexDirection: 'row',
-    padding:10,
+    padding:4,
   },
   input: {
     height: 56,

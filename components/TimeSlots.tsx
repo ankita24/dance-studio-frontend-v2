@@ -16,8 +16,8 @@ type Props = NativeStackScreenProps<
 let start = new Date()
 start.setHours(0, 0, 0, 0)
 
-const addStartHours = 2 * 1000 * 3600
-const addEndHours = 5 * 1000 * 3600
+const addStartHours = 7 * 1000 * 3600
+const addEndHours = 10 * 1000 * 3600
 
 const addDefaultStartHours = start.getTime() + addStartHours
 const addDefaultEndHours = start.getTime() + addEndHours

@@ -82,12 +82,12 @@ export default function StudioDetails({ route, navigation }: Props) {
 
   const toShow = (endTime: string) => {
     const endFullhour = to24HrTime(endTime)
-    if (currentTime > endFullhour) {
+    const currentTimeHour=to24HrTime(currentTime)
+    if (currentTimeHour > endFullhour) {
       return false
     }
     return true
   }
-  console.log(studio)
 
   return (
     <ScrollView>

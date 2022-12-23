@@ -170,15 +170,25 @@ export default function Profile({ route, navigation }: Props) {
       return false
     }
   }
+  function convertTime12To24(time:any) {
+    var hours   = Number(time.match(/^(\d+)/)[1]);
+    var minutes = Number(time.match(/:(\d+)/)[1]);
+    var AMPM    = time.match(/\s(.*)$/)[1];
+    if (AMPM === "PM" && hours < 12) hours = hours + 12;
+    if (AMPM === "AM" && hours === 12) hours = hours - 12;
+    var sHours   = hours.toString();
+    var sMinutes = minutes.toString();
+    if (hours < 10) sHours = "0" + sHours;
+    if (minutes < 10) sMinutes = "0" + sMinutes;
+    return (sHours + ":" + sMinutes);
+}
 
   const renderStatus = (startTime: string, endTime: string, date: Date) => {
-    const currentTimeA=new Date()
-    const endTimeA=new Date()
-    const startTimeA=new Date()
+    const currentTimeA=new Date().toLocaleTimeString()
     if (new Date(date).getDate() >= new Date().getDate()) {
-      if (currentTimeA > endTimeA) {
+      if (currentTimeA > convertTime12To24(endTime)) {
         return 'Past Booking'
-      } else if (currentTimeA > startTimeA) {
+      } else if (currentTimeA > convertTime12To24(startTime)) {
         return 'In Progress'
       }
       return 'Upcoming'

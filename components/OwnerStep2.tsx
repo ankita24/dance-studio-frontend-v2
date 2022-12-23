@@ -6,7 +6,7 @@ import {
   View,
   TouchableHighlight,
   Button,
-  Alert,Platform
+  Alert, Platform
 } from 'react-native'
 import axios from 'axios'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -71,7 +71,7 @@ export default function OwnerStep2({ route, navigation }: Props) {
           if (res?.data?.status === 'error') {
             Alert.alert(res?.data?.error)
           } else {
-            navigation.navigate('ownerStep3', { id,signUpStep:true })
+            navigation.navigate('ownerStep3', { id, signUpStep: true })
           }
         })
         .catch(e => console.error(e))
@@ -137,8 +137,8 @@ export default function OwnerStep2({ route, navigation }: Props) {
           </View>
         </View>
 
-        <TouchableHighlight style={[styles.button, styles.marginTop45,styles.marginRight30]}>
-        {Platform.OS === 'android' ? (
+        <TouchableHighlight style={[styles.button, styles.marginTop45, styles.marginRight30]}>
+          {Platform.OS === 'android' ? (
             <Text
               style={{
                 textAlign: 'center',
@@ -163,7 +163,7 @@ export default function OwnerStep2({ route, navigation }: Props) {
         </TouchableHighlight>
 
         <TouchableHighlight style={{ marginRight: 50 }}>
-        {Platform.OS === 'android' ? (
+          {Platform.OS === 'android' ? (
             <Text
               style={{
                 marginTop: 22,
@@ -172,7 +172,7 @@ export default function OwnerStep2({ route, navigation }: Props) {
                 color: '#FF7083',
               }}
               onPress={() =>
-                navigation.navigate('ownerStep3', { id: id ?? '',signUpStep:true })
+                navigation.navigate('ownerStep3', { id: id ?? '', signUpStep: true })
               }
             >
               Skip
@@ -182,7 +182,7 @@ export default function OwnerStep2({ route, navigation }: Props) {
               color='#FF7083'
               title='Skip'
               onPress={() =>
-                navigation.navigate('ownerStep3', { id: id ?? '',signUpStep:true })
+                navigation.navigate('ownerStep3', { id: id ?? '', signUpStep: true })
               } //change this
             />
           )}

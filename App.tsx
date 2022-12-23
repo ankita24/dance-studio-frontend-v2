@@ -72,7 +72,6 @@ const App = () => {
           const {
             data: { user },
           } = response
-          console.log(response.data.user.name, typeofUser)
           const ifOwner = user.__t === 'OwnerSchema'
           if (ifOwner) {
             dispatch(setType('owner'))
