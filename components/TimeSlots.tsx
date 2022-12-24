@@ -1,12 +1,12 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
-import { View, ScrollView, StyleSheet, Alert, Button, Text } from 'react-native'
+import { View, ScrollView, StyleSheet, Alert, Text } from 'react-native'
 import { Profile as ProfileType, UserBookings } from '../types'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
 import { IP_ADDRESS } from '@env'
-import { Availability, Loader } from '../partials'
+import { Availability, Loader, Button } from '../partials'
 
 type Props = NativeStackScreenProps<
   RootStackParamList,
@@ -61,7 +61,7 @@ export default function Profile({ route, navigation }: Props) {
         } = response
         if (!!id) {
           if (typeOfUser === 'owner') {
-            if (!user.location && !user.cost && !user.duration)
+            if (!user.location && !user.cost)
               navigation.navigate('ownerStep1', { id })
             else if (
               !user.rooms &&
@@ -123,12 +123,11 @@ export default function Profile({ route, navigation }: Props) {
   if (loading) {
     return <Loader />
   }
-
   return (
     <ScrollView style={styles.container}>
       {route.params?.signUpStep && <Text style={styles.title}>Time Slots</Text>}
       {!edit ? (
-        <Button title='Edit' color='#FF7083' onPress={() => setEdit(true)} />
+        <Button title='Edit' color='#FF7083' onPress={() => setEdit(true)} androidButtonStyled={styles.androidButtonStyles} />
       ) : (
         <View style={[styles.flex, styles.alignSelfCenter]}>
           <Button color='#FF7083' title='Save' onPress={SaveDetails} />
@@ -143,6 +142,7 @@ export default function Profile({ route, navigation }: Props) {
                   setEditableData({ ...data })
                 }
               }}
+              androidButtonStyled={styles.androidButtonStyles}
             />
           ) : (
             <Button
@@ -151,6 +151,7 @@ export default function Profile({ route, navigation }: Props) {
               onPress={() => {
                 navigation.navigate('Profile', { id: id ?? '' })
               }}
+              androidButtonStyled={styles.androidButtonStyles}
             />
           )}
         </View>
@@ -275,4 +276,10 @@ export const styles = StyleSheet.create({
   alignSelfCenter: {
     alignSelf: 'center',
   },
+  androidButtonStyles: {
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 16,
+    color: '#FF7083',
+  }
 })

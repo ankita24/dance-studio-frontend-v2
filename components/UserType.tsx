@@ -4,17 +4,17 @@ import {
   Text,
   View,
   TouchableHighlight,
-  Button,
 } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useIsFocused } from '@react-navigation/native'
 import { RootStackParamList } from '../App'
+import { Button } from '../partials'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
 export default function UserType({ navigation }: Props) {
-  const isFocused=useIsFocused()
+  const isFocused = useIsFocused()
   useEffect(() => {
     getData()
   }, [isFocused])
@@ -61,13 +61,13 @@ export default function UserType({ navigation }: Props) {
       </View>
       <Text style={styles.footerText}>
         Not the first time?{' '}
-        <TouchableHighlight style={{ marginTop: -12 }}>
-          <Button
-            color='#FF7083'
-            title='Login'
-            onPress={() => navigation.navigate('login')}
-          />
-        </TouchableHighlight>
+        <Button
+          color='#FF7083'
+          title='Login'
+          onPress={() => navigation.navigate('login')}
+          touchOpacityStyles={{ marginTop: -12 }}
+          androidButtonStyled={styles.androidButtonStyles}
+        />
       </Text>
     </View>
   )
@@ -123,6 +123,12 @@ const styles = StyleSheet.create({
     marginLeft: 35,
     lineHeight: 24,
     fontSize: 17,
-    color: '#fff', 
+    color: '#fff',
   },
+  androidButtonStyles: {
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 16,
+    color: '#FF7083',
+  }
 })

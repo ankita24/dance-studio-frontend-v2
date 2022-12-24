@@ -4,14 +4,12 @@ import {
   Text,
   TextInput,
   View,
-  TouchableHighlight,
-  Button,
   Alert,
   ScrollView,
   Platform,
 } from 'react-native'
 import axios from 'axios'
-import UploadImage from '../partials/UploadImage'
+import { UploadImage, Button } from '../partials'
 import { validateEmail, validPhone } from '../utils/helper'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
@@ -104,7 +102,7 @@ export default function SignUp({ route, navigation }: Props) {
           /**
            * TODO: change below to expoPushToken
            */
-          deviceToken: 'abc1',//expoPushToken,
+          deviceToken: 'abc2',//expoPushToken,
           availabilty: noWeek,
         }
       )
@@ -225,35 +223,53 @@ export default function SignUp({ route, navigation }: Props) {
             ? `Password and confirm password should match`
             : ''}
         </Text>
-
-        <TouchableHighlight style={[styles.button, styles.marginTop25]}>
-          <Button
-            title='SIGN UP'
-            color='#fff'
-            onPress={handleRegister}
-            disabled={
-              (!data.email &&
-                !validateEmail(data.email) &&
-                !data.name &&
-                !data.password &&
-                !data.confirmPassword &&
-                !data.phone &&
-                !validPhone(data.phone)) ||
+        <Button
+          title='SIGN UP'
+          color='#fff'
+          onPress={handleRegister}
+          disabled={
+            (!data.email &&
+              !validateEmail(data.email) &&
+              !data.name &&
+              !data.password &&
+              !data.confirmPassword &&
+              !data.phone &&
+              !validPhone(data.phone)) ||
+            data.password !== data.confirmPassword ||
+            !validateEmail(data.email) ||
+            !validPhone(data.phone)
+          }
+          touchOpacityStyles={[styles.button, styles.marginTop25]}
+          androidButtonStyled={{
+            textAlign: 'center',
+            marginTop: 10,
+            fontSize: 16,
+            color: (!data.email &&
+              !validateEmail(data.email) &&
+              !data.name &&
+              !data.password &&
+              !data.confirmPassword &&
+              !data.phone &&
+              !validPhone(data.phone)) ||
               data.password !== data.confirmPassword ||
               !validateEmail(data.email) ||
-              !validPhone(data.phone)
-            }
-          />
-        </TouchableHighlight>
+              !validPhone(data.phone) ? 'grey' : '#fff',
+          }}
+        />
         <Text style={[styles.marginTop10, styles.loginText]}>
           Not the first time?{' '}
-          <TouchableHighlight style={{ marginTop: -12 }}>
-            <Button
-              color='#FF7083'
-              title='Login!'
-              onPress={() => navigation.navigate('login')}
-            />
-          </TouchableHighlight>
+          <Button
+            color='#FF7083'
+            title='Login!'
+            onPress={() => navigation.navigate('login')}
+            androidButtonStyled={{
+              textAlign: 'center',
+              marginTop: 10,
+              fontSize: 16,
+              color: '#FF7083',
+            }}
+            touchOpacityStyles={{ marginTop: -12 }}
+          />
         </Text>
       </ScrollView>
     </View>
@@ -351,7 +367,7 @@ const styles = StyleSheet.create({
     color: '#fff',
     marginLeft: 50,
   },
-  marginTop10:{
+  marginTop10: {
     marginTop: 10,
   }
 })

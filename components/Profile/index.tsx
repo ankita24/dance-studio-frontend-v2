@@ -5,7 +5,6 @@ import {
   View,
   TextInput,
   TouchableHighlight,
-  Button,
   Alert,
   ScrollView,
   FlatList,
@@ -18,7 +17,7 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../../App'
 import { IP_ADDRESS } from '@env'
 import { styles } from './styles'
-import { RadioButton, Loader, UploadImage } from '../../partials'
+import { RadioButton, Loader, UploadImage, Button } from '../../partials'
 import { useDispatch } from 'react-redux'
 import { setType } from '../../redux/typeSlice'
 
@@ -114,7 +113,7 @@ export default function Profile({ route, navigation }: Props) {
 
   const fetchImage = (img: string, index?: number) => {
     if (editableData) {
-      if (index || index===0) {
+      if (index || index === 0) {
         const imageWIthIndex = editableData.images.map((item, index1) => {
           if (index === index1) return img
           return item
@@ -170,21 +169,21 @@ export default function Profile({ route, navigation }: Props) {
       return false
     }
   }
-  function convertTime12To24(time:any) {
-    var hours   = Number(time.match(/^(\d+)/)[1]);
+  function convertTime12To24(time: any) {
+    var hours = Number(time.match(/^(\d+)/)[1]);
     var minutes = Number(time.match(/:(\d+)/)[1]);
-    var AMPM    = time.match(/\s(.*)$/)[1];
+    var AMPM = time.match(/\s(.*)$/)[1];
     if (AMPM === "PM" && hours < 12) hours = hours + 12;
     if (AMPM === "AM" && hours === 12) hours = hours - 12;
-    var sHours   = hours.toString();
+    var sHours = hours.toString();
     var sMinutes = minutes.toString();
     if (hours < 10) sHours = "0" + sHours;
     if (minutes < 10) sMinutes = "0" + sMinutes;
     return (sHours + ":" + sMinutes);
-}
+  }
 
   const renderStatus = (startTime: string, endTime: string, date: Date) => {
-    const currentTimeA=new Date().toLocaleTimeString()
+    const currentTimeA = new Date().toLocaleTimeString()
     if (new Date(date).getDate() >= new Date().getDate()) {
       if (currentTimeA > convertTime12To24(endTime)) {
         return 'Past Booking'
@@ -198,9 +197,8 @@ export default function Profile({ route, navigation }: Props) {
 
   const formatDate = (date: Date | undefined) => {
     if (!!date)
-      return `${new Date(date).getDate()}/${
-        new Date(date).getMonth() + 1
-      }/${new Date(date).getFullYear()}`
+      return `${new Date(date).getDate()}/${new Date(date).getMonth() + 1
+        }/${new Date(date).getFullYear()}`
     return ''
   }
   if (loading) {
@@ -228,11 +226,11 @@ export default function Profile({ route, navigation }: Props) {
       </View>
 
       {!edit ? (
-        <View style={[ styles.marginLeft15]}>
-        <Button title='Edit' color='#FF7083' onPress={() => setEdit(true)} /></View>
+        <View style={[styles.alignSelfCenter]}>
+          <Button title='Edit' color='#FF7083' onPress={() => setEdit(true)} androidButtonStyled={styles.androidButtonStyles} /></View>
       ) : (
         <View style={[styles.flex, styles.alignSelfCenter]}>
-          <Button color='#FF7083' title='Save' onPress={SaveDetails} />
+          <Button color='#FF7083' title='Save' onPress={SaveDetails} androidButtonStyled={styles.androidButtonStyles} />
           <Button
             title='Cancel'
             color='#FF7083'
@@ -240,6 +238,7 @@ export default function Profile({ route, navigation }: Props) {
               setEdit(false)
               setEditableData(profile)
             }}
+            androidButtonStyled={styles.androidButtonStyles}
           />
         </View>
       )}
@@ -290,22 +289,11 @@ export default function Profile({ route, navigation }: Props) {
                         value={editableData?.cost?.toString()}
                         onChangeText={value => handleTextChange('rent', value)}
                       />
-                      <Text style={styles.textStyle}> Rs/</Text>
+                      <Text style={styles.textStyle}> र/hr</Text>
                     </View>
                   ) : (
-                    <Text style={styles.textStyle}>{profile.cost} Rs/</Text>
+                    <Text style={styles.textStyle}>{profile.cost} र/hr</Text>
                   )}
-                  {edit ? (
-                    <TextInput
-                      value={editableData?.duration?.toString()}
-                      onChangeText={value =>
-                        handleTextChange('duration', value)
-                      }
-                    />
-                  ) : (
-                    <Text style={styles.textStyle}>{profile.duration}</Text>
-                  )}
-                  <Text style={styles.textStyle}>hrs</Text>
                 </View>
                 <View style={[styles.marginBottom6, styles.flex]}>
                   <Text style={[styles.fontWeight, styles.textStyle]}>
@@ -391,7 +379,7 @@ export default function Profile({ route, navigation }: Props) {
                     styles.marginLeft28,
                   ]}
                 >
-                  Photos for users to see (min 2)
+                  Photos for users to see (min 1)
                 </Text>
                 {!editableData?.images.length && !edit && (
                   <Text style={styles.noImagesText}>
@@ -469,8 +457,8 @@ export default function Profile({ route, navigation }: Props) {
                           status === 'Past Booking'
                             ? styles.green
                             : status === 'In Progress'
-                            ? styles.yellow
-                            : styles.red,
+                              ? styles.yellow
+                              : styles.red,
                         ]}
                       >
                         <Text style={styles.statusText}>{status}</Text>
@@ -522,12 +510,12 @@ export default function Profile({ route, navigation }: Props) {
             <View />
           )}
           <TouchableHighlight style={styles.logoutStyle}>
-            <Button color='#FF7083' title='Log out' onPress={logOut} />
+            <Button color='#FF7083' title='Log out' onPress={logOut} androidButtonStyled={styles.androidButtonStyles} />
           </TouchableHighlight>
         </ScrollView>
       ) : (
         <TouchableHighlight style={styles.logoutStyle}>
-          <Button color='#FF7083' title='Log out' onPress={logOut} />
+          <Button color='#FF7083' title='Log out' onPress={logOut} androidButtonStyled={styles.androidButtonStyles} />
         </TouchableHighlight>
       )}
     </ScrollView>

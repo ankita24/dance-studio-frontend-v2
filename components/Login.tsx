@@ -6,7 +6,6 @@ import {
   View,
   TouchableHighlight,
   Alert,
-  Button,
 } from 'react-native'
 import axios from 'axios'
 import { validateEmail } from '../utils/helper'
@@ -17,6 +16,7 @@ import { RootStackParamList } from '../App'
 import { useDispatch } from 'react-redux'
 import { IP_ADDRESS } from '@env'
 import { setType } from '../redux/typeSlice'
+import { Button } from '../partials'
 
 type Props = NativeStackScreenProps<RootStackParamList>
 
@@ -30,12 +30,12 @@ export default function Login({ route, navigation }: Props) {
     axios
       .post<
         | {
-            status?: 'error' | 'ok'
-            id: string
-            type: 'owner' | 'user'
-            user: Profile
-            error: string
-          }
+          status?: 'error' | 'ok'
+          id: string
+          type: 'owner' | 'user'
+          user: Profile
+          error: string
+        }
         | undefined
       >(
         `${IP_ADDRESS}/api/login`,
@@ -64,7 +64,7 @@ export default function Login({ route, navigation }: Props) {
                 const {
                   data: { user },
                 } = res
-                if (!user.location || !user.cost || !user.duration)
+                if (!user.location || !user.cost)
                   navigation.navigate('ownerStep1', { id: res.data.id })
                 else if (
                   !user.rooms ||
@@ -130,23 +130,34 @@ export default function Login({ route, navigation }: Props) {
           style={[styles.input]}
           onChangeText={text => setData({ ...data, pwd: text })}
         />
-        <TouchableHighlight style={[styles.button, styles.marginTop56]}>
-          <Button
-            title='LOGIN'
-            color='#fff'
-            onPress={handleLogin}
-            disabled={!data.email || !data.pwd || !validateEmail(data.email)}
-          />
-        </TouchableHighlight>
+        <Button
+          touchOpacityStyles={[styles.button, styles.marginTop56]}
+          disabled={!data.email || !data.pwd || !validateEmail(data.email)}
+          onPress={handleLogin}
+          title='LOGIN'
+          color='#fff'
+          androidButtonStyled={{
+            textAlign: 'center',
+            marginTop: 10,
+            fontSize: 16,
+            color: !data.email || !data.pwd || !validateEmail(data.email) ? 'grey' : '#fff',
+          }}
+        />
         <Text style={[styles.signUpText, styles.marginTop25]}>
           First time here?{' '}
-          <TouchableHighlight style={{ marginTop: -12.5 }}>
-            <Button
-              color='#FF7083'
-              title='Sign up!'
-              onPress={() => navigation.navigate('home')}
-            />
-          </TouchableHighlight>
+          <Button
+            touchOpacityStyles={{ marginTop: -12.5 }}
+            disabled={false}
+            onPress={() => navigation.navigate('home')}
+            title='Sign up!'
+            color='#FF7083'
+            androidButtonStyled={{
+              textAlign: 'center',
+              marginTop: 10,
+              fontSize: 16,
+              color: '#FF7083',
+            }}
+          />
         </Text>
       </View>
     </View>

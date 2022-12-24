@@ -75,7 +75,7 @@ const App = () => {
           const ifOwner = user.__t === 'OwnerSchema'
           if (ifOwner) {
             dispatch(setType('owner'))
-            if (!user.location || !user.cost || !user.duration)
+            if (!user.location || !user.cost)
               RootNavigation.navigate('ownerStep1', { id })
             else if (
               !user.rooms ||

@@ -131,7 +131,10 @@ export const styles = StyleSheet.create({
     flexWrap:'wrap',
     width:360
   },
-  marginLeft15:{
-    marginLeft:15
+  androidButtonStyles:{
+    textAlign: 'center',
+    marginTop: 10,
+    fontSize: 16,
+    color: '#FF7083',
   }
 })

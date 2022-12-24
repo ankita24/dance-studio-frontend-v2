@@ -5,7 +5,7 @@ import {
   TextInput,
   View,
   TouchableHighlight,
-  Button,
+
   Alert,
   Platform,
 } from 'react-native'
@@ -14,7 +14,7 @@ import {
   GooglePlacesAutocomplete,
   GooglePlacesAutocompleteRef,
 } from 'react-native-google-places-autocomplete'
-import UploadImage from '../partials/UploadImage'
+import { UploadImage, Button } from '../partials'
 
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
@@ -52,7 +52,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
       .get<{ user: Profile }>(`${IP_ADDRESS}/api/profile/${id}`)
       .then(response => {
         const { location, cost, lat, long } = response?.data?.user
-        if (!!location && !!cost  && id) {
+        if (!!location && !!cost && id) {
           navigation.navigate('ownerStep2', { id })
         } else
           setData({
@@ -131,7 +131,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
             onChangeText={text => setData({ ...data, cost: Number(text) })}
             value={data?.cost?.toString() ?? ''}
           />
-          
+
         </View>
         <Text style={[styles.label, styles.marginTop20]}>
           Upload Studio Image
@@ -189,54 +189,35 @@ export default function OwnerRequired({ route, navigation }: Props) {
             ) : null}
           </View>
         ) : null}
-        <TouchableHighlight style={[styles.button, styles.marginTop20]}>
-          {Platform.OS === 'android' ? (
-            <Text
-              style={{
-                textAlign: 'center',
-                fontSize: 16,
-                color: !data.location && !data.cost ? 'grey' : '#fff',
-              }}
-              onPress={() => {
-                if (!!data.location && !!data.cost && !!data.lat && !!data.long && image?.length) handleStepOne()
-              }}
-            >
-              CONFIRM
-            </Text>
-          ) : (
-            <Button
-              title='CONFIRM'
-              color='#fff'
-              onPress={handleStepOne}
-              disabled={!data.location && !data.cost}
-            />
-          )}
-        </TouchableHighlight>
-        <TouchableHighlight style={{ marginRight: 22 }}>
-          {Platform.OS === 'android' ? (
-            <Text
-              style={{
-                marginTop: 22,
-                textAlign: 'center',
-                fontSize: 16,
-                color: '#FF7083',
-              }}
-              onPress={() =>
-                navigation.navigate('ownerStep2', { id: id ?? '' })
-              }
-            >
-              Skip
-            </Text>
-          ) : (
-            <Button
-              color='#FF7083'
-              title='Skip'
-              onPress={() =>
-                navigation.navigate('ownerStep2', { id: id ?? '' })
-              } //change this
-            />
-          )}
-        </TouchableHighlight>
+        <Button
+          touchOpacityStyles={[styles.button, styles.marginTop20]}
+          androidButtonStyled={{
+            textAlign: 'center',
+            fontSize: 16,
+            color: !data.location && !data.cost ? 'grey' : '#fff',
+          }}
+          onPress={() => {
+            if (!!data.location && !!data.cost && !!data.lat && !!data.long && image?.length) handleStepOne()
+          }}
+          title={'CONFIRM'}
+          color='#fff'
+          disabled={!data.location && !data.cost}
+        />
+        <Button
+          touchOpacityStyles={{ marginRight: 22 }}
+          androidButtonStyled={{
+            marginTop: 22,
+            textAlign: 'center',
+            fontSize: 16,
+            color: '#FF7083',
+          }}
+          onPress={() =>
+            navigation.navigate('ownerStep2', { id: id ?? '' })
+          }
+          color={'#FF7083'}
+          title={'Skip'}
+          disabled={false}
+        />
       </View>
     </View>
   )
@@ -248,7 +229,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   innerContainer: { marginLeft: 40, marginTop: 50 },
-  
+
   cost: {
     display: 'flex',
     flexDirection: 'row',
@@ -308,7 +289,7 @@ const styles = StyleSheet.create({
     borderColor: '#030169',
     width: 290,
     flexDirection: 'row',
-    padding:4,
+    padding: 4,
   },
   input: {
     height: 56,

@@ -1,9 +1,10 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Image, View, TouchableOpacity, StyleSheet } from 'react-native'
 import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import * as ImagePicker from 'expo-image-picker'
 import axios from 'axios'
 import { cloudinaryUrl } from '../utils'
+import Loader from './Loader'
 
 export default function UploadImage({
   receiveImage,
@@ -18,7 +19,9 @@ export default function UploadImage({
   addMore?: boolean
   edit?: boolean
 }) {
+  const [loading, setLoading] = useState(false)
   const addImage = async () => {
+    
     let result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: ImagePicker.MediaTypeOptions.All,
       allowsEditing: true,
@@ -31,6 +34,7 @@ export default function UploadImage({
     }
 
     if (!result.cancelled) {
+      setLoading(true)
       let localUri = result.uri
       let filename = localUri.split('/').pop()
       let formData = new FormData()
@@ -62,6 +66,8 @@ export default function UploadImage({
         })
         .catch(e => {
           console.error(e.message)
+        }).finally(() => {
+          setLoading(false)
         })
     }
   }
@@ -86,16 +92,18 @@ export default function UploadImage({
             color='#FF7083'
             style={imageUploaderStyles.editIcon}
           />
-          <Image
-            source={{ uri: cloudinaryUrl(image) }}
-            style={{
-              width: 90,
-              height: 90,
-              borderRadius: !squared ? 50 : 0,
-              opacity: edit ? 0.2 : 1,
-              marginBottom: 20,
-            }}
-          />
+          {loading ? <Loader /> :
+            <Image
+              source={{ uri: cloudinaryUrl(image) }}
+              style={{
+                width: 90,
+                height: 90,
+                borderRadius: !squared ? 50 : 0,
+                opacity: edit ? 0.2 : 1,
+                marginBottom: 20,
+              }}
+
+            />}
         </TouchableOpacity>
       ) : (
         <TouchableOpacity

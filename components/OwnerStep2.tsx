@@ -5,14 +5,13 @@ import {
   TextInput,
   View,
   TouchableHighlight,
-  Button,
   Alert, Platform
 } from 'react-native'
 import axios from 'axios'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
 import { IP_ADDRESS } from '@env'
-import RadioButton from '../partials/RadioButton'
+import { RadioButton, Button } from '../partials'
 import { Profile } from 'types'
 
 type Props = NativeStackScreenProps<
@@ -136,59 +135,36 @@ export default function OwnerStep2({ route, navigation }: Props) {
             />
           </View>
         </View>
-
-        <TouchableHighlight style={[styles.button, styles.marginTop45, styles.marginRight30]}>
-          {Platform.OS === 'android' ? (
-            <Text
-              style={{
-                textAlign: 'center',
-                marginTop: 10,
-                fontSize: 16,
-                color: !data.area && !data.rooms ? 'grey' : '#fff',
-              }}
-              onPress={() => {
-                if (!!data.area && !!data.rooms) handleStepTwo()
-              }}
-            >
-              CONFIRM
-            </Text>
-          ) : (
-            <Button
-              title='CONFIRM'
-              color='#fff'
-              onPress={handleStepTwo}
-              disabled={!data.area && !data.rooms}
-            />
-          )}
-        </TouchableHighlight>
-
-        <TouchableHighlight style={{ marginRight: 50 }}>
-          {Platform.OS === 'android' ? (
-            <Text
-              style={{
-                marginTop: 22,
-                textAlign: 'center',
-                fontSize: 16,
-                color: '#FF7083',
-              }}
-              onPress={() =>
-                navigation.navigate('ownerStep3', { id: id ?? '', signUpStep: true })
-              }
-            >
-              Skip
-            </Text>
-          ) : (
-            <Button
-              color='#FF7083'
-              title='Skip'
-              onPress={() =>
-                navigation.navigate('ownerStep3', { id: id ?? '', signUpStep: true })
-              } //change this
-            />
-          )}
-        </TouchableHighlight>
+        <Button
+          title='CONFIRM'
+          disabled={!data.area && !data.rooms}
+          onPress={() => {
+            if (!!data.area && !!data.rooms) handleStepTwo()
+          }}
+          androidButtonStyled={{
+            textAlign: 'center',
+            marginTop: 10,
+            fontSize: 16,
+            color: !data.area && !data.rooms ? 'grey' : '#fff',
+          }}
+          touchOpacityStyles={[styles.button, styles.marginTop45, styles.marginRight30]}
+          color='#fff'
+        />
+        <Button
+          title='Skip'
+          disabled={false}
+          onPress={() => navigation.navigate('ownerStep3', { id: id ?? '', signUpStep: true })}
+          androidButtonStyled={{
+            marginTop: 22,
+            textAlign: 'center',
+            fontSize: 16,
+            color: '#FF7083',
+          }}
+          touchOpacityStyles={{ marginRight: 50 }}
+          color='#FF7083'
+        />
       </View>
-    </View>
+    </View >
   )
 }
 

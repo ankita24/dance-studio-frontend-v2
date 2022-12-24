@@ -4,8 +4,6 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  Button,
-  TouchableHighlight,
   ScrollView, Image, Animated
 } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -15,6 +13,7 @@ import { StudioWithSlots } from 'types'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { IP_ADDRESS } from '@env'
 import { cloudinaryUrl } from '../utils'
+import { Button } from '../partials'
 
 const currentTime = new Date().toLocaleTimeString('en-US', {
   hour: 'numeric',
@@ -82,7 +81,7 @@ export default function StudioDetails({ route, navigation }: Props) {
 
   const toShow = (endTime: string) => {
     const endFullhour = to24HrTime(endTime)
-    const currentTimeHour=to24HrTime(currentTime)
+    const currentTimeHour = to24HrTime(currentTime)
     if (currentTimeHour > endFullhour) {
       return false
     }
@@ -94,30 +93,30 @@ export default function StudioDetails({ route, navigation }: Props) {
       <View style={styles.container}>
         <View />
         <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            scrollEventThrottle={10}
-            pagingEnabled
-            onScroll={Animated.event([
-              { nativeEvent: { contentOffset: { x: animVal } } },
-            ])}
-            style={styles.carousal}
-          >
-              {studio?.images.length ? (
-                studio?.images?.map(item => {
-                  return (
-                    <Image
-                      source={{ uri: cloudinaryUrl(item) }}
-                      style={styles.image}
-                    />
-                  )
-                })
-              ) : (
-                <View />
-              )}
-            </ScrollView>
+          horizontal
+          showsHorizontalScrollIndicator={false}
+          scrollEventThrottle={10}
+          pagingEnabled
+          onScroll={Animated.event([
+            { nativeEvent: { contentOffset: { x: animVal } } },
+          ])}
+          style={styles.carousal}
+        >
+          {studio?.images.length ? (
+            studio?.images?.map(item => {
+              return (
+                <Image
+                  source={{ uri: cloudinaryUrl(item) }}
+                  style={styles.image}
+                />
+              )
+            })
+          ) : (
+            <View />
+          )}
+        </ScrollView>
         <View style={styles.innerContainer}>
-        
+
           <View
             style={{
               display: 'flex',
@@ -135,7 +134,7 @@ export default function StudioDetails({ route, navigation }: Props) {
             </Text>
           </View>
           <Text style={styles.infoCtn}>{studio?.location}</Text>
-          <Text style={styles.cost}>Rs {studio?.cost} / 1 hour</Text>
+          <Text style={styles.cost}>र {studio?.cost} / 1 hour</Text>
           <View style={{ marginTop: 30 }}>
             <Text style={styles.subPara}>Area: {studio?.area} sq ft</Text>
             <Text style={[styles.subPara, styles.marginTop5]}>
@@ -179,14 +178,19 @@ export default function StudioDetails({ route, navigation }: Props) {
                 )
             })}
           </View>
-          <TouchableHighlight style={[styles.button, styles.marginTop25]}>
-            <Button
-              title='BOOK'
-              color='#fff'
-              onPress={handleBooking}
-              disabled={!selectedSlot && selectedSlot !== 0}
-            />
-          </TouchableHighlight>
+          <Button
+            title='BOOK'
+            color='#fff'
+            onPress={handleBooking}
+            disabled={!selectedSlot && selectedSlot !== 0}
+            touchOpacityStyles={[styles.button, styles.marginTop25]}
+            androidButtonStyled={{
+              textAlign: 'center',
+              marginTop: 10,
+              fontSize: 16,
+              color: !selectedSlot && selectedSlot !== 0 ? 'grey' : '#fff',
+            }}
+          />
         </View>
       </View>
     </ScrollView>
