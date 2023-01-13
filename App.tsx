@@ -28,6 +28,7 @@ import { IP_ADDRESS } from '@env'
 import { setType } from './redux/typeSlice'
 import { navigationRef } from './RootNavigation';
 import * as RootNavigation from './RootNavigation';
+import * as SplashScreen from 'expo-splash-screen'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
 const Tab = createBottomTabNavigator()
@@ -57,6 +58,10 @@ const AppWrapper: React.FC<RootStackParamList> = () => {
 }
 
 const App = () => {
+
+  SplashScreen.preventAutoHideAsync()
+  setTimeout(SplashScreen.hideAsync,2000)
+
   const { type: typeofUser } = useSelector((state: RootState) => state.type)
   const dispatch = useDispatch()
   useEffect(() => {
