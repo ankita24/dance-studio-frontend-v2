@@ -4,8 +4,7 @@ import {
   Text,
   TextInput,
   View,
-  TouchableHighlight,
-  Alert, Platform
+  Alert, 
 } from 'react-native'
 import axios from 'axios'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'

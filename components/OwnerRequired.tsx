@@ -1,14 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  TouchableHighlight,
-
-  Alert,
-  Platform,
-} from 'react-native'
+import { StyleSheet, Text, TextInput, View, Alert } from 'react-native'
 import axios from 'axios'
 import {
   GooglePlacesAutocomplete,
@@ -59,7 +50,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
             ...data,
             cost,
             lat,
-            long
+            long,
           })
       })
       .catch(error => console.error(error))
@@ -97,7 +88,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
                 ...data,
                 lat: details?.geometry.location.lat ?? 0,
                 long: details?.geometry.location.lng ?? 0,
-                location: data1.description
+                location: data1.description,
               })
             }}
             query={{
@@ -108,15 +99,15 @@ export default function OwnerRequired({ route, navigation }: Props) {
             fetchDetails
             listUnderlayColor={'#D1D100'}
             textInputProps={{ style: styles.input }}
-            renderRow={(rowData) => {
-              const title = rowData.structured_formatting.main_text;
-              const address = rowData.structured_formatting.secondary_text;
+            renderRow={rowData => {
+              const title = rowData.structured_formatting.main_text
+              const address = rowData.structured_formatting.secondary_text
               return (
                 <View>
                   <Text style={{ fontSize: 14 }}>{title}</Text>
                   <Text style={{ fontSize: 14 }}>{address}</Text>
                 </View>
-              );
+              )
             }}
           />
         </View>
@@ -131,7 +122,6 @@ export default function OwnerRequired({ route, navigation }: Props) {
             onChangeText={text => setData({ ...data, cost: Number(text) })}
             value={data?.cost?.toString() ?? ''}
           />
-
         </View>
         <Text style={[styles.label, styles.marginTop20]}>
           Upload Studio Image
@@ -197,7 +187,14 @@ export default function OwnerRequired({ route, navigation }: Props) {
             color: !data.location && !data.cost ? 'grey' : '#fff',
           }}
           onPress={() => {
-            if (!!data.location && !!data.cost && !!data.lat && !!data.long && image?.length) handleStepOne()
+            if (
+              !!data.location &&
+              !!data.cost &&
+              !!data.lat &&
+              !!data.long &&
+              image?.length
+            )
+              handleStepOne()
           }}
           title={'CONFIRM'}
           color='#fff'
@@ -211,9 +208,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
             fontSize: 16,
             color: '#FF7083',
           }}
-          onPress={() =>
-            navigation.navigate('ownerStep2', { id: id ?? '' })
-          }
+          onPress={() => navigation.navigate('ownerStep2', { id: id ?? '' })}
           color={'#FF7083'}
           title={'Skip'}
           disabled={false}
