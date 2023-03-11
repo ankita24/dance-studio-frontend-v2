@@ -26,8 +26,8 @@ import axios from 'axios'
 import { Profile as ProfileType } from 'types'
 import { IP_ADDRESS } from '@env'
 import { setType } from './redux/typeSlice'
-import { navigationRef } from './RootNavigation';
-import * as RootNavigation from './RootNavigation';
+import { navigationRef } from './RootNavigation'
+import * as RootNavigation from './RootNavigation'
 import * as SplashScreen from 'expo-splash-screen'
 
 const Stack = createNativeStackNavigator<RootStackParamList>()
@@ -46,7 +46,7 @@ export type RootStackParamList = {
   userBookedClasses: { id: string }
   Tabs: any
   bookedClasses: { id: string }
-  ownerStep3: { id: string; signUpStep?: boolean }
+  ownerStep3: { id: string }
 }
 
 const AppWrapper: React.FC<RootStackParamList> = () => {
@@ -58,9 +58,8 @@ const AppWrapper: React.FC<RootStackParamList> = () => {
 }
 
 const App = () => {
-
   SplashScreen.preventAutoHideAsync()
-  setTimeout(SplashScreen.hideAsync,2000)
+  setTimeout(SplashScreen.hideAsync, 2000)
 
   const { type: typeofUser } = useSelector((state: RootState) => state.type)
   const dispatch = useDispatch()

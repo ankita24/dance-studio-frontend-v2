@@ -59,7 +59,7 @@ export default function OwnerStep2({ route, navigation }: Props) {
           if (res?.data?.status === 'error') {
             Alert.alert(res?.data?.error)
           } else {
-            navigation.navigate('ownerStep3', { id, signUpStep: true })
+            navigation.navigate('ownerStep3', { id })
           }
         })
         .catch(e => console.error(e))
@@ -142,24 +142,6 @@ export default function OwnerStep2({ route, navigation }: Props) {
             styles.marginRight30,
           ]}
           color='#fff'
-        />
-        <Button
-          title='Skip'
-          disabled={false}
-          onPress={() =>
-            navigation.navigate('ownerStep3', {
-              id: id ?? '',
-              signUpStep: true,
-            })
-          }
-          androidButtonStyled={{
-            marginTop: 22,
-            textAlign: 'center',
-            fontSize: 16,
-            color: '#FF7083',
-          }}
-          touchOpacityStyles={{ marginRight: 50 }}
-          color='#FF7083'
         />
       </View>
     </View>

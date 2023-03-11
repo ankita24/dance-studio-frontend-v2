@@ -26,7 +26,7 @@ export default function Profile({ route, navigation }: Props) {
   const [id, setId] = useState<string | null>()
   const [typeOfUser, setTypeOfUser] = useState<string | null>('')
   const [profile, setProfile] = useState<ProfileType>()
-  const [edit, setEdit] = useState(route.params?.signUpStep ?? false)
+  const [edit, setEdit] = useState(false)
   const [editableData, setEditableData] = useState<ProfileType>()
   const [bookings, setBookings] = useState<UserBookings[]>([])
   const [loading, setLoading] = useState(false)
@@ -108,12 +108,7 @@ export default function Profile({ route, navigation }: Props) {
           if (res?.data?.status === 'error') {
             Alert.alert(res?.data?.error)
           } else {
-            if (route.params?.signUpStep) {
-              navigation.navigate('Profile', { id })
-            } else {
-              fetchProfile()
-              setEdit(false)
-            }
+            navigation.navigate('Profile', { id })
           }
         })
         .catch(e => console.error(e))
@@ -125,7 +120,7 @@ export default function Profile({ route, navigation }: Props) {
   }
   return (
     <ScrollView style={styles.container}>
-      {route.params?.signUpStep && <Text style={styles.title}>Time Slots</Text>}
+      <Text style={styles.title}>Time Slots</Text>
       {!edit ? (
         <Button
           title='Edit'
@@ -136,29 +131,18 @@ export default function Profile({ route, navigation }: Props) {
       ) : (
         <View style={[styles.flex, styles.alignSelfCenter]}>
           <Button color='#FF7083' title='Save' onPress={SaveDetails} />
-          {!route.params?.signUpStep ? (
-            <Button
-              title='Cancel'
-              color='#FF7083'
-              onPress={() => {
-                if (profile) {
-                  setEdit(false)
-                  const data = { ...profile }
-                  setEditableData({ ...data })
-                }
-              }}
-              androidButtonStyled={styles.androidButtonStyles}
-            />
-          ) : (
-            <Button
-              title='Skip'
-              color='#FF7083'
-              onPress={() => {
-                navigation.navigate('Profile', { id: id ?? '' })
-              }}
-              androidButtonStyled={styles.androidButtonStyles}
-            />
-          )}
+          <Button
+            title='Cancel'
+            color='#FF7083'
+            onPress={() => {
+              if (profile) {
+                setEdit(false)
+                const data = { ...profile }
+                setEditableData({ ...data })
+              }
+            }}
+            androidButtonStyled={styles.androidButtonStyles}
+          />
         </View>
       )}
       <View style={{ marginLeft: 13 }}>
