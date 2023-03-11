@@ -4,7 +4,9 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  ScrollView, Image, Animated
+  ScrollView,
+  Image,
+  Animated,
 } from 'react-native'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
@@ -116,7 +118,6 @@ export default function StudioDetails({ route, navigation }: Props) {
           )}
         </ScrollView>
         <View style={styles.innerContainer}>
-
           <View
             style={{
               display: 'flex',
@@ -125,7 +126,6 @@ export default function StudioDetails({ route, navigation }: Props) {
               width: 340,
             }}
           >
-
             <Text style={{ fontSize: 24, color: '#030169' }}>
               {studio?.name}
             </Text>
@@ -138,7 +138,7 @@ export default function StudioDetails({ route, navigation }: Props) {
           <View style={{ marginTop: 30 }}>
             <Text style={styles.subPara}>Area: {studio?.area} sq ft</Text>
             <Text style={[styles.subPara, styles.marginTop5]}>
-              Is Soundproof?: {studio?.isSoundProof ?? 'No'}
+              Is Soundproof?: {studio?.soundProof ?? 'No'}
             </Text>
             <Text style={[styles.subPara, styles.marginTop5]}>
               Has changing room?: {studio?.hasChangingRoom ?? 'No'}
@@ -156,7 +156,7 @@ export default function StudioDetails({ route, navigation }: Props) {
                     style={[
                       styles.tag,
                       (selectedSlot || selectedSlot === 0) &&
-                        index === selectedSlot
+                      index === selectedSlot
                         ? styles.selectedTag
                         : styles.notSelectedTag,
                     ]}
@@ -167,7 +167,7 @@ export default function StudioDetails({ route, navigation }: Props) {
                         padding: 9,
                         color:
                           (selectedSlot || selectedSlot === 0) &&
-                            index === selectedSlot
+                          index === selectedSlot
                             ? '#fff'
                             : '#FF7083',
                       }}

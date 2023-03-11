@@ -1,11 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import {
-  StyleSheet,
-  Text,
-  TextInput,
-  View,
-  Alert, 
-} from 'react-native'
+import { StyleSheet, Text, TextInput, View, Alert } from 'react-native'
 import axios from 'axios'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../App'
@@ -24,7 +18,7 @@ export default function OwnerStep2({ route, navigation }: Props) {
   const [data, setData] = useState({
     area: 0,
     rooms: 0,
-    isSoundProof: true,
+    soundProof: true,
     hasChangingRoom: true,
   })
 
@@ -36,20 +30,16 @@ export default function OwnerStep2({ route, navigation }: Props) {
     axios
       .get<{ user: Profile }>(`${IP_ADDRESS}/api/profile/${id}`)
       .then(response => {
-        const {
-          area,
-          rooms,
-          isSoundProof,
-          hasChangingRoom,
-        } = response?.data?.user
-        if (!!area && !!rooms && !!isSoundProof && hasChangingRoom && id) {
+        const { area, rooms, soundProof, hasChangingRoom } =
+          response?.data?.user
+        if (!!area && !!rooms && !!soundProof && hasChangingRoom && id) {
           navigation.navigate('ownerStep2', { id })
         } else
           setData({
             ...data,
             area,
             rooms,
-            isSoundProof: isSoundProof ?? true,
+            soundProof: soundProof ?? true,
             hasChangingRoom: hasChangingRoom ?? true,
           })
       })
@@ -116,9 +106,9 @@ export default function OwnerStep2({ route, navigation }: Props) {
           <View>
             <Text style={styles.label}>Is soundproof?</Text>
             <RadioButton
-              value={data.isSoundProof}
-              onUpdate={(isSoundProof: boolean) =>
-                setData({ ...data, isSoundProof })
+              value={data.soundProof}
+              onUpdate={(soundProof: boolean) =>
+                setData({ ...data, soundProof })
               }
             />
           </View>
@@ -146,13 +136,22 @@ export default function OwnerStep2({ route, navigation }: Props) {
             fontSize: 16,
             color: !data.area && !data.rooms ? 'grey' : '#fff',
           }}
-          touchOpacityStyles={[styles.button, styles.marginTop45, styles.marginRight30]}
+          touchOpacityStyles={[
+            styles.button,
+            styles.marginTop45,
+            styles.marginRight30,
+          ]}
           color='#fff'
         />
         <Button
           title='Skip'
           disabled={false}
-          onPress={() => navigation.navigate('ownerStep3', { id: id ?? '', signUpStep: true })}
+          onPress={() =>
+            navigation.navigate('ownerStep3', {
+              id: id ?? '',
+              signUpStep: true,
+            })
+          }
           androidButtonStyled={{
             marginTop: 22,
             textAlign: 'center',
@@ -163,7 +162,7 @@ export default function OwnerStep2({ route, navigation }: Props) {
           color='#FF7083'
         />
       </View>
-    </View >
+    </View>
   )
 }
 

@@ -135,6 +135,7 @@ export const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 10,
     fontSize: 16,
+    marginLeft:8,
     color: '#FF7083',
   }
 })

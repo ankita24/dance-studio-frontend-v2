@@ -11,7 +11,7 @@ export interface Profile {
   area: number
   cost: number
   duration: number
-  isSoundProof?: boolean
+  soundProof?: boolean
   hasChangingRoom?: boolean
   availabilty: { day: string; timings: { start: Date; end: Date }[],enable?:boolean }[]
   __t: 'OwnerSchema' | 'UserSchema'
@@ -34,7 +34,7 @@ export interface Studio {
   long: number
   name: string
   rooms: number
-  isSoundProof?: boolean
+  soundProof?: boolean
   hasChangingRoom?: boolean,
   deviceToken?:string
 }

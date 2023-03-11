@@ -287,7 +287,7 @@ export default function Profile({ route, navigation }: Props) {
                     <View style={styles.flexRow}>
                       <TextInput
                         value={editableData?.cost?.toString()}
-                        onChangeText={value => handleTextChange('rent', value)}
+                        onChangeText={value => handleTextChange('cost', value)}
                       />
                       <Text style={styles.textStyle}> र/hr</Text>
                     </View>
@@ -330,7 +330,7 @@ export default function Profile({ route, navigation }: Props) {
                       </Text>
 
                       <Text style={styles.textStyle}>
-                        {profile?.isSoundProof === true ? 'Yes' : 'No'}
+                        {profile?.soundProof === true ? 'Yes' : 'No'}
                       </Text>
                     </View>
                     <View style={[styles.marginBottom6, styles.flex]}>
@@ -351,9 +351,9 @@ export default function Profile({ route, navigation }: Props) {
                       </Text>
 
                       <RadioButton
-                        value={editableData?.isSoundProof ?? false}
-                        onUpdate={(isSoundProof: boolean) =>
-                          handleTextChange('isSoundProof', isSoundProof)
+                        value={editableData?.soundProof ?? false}
+                        onUpdate={(soundProof: boolean) =>
+                          handleTextChange('soundProof', soundProof)
                         }
                       />
                     </View>

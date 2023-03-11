@@ -127,7 +127,12 @@ export default function Profile({ route, navigation }: Props) {
     <ScrollView style={styles.container}>
       {route.params?.signUpStep && <Text style={styles.title}>Time Slots</Text>}
       {!edit ? (
-        <Button title='Edit' color='#FF7083' onPress={() => setEdit(true)} androidButtonStyled={styles.androidButtonStyles} />
+        <Button
+          title='Edit'
+          color='#FF7083'
+          onPress={() => setEdit(true)}
+          androidButtonStyled={styles.androidButtonStyles}
+        />
       ) : (
         <View style={[styles.flex, styles.alignSelfCenter]}>
           <Button color='#FF7083' title='Save' onPress={SaveDetails} />
@@ -281,5 +286,5 @@ export const styles = StyleSheet.create({
     marginTop: 10,
     fontSize: 16,
     color: '#FF7083',
-  }
+  },
 })

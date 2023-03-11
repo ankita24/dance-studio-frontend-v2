@@ -183,6 +183,7 @@ export default function OwnerRequired({ route, navigation }: Props) {
           touchOpacityStyles={[styles.button, styles.marginTop20]}
           androidButtonStyled={{
             textAlign: 'center',
+            paddingTop: 10,
             fontSize: 16,
             color: !data.location && !data.cost ? 'grey' : '#fff',
           }}
@@ -199,19 +200,6 @@ export default function OwnerRequired({ route, navigation }: Props) {
           title={'CONFIRM'}
           color='#fff'
           disabled={!data.location && !data.cost}
-        />
-        <Button
-          touchOpacityStyles={{ marginRight: 22 }}
-          androidButtonStyled={{
-            marginTop: 22,
-            textAlign: 'center',
-            fontSize: 16,
-            color: '#FF7083',
-          }}
-          onPress={() => navigation.navigate('ownerStep2', { id: id ?? '' })}
-          color={'#FF7083'}
-          title={'Skip'}
-          disabled={false}
         />
       </View>
     </View>
