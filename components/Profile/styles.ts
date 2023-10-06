@@ -1,4 +1,4 @@
-import { StyleSheet } from 'react-native'
+import { StyleSheet, Platform } from 'react-native'
 
 export const styles = StyleSheet.create({
   container: {
@@ -35,8 +35,8 @@ export const styles = StyleSheet.create({
     display: 'flex',
     flexDirection: 'row',
   },
-  justifyContent:{
-    justifyContent:'space-between'
+  justifyContent: {
+    justifyContent: 'space-between',
   },
   containerStyle: {
     alignSelf: 'center',
@@ -128,14 +128,17 @@ export const styles = StyleSheet.create({
   },
   imageStyle: {
     marginLeft: 55,
-    flexWrap:'wrap',
-    width:360
+    flexWrap: 'wrap',
+    width: 360,
   },
-  androidButtonStyles:{
+  androidButtonStyles: {
     textAlign: 'center',
     marginTop: 10,
     fontSize: 16,
-    marginLeft:8,
+    marginLeft: 8,
     color: '#FF7083',
-  }
+  },
+  androidTextInput: {
+    marginTop: Platform.OS === 'android' ? -4 : 0,
+  },
 })

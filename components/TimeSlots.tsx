@@ -130,7 +130,7 @@ export default function Profile({ route, navigation }: Props) {
         />
       ) : (
         <View style={[styles.flex, styles.alignSelfCenter]}>
-          <Button color='#FF7083' title='Save' onPress={SaveDetails} />
+          <Button color='#FF7083' title='Save' onPress={SaveDetails} androidButtonStyled={styles.androidButtonStyles}/>
           <Button
             title='Cancel'
             color='#FF7083'
@@ -142,6 +142,7 @@ export default function Profile({ route, navigation }: Props) {
               }
             }}
             androidButtonStyled={styles.androidButtonStyles}
+            touchOpacityStyles={{marginLeft:8}}
           />
         </View>
       )}

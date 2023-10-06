@@ -170,16 +170,16 @@ export default function Profile({ route, navigation }: Props) {
     }
   }
   function convertTime12To24(time: any) {
-    var hours = Number(time.match(/^(\d+)/)[1]);
-    var minutes = Number(time.match(/:(\d+)/)[1]);
-    var AMPM = time.match(/\s(.*)$/)[1];
-    if (AMPM === "PM" && hours < 12) hours = hours + 12;
-    if (AMPM === "AM" && hours === 12) hours = hours - 12;
-    var sHours = hours.toString();
-    var sMinutes = minutes.toString();
-    if (hours < 10) sHours = "0" + sHours;
-    if (minutes < 10) sMinutes = "0" + sMinutes;
-    return (sHours + ":" + sMinutes);
+    var hours = Number(time.match(/^(\d+)/)[1])
+    var minutes = Number(time.match(/:(\d+)/)[1])
+    var AMPM = time.match(/\s(.*)$/)[1]
+    if (AMPM === 'PM' && hours < 12) hours = hours + 12
+    if (AMPM === 'AM' && hours === 12) hours = hours - 12
+    var sHours = hours.toString()
+    var sMinutes = minutes.toString()
+    if (hours < 10) sHours = '0' + sHours
+    if (minutes < 10) sMinutes = '0' + sMinutes
+    return sHours + ':' + sMinutes
   }
 
   const renderStatus = (startTime: string, endTime: string, date: Date) => {
@@ -197,8 +197,9 @@ export default function Profile({ route, navigation }: Props) {
 
   const formatDate = (date: Date | undefined) => {
     if (!!date)
-      return `${new Date(date).getDate()}/${new Date(date).getMonth() + 1
-        }/${new Date(date).getFullYear()}`
+      return `${new Date(date).getDate()}/${
+        new Date(date).getMonth() + 1
+      }/${new Date(date).getFullYear()}`
     return ''
   }
   if (loading) {
@@ -227,10 +228,21 @@ export default function Profile({ route, navigation }: Props) {
 
       {!edit ? (
         <View style={[styles.alignSelfCenter]}>
-          <Button title='Edit' color='#FF7083' onPress={() => setEdit(true)} androidButtonStyled={styles.androidButtonStyles} /></View>
+          <Button
+            title='Edit'
+            color='#FF7083'
+            onPress={() => setEdit(true)}
+            androidButtonStyled={styles.androidButtonStyles}
+          />
+        </View>
       ) : (
         <View style={[styles.flex, styles.alignSelfCenter]}>
-          <Button color='#FF7083' title='Save' onPress={SaveDetails} androidButtonStyled={styles.androidButtonStyles} />
+          <Button
+            color='#FF7083'
+            title='Save'
+            onPress={SaveDetails}
+            androidButtonStyled={styles.androidButtonStyles}
+          />
           <Button
             title='Cancel'
             color='#FF7083'
@@ -286,6 +298,7 @@ export default function Profile({ route, navigation }: Props) {
                   {edit ? (
                     <View style={styles.flexRow}>
                       <TextInput
+                        style={styles.androidTextInput}
                         value={editableData?.cost?.toString()}
                         onChangeText={value => handleTextChange('cost', value)}
                       />
@@ -301,6 +314,7 @@ export default function Profile({ route, navigation }: Props) {
                   </Text>
                   {edit ? (
                     <TextInput
+                      style={styles.androidTextInput}
                       value={editableData?.area?.toString()}
                       onChangeText={value => handleTextChange('area', value)}
                     />
@@ -315,6 +329,7 @@ export default function Profile({ route, navigation }: Props) {
                   </Text>
                   {edit ? (
                     <TextInput
+                      style={styles.androidTextInput}
                       value={editableData?.rooms?.toString()}
                       onChangeText={value => handleTextChange('rooms', value)}
                     />
@@ -386,12 +401,7 @@ export default function Profile({ route, navigation }: Props) {
                     Please edit and add images
                   </Text>
                 )}
-                <View
-                  style={[
-                    styles.flexRow,
-                    styles.imageStyle,
-                  ]}
-                >
+                <View style={[styles.flexRow, styles.imageStyle]}>
                   {editableData?.images.map((item, index) => {
                     return (
                       <View style={{ width: '30%' }}>
@@ -457,8 +467,8 @@ export default function Profile({ route, navigation }: Props) {
                           status === 'Past Booking'
                             ? styles.green
                             : status === 'In Progress'
-                              ? styles.yellow
-                              : styles.red,
+                            ? styles.yellow
+                            : styles.red,
                         ]}
                       >
                         <Text style={styles.statusText}>{status}</Text>
@@ -510,12 +520,22 @@ export default function Profile({ route, navigation }: Props) {
             <View />
           )}
           <TouchableHighlight style={styles.logoutStyle}>
-            <Button color='#FF7083' title='Log out' onPress={logOut} androidButtonStyled={styles.androidButtonStyles} />
+            <Button
+              color='#FF7083'
+              title='Log out'
+              onPress={logOut}
+              androidButtonStyled={styles.androidButtonStyles}
+            />
           </TouchableHighlight>
         </ScrollView>
       ) : (
         <TouchableHighlight style={styles.logoutStyle}>
-          <Button color='#FF7083' title='Log out' onPress={logOut} androidButtonStyled={styles.androidButtonStyles} />
+          <Button
+            color='#FF7083'
+            title='Log out'
+            onPress={logOut}
+            androidButtonStyled={styles.androidButtonStyles}
+          />
         </TouchableHighlight>
       )}
     </ScrollView>
