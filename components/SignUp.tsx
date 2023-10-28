@@ -100,7 +100,7 @@ export default function SignUp({ route, navigation }: Props) {
           /**
            * TODO: change below to expoPushToken
            */
-          deviceToken: 123456,//expoPushToken,
+          deviceToken: expoPushToken,
           availabilty: noWeek,
         }
       )
