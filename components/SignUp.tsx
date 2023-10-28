@@ -69,18 +69,16 @@ export default function SignUp({ route, navigation }: Props) {
     )
 
     // This listener is fired whenever a notification is received while the app is foregrounded
-    notificationListener.current = Notifications.addNotificationReceivedListener(
-      notification => {
+    notificationListener.current =
+      Notifications.addNotificationReceivedListener(notification => {
         setNotification(notification)
-      }
-    )
+      })
 
     // This listener is fired whenever a user taps on or interacts with a notification (works when app is foregrounded, backgrounded, or killed)
-    responseListener.current = Notifications.addNotificationResponseReceivedListener(
-      response => {
+    responseListener.current =
+      Notifications.addNotificationResponseReceivedListener(response => {
         console.log(response)
-      }
-    )
+      })
 
     return () => {
       Notifications.removeNotificationSubscription(notificationListener.current)
@@ -102,7 +100,7 @@ export default function SignUp({ route, navigation }: Props) {
           /**
            * TODO: change below to expoPushToken
            */
-          deviceToken: expoPushToken,
+          deviceToken: 123456,//expoPushToken,
           availabilty: noWeek,
         }
       )
@@ -126,6 +124,7 @@ export default function SignUp({ route, navigation }: Props) {
         }
       })
       .catch(e => console.error(e))
+
   }
 
   const storeProfileId = async (id: string) => {
@@ -138,91 +137,103 @@ export default function SignUp({ route, navigation }: Props) {
 
   return (
     <View style={styles.container}>
-      <ScrollView
-        style={{ marginLeft: 51, overflow: 'scroll', marginBottom: 25 }}
-      >
+      <ScrollView style={{ overflow: 'scroll', marginBottom: 25 }}>
         <Text style={styles.title}>Register</Text>
+        <View style={{ alignSelf: 'center',marginLeft:20 }}>
         <UploadImage
           receiveImage={(image: string) => setData({ ...data, image })}
           image={data.image}
         />
-        <Text style={[styles.label, styles.marginTop16]}>Name</Text>
-        <TextInput
-          placeholderTextColor='grey'
-          onBlur={() => setFocus({ ...focus, name: false })}
-          onFocus={() => setFocus({ ...focus, name: true })}
-          placeholder='Name'
-          style={styles.input}
-          onChangeText={text => setData({ ...data, name: text })}
-          autoCorrect={false}
-        />
-        <Text style={[styles.label, styles.marginTop16]}>Phone</Text>
-        <TextInput
-          textContentType='telephoneNumber'
-          placeholderTextColor='grey'
-          onBlur={() => setFocus({ ...focus, phone: false })}
-          onFocus={() => setFocus({ ...focus, phone: true })}
-          placeholder='Phone'
-          style={styles.input}
-          onChangeText={text => setData({ ...data, phone: text })}
-          autoCorrect={false}
-        />
-        {!validPhone(data.phone) && !!data.phone && !focus.phone ? (
-          <Text style={{ color: 'red' }}>
-            Please enter 10 digit valid phone number
+        </View>
+        <View style={{ alignSelf: 'center' }}>
+          <Text style={[styles.label, styles.marginTop16]}>Name</Text>
+          <TextInput
+            placeholderTextColor='grey'
+            onBlur={() => setFocus({ ...focus, name: false })}
+            onFocus={() => setFocus({ ...focus, name: true })}
+            placeholder='Name'
+            style={styles.input}
+            onChangeText={text => setData({ ...data, name: text })}
+            autoCorrect={false}
+          />
+        </View>
+        <View style={{ alignSelf: 'center' }}>
+          <Text style={[styles.label, styles.marginTop16]}>Phone</Text>
+          <TextInput
+            textContentType='telephoneNumber'
+            placeholderTextColor='grey'
+            onBlur={() => setFocus({ ...focus, phone: false })}
+            onFocus={() => setFocus({ ...focus, phone: true })}
+            placeholder='Phone'
+            style={styles.input}
+            onChangeText={text => setData({ ...data, phone: text })}
+            autoCorrect={false}
+          />
+          {!validPhone(data.phone) && !!data.phone && !focus.phone ? (
+            <Text style={{ color: 'red' }}>
+              Please enter 10 digit valid phone number
+            </Text>
+          ) : null}
+        </View>
+        <View style={{ alignSelf: 'center' }}>
+          <Text style={[styles.label, styles.marginTop16]}>Email</Text>
+          <TextInput
+            textContentType='emailAddress'
+            placeholderTextColor='grey'
+            autoCapitalize='none'
+            autoCorrect={false}
+            onBlur={() => setFocus({ ...focus, email: false })}
+            onFocus={() => setFocus({ ...focus, email: true })}
+            placeholder='Email'
+            style={styles.input}
+            onChangeText={text => {
+              setData({ ...data, email: text })
+            }}
+          />
+
+          {!validateEmail(data.email) && !!data.email && !focus.email ? (
+            <Text style={{ color: 'red' }}>Email is invalid</Text>
+          ) : null}
+        </View>
+        <View style={{ alignSelf: 'center' }}>
+          <Text style={[styles.label, styles.marginTop16]}>Password</Text>
+          <TextInput
+            placeholderTextColor='grey'
+            onBlur={() => setFocus({ ...focus, pwd: false })}
+            onFocus={() => setFocus({ ...focus, pwd: true })}
+            placeholder='Password'
+            textContentType='password'
+            secureTextEntry
+            autoCapitalize='none'
+            autoCorrect={false}
+            style={styles.input}
+            onChangeText={text => setData({ ...data, password: text })}
+          />
+        </View>
+        <View style={{ alignSelf: 'center' }}>
+          <Text style={[styles.label, styles.marginTop16]}>
+            Confirm Password
           </Text>
-        ) : null}
-
-        <Text style={[styles.label, styles.marginTop16]}>Email</Text>
-        <TextInput
-          textContentType='emailAddress'
-          placeholderTextColor='grey'
-          autoCapitalize='none'
-          autoCorrect={false}
-          onBlur={() => setFocus({ ...focus, email: false })}
-          onFocus={() => setFocus({ ...focus, email: true })}
-          placeholder='Email'
-          style={styles.input}
-          onChangeText={text => {
-            setData({ ...data, email: text })
-          }}
-        />
-
-        {!validateEmail(data.email) && !!data.email && !focus.email ? (
-          <Text style={{ color: 'red' }}>Email is invalid</Text>
-        ) : null}
-        <Text style={[styles.label, styles.marginTop16]}>Password</Text>
-        <TextInput
-          placeholderTextColor='grey'
-          onBlur={() => setFocus({ ...focus, pwd: false })}
-          onFocus={() => setFocus({ ...focus, pwd: true })}
-          placeholder='Password'
-          textContentType='password'
-          secureTextEntry
-          autoCapitalize='none'
-          autoCorrect={false}
-          style={styles.input}
-          onChangeText={text => setData({ ...data, password: text })}
-        />
-        <Text style={[styles.label, styles.marginTop16]}>Confirm Password</Text>
-        <TextInput
-          placeholderTextColor='grey'
-          onBlur={() => setFocus({ ...focus, confirmPwd: false })}
-          onFocus={() => setFocus({ ...focus, confirmPwd: true })}
-          placeholder='Confirm Password'
-          textContentType='password'
-          secureTextEntry
-          autoCapitalize='none'
-          autoCorrect={false}
-          style={styles.input}
-          onChangeText={text => setData({ ...data, confirmPassword: text })}
-        />
+          <TextInput
+            placeholderTextColor='grey'
+            onBlur={() => setFocus({ ...focus, confirmPwd: false })}
+            onFocus={() => setFocus({ ...focus, confirmPwd: true })}
+            placeholder='Confirm Password'
+            textContentType='password'
+            secureTextEntry
+            autoCapitalize='none'
+            autoCorrect={false}
+            style={styles.input}
+            onChangeText={text => setData({ ...data, confirmPassword: text })}
+          />
+        </View>
 
         <Text style={{ color: 'red' }}>
           {data.confirmPassword && data.password !== data.confirmPassword
             ? `Password and confirm password should match`
             : ''}
         </Text>
+        <View style={{ alignSelf: 'center' }}> 
         <Button
           title='SIGN UP'
           color='#fff'
@@ -242,21 +253,25 @@ export default function SignUp({ route, navigation }: Props) {
           touchOpacityStyles={[styles.button, styles.marginTop25]}
           androidButtonStyled={{
             textAlign: 'center',
-            marginTop: 10,
+            marginTop: 10 ,
             fontSize: 16,
-            color: (!data.email &&
-              !validateEmail(data.email) &&
-              !data.name &&
-              !data.password &&
-              !data.confirmPassword &&
-              !data.phone &&
-              !validPhone(data.phone)) ||
+            color:
+              (!data.email &&
+                !validateEmail(data.email) &&
+                !data.name &&
+                !data.password &&
+                !data.confirmPassword &&
+                !data.phone &&
+                !validPhone(data.phone)) ||
               data.password !== data.confirmPassword ||
               !validateEmail(data.email) ||
-              !validPhone(data.phone) ? 'grey' : '#fff',
+              !validPhone(data.phone)
+                ? 'grey'
+                : '#fff',
           }}
         />
-        <Text style={[styles.marginTop10, styles.loginText]}>
+        </View>
+        <Text style={[styles.marginTop20, styles.loginText]}>
           Not the first time?{' '}
           <Button
             color='#FF7083'
@@ -264,7 +279,7 @@ export default function SignUp({ route, navigation }: Props) {
             onPress={() => navigation.navigate('login')}
             androidButtonStyled={{
               textAlign: 'center',
-              marginTop: 10,
+              marginBottom: -5,
               fontSize: 16,
               color: '#FF7083',
             }}
@@ -330,6 +345,9 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#030169',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
   },
   input: {
     height: 56,
@@ -351,13 +369,13 @@ const styles = StyleSheet.create({
   },
   title: {
     color: '#FF7083',
-    marginTop: 80,
-    fontSize: 56,
+    marginTop: 30,
+    fontSize: 40,
+    textAlign: 'center',
   },
   label: {
     color: '#FF7083',
     marginBottom: 16,
-    marginLeft: 10,
     fontSize: 17,
   },
   marginTop16: {
@@ -365,9 +383,12 @@ const styles = StyleSheet.create({
   },
   loginText: {
     color: '#fff',
-    marginLeft: 50,
+    textAlign:'center'
   },
   marginTop10: {
     marginTop: 10,
-  }
+  },
+  marginTop20: {
+    marginTop: 20,
+  },
 })

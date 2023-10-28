@@ -5,12 +5,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="c223aaa6-5161-4f06-a67f-77228d0522ad" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/eas.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app.json" beforeDir="false" afterPath="$PROJECT_DIR$/app.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Profile/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/Profile/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/Profile/styles.ts" beforeDir="false" afterPath="$PROJECT_DIR$/components/Profile/styles.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/SignUp.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/SignUp.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/TimeSlots.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/TimeSlots.tsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
     </list>
@@ -45,7 +40,10 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "RunOnceActivity.cidr.known.project.marker": "true",
-    "cidr.known.project.marker": "true"
+    "cidr.known.project.marker": "true",
+    "project.structure.last.edited": "Artifacts",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.2"
   }
 }]]></component>
   <component name="RunManager">

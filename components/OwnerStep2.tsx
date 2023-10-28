@@ -128,7 +128,8 @@ export default function OwnerStep2({ route, navigation }: Props) {
           title='CONFIRM'
           disabled={!data.area && !data.rooms}
           onPress={() => {
-            if (!!data.area && !!data.rooms) handleStepTwo()
+            if (!!data.area && !!data.rooms) 
+            handleStepTwo()
           }}
           androidButtonStyled={{
             textAlign: 'center',
@@ -152,6 +153,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#fff',
+    display:'flex',
+    flexDirection:'column',
+    justifyContent:'center',
+    alignContent:'center',alignItems:'center'
   },
   innerContainer: { marginLeft: 40, marginTop: 50 },
   input: {
@@ -181,6 +186,7 @@ const styles = StyleSheet.create({
   title: {
     color: '#FF7083',
     fontSize: 40,
+    textAlign:'center'
   },
   section: {
     display: 'flex',

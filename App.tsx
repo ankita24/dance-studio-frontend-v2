@@ -180,9 +180,9 @@ const App = () => {
             />
             <Stack.Screen name='login' component={Login} />
             <Stack.Screen name='signup' component={SignUp} />
-            <Stack.Screen name='ownerStep1' component={OwnerRequired} />
-            <Stack.Screen name='ownerStep2' component={OwnerStep2} />
-            <Stack.Screen name='ownerStep3' component={TimeSlots} />
+            <Stack.Screen name='ownerStep1' component={OwnerRequired} options={{ headerBackVisible: false,headerShown: false}}/>
+            <Stack.Screen name='ownerStep2' component={OwnerStep2} options={{ headerBackVisible: false, headerShown: false }}/>
+            <Stack.Screen name='ownerStep3' component={TimeSlots} options={{ headerBackVisible: false, headerShown: false }}/>
 
             <Stack.Screen
               name='userBookedClasses'

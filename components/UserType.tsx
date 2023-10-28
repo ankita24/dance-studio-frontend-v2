@@ -1,10 +1,5 @@
 import React, { useEffect } from 'react'
-import {
-  StyleSheet,
-  Text,
-  View,
-  TouchableHighlight,
-} from 'react-native'
+import { StyleSheet, Text, View, TouchableHighlight } from 'react-native'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { useIsFocused } from '@react-navigation/native'
@@ -33,42 +28,42 @@ export default function UserType({ navigation }: Props) {
   }
   return (
     <View style={styles.container}>
-      <Text style={styles.welcomeText}>Danvue</Text>
+        <Text style={styles.welcomeText}>DaView</Text>
 
-      <View style={styles.innerContainer}>
-        <Text style={styles.subtitle}>
-          Give your dancing shoes a beautiful{' '}
-          <Text style={{ color: '#FB304B' }}>background</Text>{' '}
+        <View style={styles.innerContainer}>
+          <Text style={styles.subtitle}>
+            Give your dancing shoes a beautiful{' '}
+            <Text style={{ color: '#FB304B' }}>background</Text>{' '}
+          </Text>
+          <TouchableHighlight
+            style={[styles.button, styles.marginTop20]}
+            onPress={() =>
+              navigation.navigate('signup', { type: 'user', id: '' })
+            }
+          >
+            <Text style={styles.userTypeText}>User</Text>
+          </TouchableHighlight>
+          <Text style={[styles.marginTop20, styles.white]}>Or</Text>
+
+          <TouchableHighlight
+            style={[styles.button, styles.marginTop20]}
+            onPress={() =>
+              navigation.navigate('signup', { type: 'owner', id: '' })
+            }
+          >
+            <Text style={styles.userTypeText}>Owner</Text>
+          </TouchableHighlight>
+        </View>
+        <Text style={styles.footerText}>
+          Not the first time?{' '}
+          <Button
+            color='#FF7083'
+            title='Login'
+            onPress={() => navigation.navigate('login')}
+            touchOpacityStyles={{ marginTop: -12 }}
+            androidButtonStyled={styles.androidButtonStyles}
+          />
         </Text>
-        <TouchableHighlight
-          style={[styles.button, styles.marginTop81]}
-          onPress={() =>
-            navigation.navigate('signup', { type: 'user', id: '' })
-          }
-        >
-          <Text style={styles.userTypeText}>User</Text>
-        </TouchableHighlight>
-        <Text style={[styles.marginTop36, styles.white]}>Or</Text>
-
-        <TouchableHighlight
-          style={[styles.button, styles.marginTop36]}
-          onPress={() =>
-            navigation.navigate('signup', { type: 'owner', id: '' })
-          }
-        >
-          <Text style={styles.userTypeText}>Owner</Text>
-        </TouchableHighlight>
-      </View>
-      <Text style={styles.footerText}>
-        Not the first time?{' '}
-        <Button
-          color='#FF7083'
-          title='Login'
-          onPress={() => navigation.navigate('login')}
-          touchOpacityStyles={{ marginTop: -12 }}
-          androidButtonStyled={styles.androidButtonStyles}
-        />
-      </Text>
     </View>
   )
 }
@@ -78,6 +73,9 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#030169',
     color: '#fff',
+    display:'flex',
+    flexDirection:'column',
+    justifyContent:'center'
   },
   button: {
     height: 63,
@@ -88,47 +86,47 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   welcomeText: {
-    marginTop: 80,
-    fontSize: 64,
+    fontSize: 40,
+    textAlign: 'center',
     color: '#FF7083',
-    marginLeft: 80,
+    
   },
   innerContainer: {
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
-    marginTop: 36,
+    marginTop: 20,
   },
   white: {
     color: '#FFF',
   },
-  marginTop81: {
-    marginTop: 81,
-  },
-  marginTop36: {
-    marginTop: 36,
+  marginTop20: {
+    marginTop: 20,
   },
   userTypeText: {
-    fontSize: 32,
+    fontSize: 24,
     textAlign: 'center',
     color: '#FFF',
+    fontWeight:"400"
   },
   footerText: {
-    marginTop: 10,
+    marginTop: 20,
     color: '#fff',
-    marginLeft: 90,
+    textAlign: 'center',
   },
   subtitle: {
     width: 250,
-    marginLeft: 35,
+    textAlign: 'center',
     lineHeight: 24,
-    fontSize: 17,
+    fontSize: 16,
     color: '#fff',
+    fontStyle:'italic'
   },
   androidButtonStyles: {
     textAlign: 'center',
-    marginTop: 10,
     fontSize: 16,
+    marginLeft: 4,
+    marginBottom: -5,
     color: '#FF7083',
-  }
+  },
 })
