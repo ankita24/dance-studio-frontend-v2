@@ -14,9 +14,18 @@
         "gradleCommand": ":app:assembleRelease"
       }
     },
-    "production": {}
+    "production": {
+      "env": {
+        "IP_ADDRESS": "https://dance-sutdio.vercel.app",
+        "GOOGLE_MAPS_KEY": "AIzaSyBygoa-D3AeuGajrVzOTRrFnNzkGTyZtjA"
+      }
+    }
   },
   "submit": {
-    "production": {}
+    "production": {
+      "android": {
+        "serviceAccountKeyPath": "../../../danceStudioFiles/dance-studio-331215-d3f7c40c1fac.json"
+      }
+    }
   }
 }

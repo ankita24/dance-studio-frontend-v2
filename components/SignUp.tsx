@@ -87,6 +87,7 @@ export default function SignUp({ route, navigation }: Props) {
   }, [])
 
   const handleRegister = async () => {
+    console.log(`${IP_ADDRESS}`)
     axios
       .post<{ status: string; error: string; response: { _id: string } }>(
         `${IP_ADDRESS}/api/register`,
@@ -100,12 +101,13 @@ export default function SignUp({ route, navigation }: Props) {
           /**
            * TODO: change below to expoPushToken
            */
-          deviceToken: expoPushToken,
+          deviceToken: expoPushToken + Math.random(),
           availabilty: noWeek,
         }
       )
       .then(res => {
         if (res?.data?.status === 'error') {
+          console.log(res?.data)
           Alert.alert(res?.data?.error)
         } else {
           storeProfileId(res?.data.response._id).then(async () => {
@@ -124,7 +126,6 @@ export default function SignUp({ route, navigation }: Props) {
         }
       })
       .catch(e => console.error(e))
-
   }
 
   const storeProfileId = async (id: string) => {
@@ -139,11 +140,11 @@ export default function SignUp({ route, navigation }: Props) {
     <View style={styles.container}>
       <ScrollView style={{ overflow: 'scroll', marginBottom: 25 }}>
         <Text style={styles.title}>Register</Text>
-        <View style={{ alignSelf: 'center',marginLeft:20 }}>
-        <UploadImage
-          receiveImage={(image: string) => setData({ ...data, image })}
-          image={data.image}
-        />
+        <View style={{ alignSelf: 'center', marginLeft: 20 }}>
+          <UploadImage
+            receiveImage={(image: string) => setData({ ...data, image })}
+            image={data.image}
+          />
         </View>
         <View style={{ alignSelf: 'center' }}>
           <Text style={[styles.label, styles.marginTop16]}>Name</Text>
@@ -233,29 +234,12 @@ export default function SignUp({ route, navigation }: Props) {
             ? `Password and confirm password should match`
             : ''}
         </Text>
-        <View style={{ alignSelf: 'center' }}> 
-        <Button
-          title='SIGN UP'
-          color='#fff'
-          onPress={handleRegister}
-          disabled={
-            (!data.email &&
-              !validateEmail(data.email) &&
-              !data.name &&
-              !data.password &&
-              !data.confirmPassword &&
-              !data.phone &&
-              !validPhone(data.phone)) ||
-            data.password !== data.confirmPassword ||
-            !validateEmail(data.email) ||
-            !validPhone(data.phone)
-          }
-          touchOpacityStyles={[styles.button, styles.marginTop25]}
-          androidButtonStyled={{
-            textAlign: 'center',
-            marginTop: 10 ,
-            fontSize: 16,
-            color:
+        <View style={{ alignSelf: 'center' }}>
+          <Button
+            title='SIGN UP'
+            color='#fff'
+            onPress={handleRegister}
+            disabled={
               (!data.email &&
                 !validateEmail(data.email) &&
                 !data.name &&
@@ -266,10 +250,27 @@ export default function SignUp({ route, navigation }: Props) {
               data.password !== data.confirmPassword ||
               !validateEmail(data.email) ||
               !validPhone(data.phone)
-                ? 'grey'
-                : '#fff',
-          }}
-        />
+            }
+            touchOpacityStyles={[styles.button, styles.marginTop25]}
+            androidButtonStyled={{
+              textAlign: 'center',
+              marginTop: 10,
+              fontSize: 16,
+              color:
+                (!data.email &&
+                  !validateEmail(data.email) &&
+                  !data.name &&
+                  !data.password &&
+                  !data.confirmPassword &&
+                  !data.phone &&
+                  !validPhone(data.phone)) ||
+                data.password !== data.confirmPassword ||
+                !validateEmail(data.email) ||
+                !validPhone(data.phone)
+                  ? 'grey'
+                  : '#fff',
+            }}
+          />
         </View>
         <Text style={[styles.marginTop20, styles.loginText]}>
           Not the first time?{' '}
@@ -383,7 +384,7 @@ const styles = StyleSheet.create({
   },
   loginText: {
     color: '#fff',
-    textAlign:'center'
+    textAlign: 'center',
   },
   marginTop10: {
     marginTop: 10,
